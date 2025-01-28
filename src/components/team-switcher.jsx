@@ -33,17 +33,24 @@ export function TeamSwitcher({
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+              <div
+                className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
+                {/* Logo */}
+                <img
+                  className="w-8 h-8 object-contain block md:hidden"
+                  src="assets/logo.png"
+                  alt="Logo"
+                />
+              </div>
               <img
-                className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground" src="assets/logo.png"/>
-                {/* logo */}
-                {/* <activeTeam.logo className="size-4" /> */}
-                {/* <img className="" src="assets/logo.png" /> */}
-              {/* </img> */}
-              <img className="fill-none" src="assets/logo.png" />
+                className="w-40 h-40 object-contain p-2"
+                src="assets/logo.png"
+                alt="Logo"
+              />
 
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-         
+
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>)
