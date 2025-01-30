@@ -23,21 +23,21 @@ const ShowMeetings = () => {
   //   title: event.summary,
   // }));
 
-//   const handleAddAppointment = (newContact) => {
-//     setFilteredData((prev) => [...prev, newContact]);
-// };
+  //   const handleAddAppointment = (newContact) => {
+  //     setFilteredData((prev) => [...prev, newContact]);
+  // };
 
-// const handleUpdateAppointment = (updatedContact) => {
-//     setFilteredData((prev) =>
-//         prev.map((contact) =>
-//             contact.id === updatedContact.id ? updatedContact : contact
-//         )
-//     );
-// };
+  // const handleUpdateAppointment = (updatedContact) => {
+  //     setFilteredData((prev) =>
+  //         prev.map((contact) =>
+  //             contact.id === updatedContact.id ? updatedContact : contact
+  //         )
+  //     );
+  // };
 
-// const handleDeleteAppointment = (id) => {
-//     setFilteredData((prev) => prev.filter((contact) => contact.id !== id));
-// };
+  // const handleDeleteAppointment = (id) => {
+  //     setFilteredData((prev) => prev.filter((contact) => contact.id !== id));
+  // };
 
   return (
     <div>
@@ -47,15 +47,21 @@ const ShowMeetings = () => {
             {/* <Button>+ Add New Meeting</Button> */}
             <button className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110">+ Add New Meeting</button>
           </div>
-          <div>
+          {/* <div className='w-full overflow-x-scroll'>
             <AppointmentTable
               appointmentData={appointment}
               setAppointmentData={setAppointment}
-              // onAdd={handleAddAppointment} // Pass handlers for Add, Update, Delete
-              // onUpdate={handleUpdateAppointment}
-              // onDelete={handleDeleteAppointment}
             />
+          </div> */}
+          <div className="w-full">
+            <div className="overflow-x-auto">
+              <AppointmentTable
+                appointmentData={appointment}
+                setAppointmentData={setAppointment}
+              />
+            </div>
           </div>
+
 
 
         </div>
@@ -66,10 +72,13 @@ const ShowMeetings = () => {
 
       </div>
       <div className='flex flex-col md:flex-row'>
-        <div className='w-3/4'>
-        <Calendar events={events} />
+        <div className='w-full md:w-3/4'>
+          <Calendar events={events} />
         </div>
-       
+        <div className='w-full md:w-1/4'>
+          This is the rest
+        </div>
+
       </div>
 
 

@@ -1,9 +1,9 @@
-import Dashboard from '@/app/dashboard/page'
+import Start from '@/app/auth/page'
 
 export default function Home() {
   return (
     <div>
-      <Dashboard/>
+      <Start/>
     </div>
   );
 }
