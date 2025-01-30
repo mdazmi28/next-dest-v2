@@ -3,16 +3,17 @@ import ShowMeetings from '@/pages/ShowMeetingsPage';
 import React from 'react';
 import { useFlowContext } from '@/context/FlowContext';
 import AddMeetingsPage from '@/pages/AddMeetingsPage';
+import Layout from '@/components/Layout';
 
 const page = () => {
     const { addMeetingInfoStage } = useFlowContext()
     return (
-        <div>
+        <Layout>
 
             {
                 addMeetingInfoStage ? (<ShowMeetings />) : (<AddMeetingsPage />)
             }
-        </div>
+        </Layout>
 
     );
 };

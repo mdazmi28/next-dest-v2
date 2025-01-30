@@ -1,4 +1,5 @@
 'use client'
+import Layout from '@/components/Layout';
 import { useFlowContext } from '@/context/FlowContext';
 import AddContactPage from '@/pages/AddContactPage';
 import ShowContactPage from '@/pages/ShowContactPage';
@@ -9,7 +10,12 @@ const page = () => {
     // console.log(addContactInfoStage)
     
     return (
-        addContactInfoStage ? (<ShowContactPage/>) : (<AddContactPage/>)
+        <Layout>
+            {
+addContactInfoStage ? (<ShowContactPage/>) : (<AddContactPage/>)
+            }
+        </Layout>
+        
        
     );
 };
