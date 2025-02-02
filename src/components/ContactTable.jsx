@@ -178,9 +178,10 @@ const Table = ({ contactData, setContactData }) => {
     };
 
     const confirmDelete = async (id) => {
-        console.log("Deleting Contact ID:", id);
         const userId = Cookies.get('user_id');
         const authToken = localStorage.getItem('authToken');
+        console.log("user id is: ",userId)
+        console.log("Deleting Contact ID:", id);
     
         if (!id) {
             console.error("ID is undefined or null!");
@@ -188,7 +189,7 @@ const Table = ({ contactData, setContactData }) => {
         }
     
         try {
-            const response = await fetch(`${base_url}/users/${userId}/contacts/${id}`, {
+            const response = await fetch(`${base_url}/api/users/${userId}/contacts/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -198,7 +199,7 @@ const Table = ({ contactData, setContactData }) => {
     
             if (response.ok) {
                 // Remove the deleted contact from the local state
-                setContactData(contactData.filter((contact) => contact.id !== id));
+                setContactData(contactData.filter((contact) => contact.contact_id !== id));
                 setIsDeleteOpen(false);
                 console.log("Contact deleted successfully");
             } else {
@@ -208,6 +209,40 @@ const Table = ({ contactData, setContactData }) => {
             console.log("Error:", error);
         }
     };
+    
+    // const confirmDelete = async (id) => {
+    //     const userId = Cookies.get('user_id');
+    //     const authToken = localStorage.getItem('authToken');
+    //     console.log("user id is: ", userId);
+    //     console.log("Deleting Contact ID:", id);
+    
+    //     if (!id) {
+    //         console.error("ID is undefined or null!");
+    //         return;
+    //     }
+    
+    //     try {
+    //         const response = await fetch(`${base_url}/api/users/${userId}/contacts/${id}`, {
+    //             method: "DELETE",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 "Authorization": `Bearer ${authToken}`,
+    //             },
+    //         });
+    
+    //         if (response.ok) {
+    //             // Filter out the deleted contact from the state before setting it
+    //             const updatedContacts = contactData.filter((contact) => contact.id !== id);
+    //             setContactData(updatedContacts);  // Update state with the new contact list
+    //             setIsDeleteOpen(false);
+    //             console.log("Contact deleted successfully");
+    //         } else {
+    //             console.log("Failed to delete contact");
+    //         }
+    //     } catch (error) {
+    //         console.log("Error:", error);
+    //     }
+    // };
     
     
 
