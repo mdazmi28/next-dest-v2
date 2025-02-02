@@ -192,7 +192,7 @@ const ShowContactPage = () => {
                     }
 
                     const refreshData = await refreshResponse.json();
-                    authToken = refreshData.token;
+                    authToken = refreshData.access;
                     localStorage.setItem("authToken", authToken);
                     console.log("Token refreshed successfully:", authToken);
 

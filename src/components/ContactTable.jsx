@@ -137,6 +137,7 @@ import React, { useState } from "react";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Cookies from 'js-cookie';
+import { ToastContainer, toast } from "react-toastify";
 
 const Table = ({ contactData, setContactData }) => {
     const [isViewOpen, setIsViewOpen] = useState(false);
@@ -177,50 +178,18 @@ const Table = ({ contactData, setContactData }) => {
         setIsEditOpen(false);
     };
 
-    const confirmDelete = async (id) => {
-        const userId = Cookies.get('user_id');
-        const authToken = localStorage.getItem('authToken');
-        console.log("user id is: ",userId)
-        console.log("Deleting Contact ID:", id);
-    
-        if (!id) {
-            console.error("ID is undefined or null!");
-            return;
-        }
-    
-        try {
-            const response = await fetch(`${base_url}/api/users/${userId}/contacts/${id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${authToken}`,
-                },
-            });
-    
-            if (response.ok) {
-                // Remove the deleted contact from the local state
-                setContactData(contactData.filter((contact) => contact.contact_id !== id));
-                setIsDeleteOpen(false);
-                console.log("Contact deleted successfully");
-            } else {
-                console.log("Failed to delete contact");
-            }
-        } catch (error) {
-            console.log("Error:", error);
-        }
-    };
-    
+    // fix v1
     // const confirmDelete = async (id) => {
     //     const userId = Cookies.get('user_id');
     //     const authToken = localStorage.getItem('authToken');
-    //     console.log("user id is: ", userId);
+    //     console.log("user id is: ",userId)
     //     console.log("Deleting Contact ID:", id);
-    
+
     //     if (!id) {
     //         console.error("ID is undefined or null!");
     //         return;
     //     }
-    
+
     //     try {
     //         const response = await fetch(`${base_url}/api/users/${userId}/contacts/${id}`, {
     //             method: "DELETE",
@@ -229,11 +198,10 @@ const Table = ({ contactData, setContactData }) => {
     //                 "Authorization": `Bearer ${authToken}`,
     //             },
     //         });
-    
+
     //         if (response.ok) {
-    //             // Filter out the deleted contact from the state before setting it
-    //             const updatedContacts = contactData.filter((contact) => contact.id !== id);
-    //             setContactData(updatedContacts);  // Update state with the new contact list
+    //             // Remove the deleted contact from the local state
+    //             setContactData(contactData.filter((contact) => contact.contact_id !== id));
     //             setIsDeleteOpen(false);
     //             console.log("Contact deleted successfully");
     //         } else {
@@ -243,8 +211,93 @@ const Table = ({ contactData, setContactData }) => {
     //         console.log("Error:", error);
     //     }
     // };
-    
-    
+
+    // fix v2
+    const confirmDelete = async (id) => {
+        const userId = Cookies.get('user_id');
+        let authToken = localStorage.getItem('authToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        console.log("User ID is:", userId);
+        console.log("Deleting Contact ID:", id);
+
+        if (!id) {
+            console.error("ID is undefined or null!");
+            return;
+        }
+
+        if (!authToken && !refreshToken) {
+            toast.error("Please log in first.");
+            return;
+        }
+
+        const deleteContactWithToken = async (token) => {
+            const response = await fetch(`${base_url}/users/${userId}/contacts/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                // Remove the deleted contact from the local state
+                setContactData(contactData.filter((contact) => contact.contact_id !== id));
+                setIsDeleteOpen(false);
+                console.log("Contact deleted successfully");
+            } else {
+                console.log("Failed to delete contact");
+            }
+        };
+
+        // Function to refresh the token if expired
+        const refreshAndRetry = async () => {
+            try {
+                console.log("Attempting to refresh token...");
+                const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ refresh: refreshToken }),
+                });
+
+                if (!refreshResponse.ok) {
+                    throw new Error("Token refresh failed. Please log in again.");
+                }
+
+                const refreshData = await refreshResponse.json();
+                authToken = refreshData.access;
+                localStorage.setItem("authToken", authToken);
+                console.log("Token refreshed successfully:", authToken);
+
+                // Retry the delete request with the new token
+                await deleteContactWithToken(authToken);
+            } catch (err) {
+                console.error("Refresh and Retry Error:", err);
+                toast.error(err.message || "An error occurred.");
+            }
+        };
+
+        try {
+            if (authToken) {
+                await deleteContactWithToken(authToken);
+            } else if (refreshToken) {
+                await refreshAndRetry();
+            }
+        } catch (err) {
+            if (err.message.includes("401")) {
+                console.log("Token expired, attempting refresh...");
+                await refreshAndRetry();
+            } else {
+                console.error("Error:", err);
+                toast.error(err.message || "An error occurred.");
+            }
+        }
+    };
+
+
+
 
 
     return (
@@ -272,7 +325,7 @@ const Table = ({ contactData, setContactData }) => {
                                 <td>{data.email}</td>
                                 <td>{data.phone}</td>
                                 {/* <td>{data.phone}</td> */}
-                                
+
                                 <td className="flex justify-between gap-5">
                                     <FaEye
                                         className="h-5 w-5 text-green-500 cursor-pointer"
@@ -461,6 +514,17 @@ const Table = ({ contactData, setContactData }) => {
                     </div>
                 </div>
             )}
+
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </div>
     );
 };
