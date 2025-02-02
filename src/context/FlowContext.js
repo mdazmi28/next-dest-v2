@@ -10,7 +10,6 @@ export const FlowProvider = ({ children }) => {
     const [loading, setLoading] = useState("");
     const [error, setError] = useState("");
 
-
     // console.log(addContactInfoStage)
     
 

@@ -138,6 +138,7 @@ import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Cookies from 'js-cookie';
 import { ToastContainer, toast } from "react-toastify";
+import {jwtDecode} from 'jwt-decode'
 
 const Table = ({ contactData, setContactData }) => {
     const [isViewOpen, setIsViewOpen] = useState(false);
@@ -146,6 +147,18 @@ const Table = ({ contactData, setContactData }) => {
     const [selectedData, setSelectedData] = useState(null);
     const [editData, setEditData] = useState(null);
     const [selectedContactId, setSelectedContactId] = useState(null);
+
+    const isTokenExpired = (token) => {
+        try {
+            const decoded = jwtDecode(token);
+            if (!decoded.exp) return false; // If no expiry time, assume it's valid
+            return decoded.exp * 1000 < Date.now(); // Convert exp to milliseconds
+        } catch (error) {
+            console.error("Invalid token:", error);
+            return true; // Assume expired if decoding fails
+        }
+    };
+
 
     const handleView = (data) => {
         setSelectedData(data);
@@ -280,7 +293,7 @@ const Table = ({ contactData, setContactData }) => {
         };
 
         try {
-            if (authToken) {
+            if (authToken && !isTokenExpired(authToken)) {
                 await deleteContactWithToken(authToken);
             } else if (refreshToken) {
                 await refreshAndRetry();
