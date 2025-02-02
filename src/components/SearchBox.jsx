@@ -14,8 +14,8 @@ const SearchBoxWithSuggestions = ({ data, onFilter }) => {
         const searchQuery = event.target.value;
         setQuery(searchQuery);
         setIsSuggestionsOpen(searchQuery.length > 0); // Open suggestions if query is not empty
-
-        const results = data.filter((item) => {
+ 
+        const results = data.filter((item)  =>  {
             const searchString = `${item.name} ${item.designation} ${item.email} ${item.phone}` ;
             // ${item.organization.name} ${item.organization.address} ${item.organization.email} ${item.organization.web} ${item.organization.phone}
             return searchString.toLowerCase().includes(searchQuery.toLowerCase());
