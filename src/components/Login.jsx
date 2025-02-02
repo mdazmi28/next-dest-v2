@@ -33,7 +33,7 @@ const Login = () => {
         try {
             // API request for login
             console.log("im in try block")
-            const response = await fetch(`${base_url}/api/login/`, {
+            const response = await fetch(`${base_url}/login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
