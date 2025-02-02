@@ -132,9 +132,11 @@
 
 // export default Table;
 
+import base_url from "@/base_url";
 import React, { useState } from "react";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import Cookies from 'js-cookie';
 
 const Table = ({ contactData, setContactData }) => {
     const [isViewOpen, setIsViewOpen] = useState(false);
@@ -142,6 +144,7 @@ const Table = ({ contactData, setContactData }) => {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
     const [editData, setEditData] = useState(null);
+    const [selectedContactId, setSelectedContactId] = useState(null);
 
     const handleView = (data) => {
         setSelectedData(data);
@@ -153,8 +156,8 @@ const Table = ({ contactData, setContactData }) => {
         setIsEditOpen(true);
     };
 
-    const handleDelete = (data) => {
-        setSelectedData(data);
+    const handleDelete = (contact_id) => {
+        setSelectedContactId(contact_id);
         setIsDeleteOpen(true);
     };
 
@@ -174,13 +177,40 @@ const Table = ({ contactData, setContactData }) => {
         setIsEditOpen(false);
     };
 
-    const confirmDelete = () => {
-        const updatedContacts = contactData.filter(
-            (contact) => contact.id !== selectedData.id
-        );
-        setContactData(updatedContacts);
-        setIsDeleteOpen(false);
+    const confirmDelete = async (id) => {
+        console.log("Deleting Contact ID:", id);
+        const userId = Cookies.get('user_id');
+        const authToken = localStorage.getItem('authToken');
+    
+        if (!id) {
+            console.error("ID is undefined or null!");
+            return;
+        }
+    
+        try {
+            const response = await fetch(`${base_url}/users/${userId}/contacts/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${authToken}`,
+                },
+            });
+    
+            if (response.ok) {
+                // Remove the deleted contact from the local state
+                setContactData(contactData.filter((contact) => contact.id !== id));
+                setIsDeleteOpen(false);
+                console.log("Contact deleted successfully");
+            } else {
+                console.log("Failed to delete contact");
+            }
+        } catch (error) {
+            console.log("Error:", error);
+        }
     };
+    
+    
+
 
     return (
         <div>
@@ -206,6 +236,8 @@ const Table = ({ contactData, setContactData }) => {
                                 <td>{data.organization}</td>
                                 <td>{data.email}</td>
                                 <td>{data.phone}</td>
+                                {/* <td>{data.phone}</td> */}
+                                
                                 <td className="flex justify-between gap-5">
                                     <FaEye
                                         className="h-5 w-5 text-green-500 cursor-pointer"
@@ -217,7 +249,7 @@ const Table = ({ contactData, setContactData }) => {
                                     />
                                     <MdDelete
                                         className="h-5 w-5 text-red-500 cursor-pointer"
-                                        onClick={() => handleDelete(data)}
+                                        onClick={() => handleDelete(data.contact_id)}
                                     />
                                 </td>
                             </tr>
@@ -256,7 +288,7 @@ const Table = ({ contactData, setContactData }) => {
                             <button className="btn" onClick={() => setIsViewOpen(false)}>
                                 Close
                             </button>
-                        </div> 
+                        </div>
                     </div>
                 </div>
             )}
@@ -384,7 +416,7 @@ const Table = ({ contactData, setContactData }) => {
                             removed.
                         </p>
                         <div className="modal-action">
-                            <button className="btn btn-error" onClick={confirmDelete}>
+                            <button className="btn btn-error" onClick={() => confirmDelete(selectedContactId)}>
                                 Delete
                             </button>
                             <button className="btn" onClick={() => setIsDeleteOpen(false)}>

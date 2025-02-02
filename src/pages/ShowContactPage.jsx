@@ -89,6 +89,98 @@ const ShowContactPage = () => {
         }
     };
 
+    // const fetchContacts = async () => {
+    //     try {
+    //         const userId = Cookies.get("user_id");
+    //         if (!userId) {
+    //             console.error("User ID not found in cookies.");
+    //             return;
+    //         }
+    
+    //         let token = localStorage.getItem("authToken");
+    //         const rToken = localStorage.getItem("refreshToken");
+    
+    //         if (!token && !rToken) {
+    //             toast.error("Please log in first.");
+    //             return;
+    //         }
+    
+    //         // Fetch contacts with the current token
+    //         const fetchContactsWithToken = async (authToken) => {
+    //             console.log("Using Token:", authToken);
+    
+    //             const response = await fetch(`${base_url}/api/users/${userId}/contacts/`, {
+    //                 method: "GET",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     "Authorization": `Bearer ${authToken}`,
+    //                 },
+    //             });
+    
+    //             if (!response.ok) {
+    //                 if (response.status === 401) {
+    //                     throw new Error("401 Unauthorized"); // Triggers token refresh
+    //                 }
+    //                 const errorData = await response.text();
+    //                 console.log(`Error ${response.status}: ${errorData}`);
+    //             }
+    
+    //             const data = await response.json();
+    //             console.log("API Response:", data);
+    //             setFilteredData(data);
+    //         };
+    
+    //         // Refresh token if access token is expired
+    //         const refreshAndRetry = async () => {
+    //             try {
+    //                 console.log("Attempting to refresh token...");
+    //                 const refreshResponse = await fetch(`${base_url}/refresh`, {
+    //                     method: "POST",
+    //                     headers: {
+    //                         "Content-Type": "application/json",
+    //                     },
+    //                     body: JSON.stringify({ refresh_token: rToken }),
+    //                 });
+    
+    //                 if (!refreshResponse.ok) {
+    //                     console.log("Token refresh failed. Please log in again.");
+    //                 }
+    
+    //                 const refreshData = await refreshResponse.json();
+    //                 token = refreshData.token;
+    //                 localStorage.setItem("authToken", token);
+    //                 console.log("Token refreshed successfully:", token);
+    
+    //                 // Retry with new token
+    //                 await fetchContactsWithToken(token);
+    //             } catch (err) {
+    //                 console.error("Refresh and Retry Error:", err);
+    //                 toast.error(err.message || "An error occurred.");
+    //                 handleLogout();
+    //             }
+    //         };
+    
+    //         try {
+    //             if (token) {
+    //                 await fetchContactsWithToken(token);
+    //             } else if (rToken) {
+    //                 await refreshAndRetry();
+    //             }
+    //         } catch (err) {
+    //             if (err.message.includes("401")) {
+    //                 console.log("Token expired, attempting refresh...");
+    //                 await refreshAndRetry();
+    //             } else {
+    //                 console.error("Error:", err);
+    //                 toast.error(err.message || "An error occurred.");
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error("Failed to fetch contacts:", error);
+    //     }
+    // };
+    
+
     useEffect(() => {
         fetchContacts();
     }, []);
