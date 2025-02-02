@@ -42,16 +42,56 @@
 // export default ShowContactPage;
 
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from '@/components/ContactTable';
 import contactData from '@/data/contactData';
 import SearchBoxWithSuggestions from '@/components/SearchBox';
 import { useFlowContext } from '@/context/FlowContext';
+import Cookies from 'js-cookie';
+import base_url from '@/base_url';
 
 const ShowContactPage = () => {
-    const { addContactInfoStage, setAddContactInfoStage } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => {} };
+    const { addContactInfoStage, setAddContactInfoStage } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
 
-    const [filteredData, setFilteredData] = useState(contactData);
+    const [filteredData, setFilteredData] = useState([]);
+
+    const fetchContacts = async () => {
+        try {
+            const userId = Cookies.get('user_id');
+            // console.log(userId)
+            if (!userId) {
+                console.error("User ID not found in cookies.");
+                return;
+            }
+            
+            console.log("Fetching contacts for user:", userId);
+            const authToken = localStorage.getItem('authToken');
+            console.log("Auth Token:", authToken);
+
+            const response = await fetch(`${base_url}/api/users/${userId}/contacts/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.log(`Error ${response.status}: ${errorText}`);
+            }
+
+            const data = await response.json();
+            console.log("API Response:", data);
+            setFilteredData(data);
+        } catch (error) {
+            console.error("Failed to fetch contacts:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchContacts();
+    }, []);
 
     const handleFilter = (filteredResults) => {
         setFilteredData(filteredResults);
@@ -77,6 +117,8 @@ const ShowContactPage = () => {
     //     setFilteredData((prev) => prev.filter((contact) => contact.id !== id));
     // };
 
+
+
     return (
         <div className='flex flex-col w-full'>
             <div className='flex justify-end'>
@@ -87,16 +129,13 @@ const ShowContactPage = () => {
             <div className='mt-7'>
                 <div className='flex justify-end'>
                     <SearchBoxWithSuggestions
-                        data={contactData}
+                        data={filteredData}
                         onFilter={handleFilter} // Pass filter handler
                     />
                 </div>
                 <Table
                     contactData={filteredData}
                     setContactData={setFilteredData} // Pass setFilteredData for updates
-                    // onAdd={handleAddContact} // Pass handlers for Add, Update, Delete
-                    // onUpdate={handleUpdateContact}
-                    // onDelete={handleDeleteContact}
                 />
             </div>
         </div>

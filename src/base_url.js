@@ -1,3 +1,3 @@
-const base_url = "http://nd-api.nakhlah.xyz"
+const base_url = "https://nd-api.nakhlah.xyz"
 
 export default base_url

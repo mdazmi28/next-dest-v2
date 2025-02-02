@@ -198,14 +198,14 @@ const Table = ({ contactData, setContactData }) => {
                     </thead>
                     <tbody>
                         {contactData.map((data) => (
-                            <tr key={data.id}>
+                            <tr key={data.contact_id}>
                                 <td>
-                                    <div className="font-bold">{data.person.name}</div>
+                                    <div className="font-bold">{data.name}</div>
                                 </td>
-                                <td>{data.person.designation}</td>
-                                <td>{data.organization.name}</td>
-                                <td>{data.person.email}</td>
-                                <td>{data.person.phone}</td>
+                                <td>{data.designation}</td>
+                                <td>{data.organization}</td>
+                                <td>{data.email}</td>
+                                <td>{data.phone}</td>
                                 <td className="flex justify-between gap-5">
                                     <FaEye
                                         className="h-5 w-5 text-green-500 cursor-pointer"
@@ -231,15 +231,15 @@ const Table = ({ contactData, setContactData }) => {
                 <div className="modal modal-open">
                     <div className="modal-box">
                         <h4 className="text-md font-bold">Person</h4>
-                        <p>Name: {selectedData.person.name}</p>
-                        <p>Designation: {selectedData.person.designation}</p>
-                        <p>Email: {selectedData.person.email}</p>
-                        <p>Phone: {selectedData.person.phone}</p>
+                        <p>Name: {selectedData.name}</p>
+                        <p>Designation: {selectedData.designation}</p>
+                        <p>Email: {selectedData.email}</p>
+                        <p>Phone: {selectedData.phone}</p>
 
-                        <h4 className="text-md font-bold mt-4">Organization</h4>
-                        <p>Name: {selectedData.organization.name}</p>
-                        <p>Address: {selectedData.organization.address}</p>
-                        <p>Email: {selectedData.organization.email}</p>
+                        {/* <h4 className="text-md font-bold mt-4">Organization</h4>
+                        <p>Name: {selectedData.name}</p>
+                        <p>Address: {}</p>
+                        <p>Email: {}</p>
                         <p>
                             Website:{" "}
                             <a
@@ -248,15 +248,15 @@ const Table = ({ contactData, setContactData }) => {
                                 rel="noopener noreferrer"
                                 className="text-blue-500 underline"
                             >
-                                {selectedData.organization.web}
+                                {selectedData}
                             </a>
                         </p>
-                        <p>Phone: {selectedData.organization.phone}</p>
+                        <p>Phone: {selectedData.organization.phone}</p>*/}
                         <div className="modal-action">
                             <button className="btn" onClick={() => setIsViewOpen(false)}>
                                 Close
                             </button>
-                        </div>
+                        </div> 
                     </div>
                 </div>
             )}
@@ -283,7 +283,7 @@ const Table = ({ contactData, setContactData }) => {
                                 <input
                                     type="text"
                                     name="designation"
-                                    value={editData.person.designation}
+                                    value={editData.designation}
                                     onChange={handleEditChange}
                                     className="input input-bordered"
                                 />
@@ -293,7 +293,7 @@ const Table = ({ contactData, setContactData }) => {
                                 <input
                                     type="email"
                                     name="email"
-                                    value={editData.person.email}
+                                    value={editData.email}
                                     onChange={handleEditChange}
                                     className="input input-bordered"
                                 />
@@ -303,7 +303,7 @@ const Table = ({ contactData, setContactData }) => {
                                 <input
                                     type="text"
                                     name="phone"
-                                    value={editData.person.phone}
+                                    value={editData.phone}
                                     onChange={handleEditChange}
                                     className="input input-bordered"
                                 />
@@ -314,51 +314,51 @@ const Table = ({ contactData, setContactData }) => {
                                 <input
                                     type="text"
                                     name="designation"
-                                    value={editData.organization.name}
+                                    value={editData.organization}
                                     onChange={handleEditChange}
                                     className="input input-bordered"
                                 />
                             </div>
-                            <div className="form-control">
+                            {/* <div className="form-control">
                                 <label>Address</label>
                                 <input
                                     type="text"
                                     name="designation"
-                                    value={editData.organization.name}
+                                    value={}
                                     onChange={handleEditChange}
                                     className="input input-bordered"
                                 />
-                            </div>
-                            <div className="form-control">
+                            </div> */}
+                            {/* <div className="form-control">
                                 <label>Email</label>
                                 <input
                                     type="email"
                                     name="email"
-                                    value={editData.organization.email}
+                                    value={}
                                     onChange={handleEditChange}
                                     className="input input-bordered"
                                 />
-                            </div>
-                            <div className="form-control">
+                            </div> */}
+                            {/* <div className="form-control">
                                 <label>Website</label>
                                 <input
                                     type="text"
                                     name="designation"
-                                    value={editData.organization.website}
+                                    value={}
                                     onChange={handleEditChange}
                                     className="input input-bordered"
                                 />
-                            </div>
-                            <div className="form-control">
+                            </div> */}
+                            {/* <div className="form-control">
                                 <label>Phone</label>
                                 <input
                                     type="text"
                                     name="phone"
-                                    value={editData.organization.phone}
+                                    value={}
                                     onChange={handleEditChange}
                                     className="input input-bordered"
                                 />
-                            </div>
+                            </div> */}
                         </form>
                         <div className="modal-action">
                             <button className="btn btn-primary" onClick={saveEdit}>

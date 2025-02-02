@@ -16,7 +16,10 @@ const SearchBoxWithSuggestions = ({ data, onFilter }) => {
         setIsSuggestionsOpen(searchQuery.length > 0); // Open suggestions if query is not empty
 
         const results = data.filter((item) => {
-            const searchString = `${item.person.name} ${item.person.designation} ${item.person.email} ${item.person.phone} ${item.organization.name} ${item.organization.address} ${item.organization.email} ${item.organization.web} ${item.organization.phone}`;
+            const searchString = `${item.name} ${item.designation} ${item.email} ${item.phone} 
+            
+            `;
+            // ${item.organization.name} ${item.organization.address} ${item.organization.email} ${item.organization.web} ${item.organization.phone}
             return searchString.toLowerCase().includes(searchQuery.toLowerCase());
         });
 
@@ -72,8 +75,9 @@ const SearchBoxWithSuggestions = ({ data, onFilter }) => {
                     className="absolute z-50 mt-1 w-full bg-white border rounded shadow-md max-h-60 overflow-y-auto"
                 >
                     {filteredData.map((item) => (
-                        <li key={item.id} className="p-2 cursor-pointer hover:bg-gray-200">
-                            {item.person.name} - {item.person.designation} ({item.organization.name})
+                        <li key={item.contact_id} className="p-2 cursor-pointer hover:bg-gray-200">
+                            {item.name} - {item.email} 
+                            {/* ({item.organization.name}) */}
                         </li>
                     ))}
                 </ul>
