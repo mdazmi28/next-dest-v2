@@ -139,13 +139,14 @@ import { MdDelete } from "react-icons/md";
 import Cookies from 'js-cookie';
 import { ToastContainer, toast } from "react-toastify";
 import {jwtDecode} from 'jwt-decode'
+import 'react-toastify/dist/ReactToastify.css';
 
 const Table = ({ contactData, setContactData }) => {
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
-    const [editData, setEditData] = useState(null);
+    const [editData, setEditData] = useState([]);
     const [selectedContactId, setSelectedContactId] = useState(null);
 
     const isTokenExpired = (token) => {
@@ -238,9 +239,10 @@ const Table = ({ contactData, setContactData }) => {
                     const updatedContacts = contactData.map((contact) =>
                         contact.id === editData.id ? { ...contact, ...requestBody } : contact
                     );
+                    toast.success("Contact updated successfully!");
                     setContactData(updatedContacts);
                     setIsEditOpen(false);
-                    toast.success("Contact updated successfully!");
+                    
                 } else {
                     toast.error("Failed to update contact.");
                 }
@@ -407,7 +409,9 @@ const Table = ({ contactData, setContactData }) => {
 
 
     return (
-        <div>
+       
+        <>
+         <div>
             <div className="overflow-x-auto">
                 <table className="table">
                     <thead>
@@ -621,7 +625,9 @@ const Table = ({ contactData, setContactData }) => {
                 </div>
             )}
 
-            <ToastContainer
+           
+        </div>
+         <ToastContainer
                 position="bottom-right"
                 autoClose={3000}
                 hideProgressBar={false}
@@ -631,7 +637,7 @@ const Table = ({ contactData, setContactData }) => {
                 draggable
                 pauseOnHover
             />
-        </div>
+        </>
     );
 };
 
