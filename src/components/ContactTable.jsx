@@ -167,6 +167,7 @@ const Table = ({ contactData, setContactData }) => {
 
     const handleEdit = (data) => {
         setEditData(data);
+        setSelectedContactId(data.contact_id);
         setIsEditOpen(true);
     };
 
@@ -175,21 +176,113 @@ const Table = ({ contactData, setContactData }) => {
         setIsDeleteOpen(true);
     };
 
+    // const handleEditChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setEditData((prev) => ({
+    //         ...prev,
+    //         person: { ...prev.person, [name]: value },
+    //     }));
+    // };
+
     const handleEditChange = (e) => {
         const { name, value } = e.target;
         setEditData((prev) => ({
             ...prev,
-            person: { ...prev.person, [name]: value },
+            [name]: value, // Directly update the field
         }));
     };
+    
 
-    const saveEdit = () => {
-        const updatedContacts = contactData.map((contact) =>
-            contact.id === editData.id ? editData : contact
-        );
-        setContactData(updatedContacts);
-        setIsEditOpen(false);
+    // const saveEdit = () => {
+    //     const updatedContacts = contactData.map((contact) =>
+    //         contact.id === editData.id ? editData : contact
+    //     );
+    //     setContactData(updatedContacts);
+    //     setIsEditOpen(false);
+    // };
+
+    const saveEdit = async (id) => {
+        console.log(id)
+        const userId = Cookies.get('user_id');
+        let authToken = localStorage.getItem('authToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+    
+        if (!userId || !editData) {
+            toast.error("User ID or contact data is missing!");
+            return;
+        }
+    
+        const requestBody = {
+            user: parseInt(userId),
+            name: editData.name,
+            email: editData.email,
+            phone: editData.phone,
+            designation: editData.designation,
+            organization: editData.organization,
+            tags: [],
+            note: editData.note || "",
+        };
+    
+        const updateContactWithToken = async (token) => {
+            try {
+                const response = await fetch(`${base_url}/users/${userId}/contacts/${id}/`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(requestBody),
+                });
+    
+                if (response.ok) {
+                    const updatedContacts = contactData.map((contact) =>
+                        contact.id === editData.id ? { ...contact, ...requestBody } : contact
+                    );
+                    setContactData(updatedContacts);
+                    setIsEditOpen(false);
+                    toast.success("Contact updated successfully!");
+                } else {
+                    toast.error("Failed to update contact.");
+                }
+            } catch (error) {
+                console.error("Error updating contact:", error);
+                toast.error("An error occurred while updating.");
+            }
+        };
+    
+        const refreshAndRetry = async () => {
+            try {
+                const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ refresh: refreshToken }),
+                });
+    
+                if (!refreshResponse.ok) {
+                    throw new Error("Token refresh failed. Please log in again.");
+                }
+    
+                const refreshData = await refreshResponse.json();
+                authToken = refreshData.access;
+                localStorage.setItem("authToken", authToken);
+                await updateContactWithToken(authToken);
+            } catch (err) {
+                console.error("Refresh and Retry Error:", err);
+                toast.error("Session expired. Please log in again.");
+            }
+        };
+    
+        if (authToken && !isTokenExpired(authToken)) {
+            await updateContactWithToken(authToken);
+        } else if (refreshToken) {
+            await refreshAndRetry();
+        } else {
+            toast.error("Authentication error. Please log in.");
+        }
     };
+    
 
     // fix v1
     // const confirmDelete = async (id) => {
@@ -446,7 +539,7 @@ const Table = ({ contactData, setContactData }) => {
                                 <label>Name</label>
                                 <input
                                     type="text"
-                                    name="designation"
+                                    name="organization"
                                     value={editData.organization}
                                     onChange={handleEditChange}
                                     className="input input-bordered"
@@ -494,7 +587,7 @@ const Table = ({ contactData, setContactData }) => {
                             </div> */}
                         </form>
                         <div className="modal-action">
-                            <button className="btn btn-primary" onClick={saveEdit}>
+                            <button className="btn btn-primary" onClick={()=>saveEdit(selectedContactId)}>
                                 Save
                             </button>
                             <button className="btn" onClick={() => setIsEditOpen(false)}>
