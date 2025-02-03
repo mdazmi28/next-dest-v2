@@ -406,7 +406,7 @@ const Table = ({ contactData, setContactData }) => {
                                 <input
                                     type="text"
                                     name="name"
-                                    value={editData.person.name}
+                                    value={editData.name}
                                     onChange={handleEditChange}
                                     className="input input-bordered"
                                 />
