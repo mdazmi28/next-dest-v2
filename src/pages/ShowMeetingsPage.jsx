@@ -1,7 +1,6 @@
 'use client'
 import AppointmentTable from '@/components/AppointmentTable';
 import React, { useState, useEffect } from 'react';
-import appointmentData from '@/data/appointmentData';
 import Calendar from '@/components/Calendar';
 import { useFlowContext } from '@/context/FlowContext';
 import Cookies from 'js-cookie';
@@ -10,7 +9,7 @@ import base_url from '@/base_url';
 const ShowMeetings = () => {
   const { addMeetingInfoStage, setMeetingInfoStage } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
   const [events, setEvents] = useState([]);
-  const [appointment, setAppointments] = useState(appointmentData)
+  const {appointment, setAppointments} = useFlowContext()
 
   const isTokenExpired = (token) => {
     try {

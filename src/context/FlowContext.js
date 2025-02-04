@@ -9,8 +9,9 @@ export const FlowProvider = ({ children }) => {
     const [checkLogin, setCheckLogin] = useState(true);
     const [loading, setLoading] = useState("");
     const [error, setError] = useState("");
+    const [appointment, setAppointments] = useState([])
 
-    // console.log(addContactInfoStage)
+    console.log("Data is",appointment)
     
 
     return (
@@ -21,6 +22,7 @@ export const FlowProvider = ({ children }) => {
                 error, setError,
                 addContactInfoStage, setAddContactInfoStage,
                 addMeetingInfoStage, setMeetingInfoStage,
+                appointment, setAppointments
             }}
         >
             {children}
