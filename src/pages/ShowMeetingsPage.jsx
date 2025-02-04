@@ -8,8 +8,8 @@ import base_url from '@/base_url';
 
 const ShowMeetings = () => {
   const { addMeetingInfoStage, setMeetingInfoStage } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
-  const [events, setEvents] = useState([]);
-  const {appointment, setAppointments} = useFlowContext()
+  // const [events, setEvents] = useState([]);
+  const {appointments, setAppointments, events, setEvents} = useFlowContext()
 
   const isTokenExpired = (token) => {
     try {
@@ -130,7 +130,7 @@ const ShowMeetings = () => {
           <div className="w-full">
             <div className="overflow-x-auto">
               <AppointmentTable
-                appointmentData={appointment}
+                appointmentData={appointments}
                 setAppointmentData={setAppointments}
               />
             </div>
@@ -146,9 +146,9 @@ const ShowMeetings = () => {
 
       </div>
       <div className='flex flex-col md:flex-row'>
-        {/* <div className='w-full md:w-3/4'>
+        <div className='w-full md:w-3/4'>
           <Calendar events={events} />
-        </div> */}
+        </div>
         <div className='w-full md:w-1/4'>
           This is the rest
         </div>
