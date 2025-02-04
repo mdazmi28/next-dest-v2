@@ -1,5 +1,5 @@
 import base_url from "@/base_url";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Cookies from 'js-cookie';
@@ -15,6 +15,23 @@ const Table = ({ contactData, setContactData }) => {
     const [editData, setEditData] = useState(null);
     const [selectedContactId, setSelectedContactId] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                setIsEditOpen(false);
+                setEditData(null);
+            }
+        };
+
+        if (isEditOpen) {
+            window.addEventListener("keydown", handleKeyDown);
+        }
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [isEditOpen]);
 
     const isTokenExpired = (token) => {
         try {
