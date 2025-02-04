@@ -475,7 +475,7 @@ const Calendar = ({ events }) => {
                 const daysInRange = eachDayOfInterval({ start, end }).map((date) =>
                     format(date, "dd-MM-yyyy")
                 );
-                eventDates.push({ days: daysInRange, title: event.title, priority: event.priority });
+                eventDates.push({ days: daysInRange, title: event.title, description:event.description ,priority: event.priority });
             } catch (error) {
                 console.error("Error parsing dates for event:", event, error);
             }
@@ -496,6 +496,7 @@ const Calendar = ({ events }) => {
             .filter((event) => event.days.includes(today))
             .map((event) => ({
                 title: event.title,
+                description : event.description,
                 priority: event.priority,
             }));
         setSelectedEvents(eventsForToday);
@@ -509,6 +510,7 @@ const Calendar = ({ events }) => {
             .filter((event) => event.days.includes(date))
             .map((event) => ({
                 title: event.title,
+                description : event.description,
                 priority: event.priority,
             }));
         setSelectedEvents(eventsForDate);
@@ -580,7 +582,7 @@ const Calendar = ({ events }) => {
                                         className={`${getPriorityClass(event.priority)} p-2 rounded mb-2 flex justify-center`}
                                     >
                                         {event.title}
-                                        
+                                        <br/>
                                         {event.description}
                                     </li>
                                 ))}
