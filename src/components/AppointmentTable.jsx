@@ -155,7 +155,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {appointmentData.map((data, index) => (
+                        {appointmentData.slice().reverse().map((data, index) => (
                             <tr key={data.appointment_id || index}>
                                 {/* Time */}
                                 <td>
