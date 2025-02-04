@@ -6,13 +6,13 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { FlowProvider } from "@/context/FlowContext";
 
 const Layout = ({children}) => {
     return (
-        
             <div className="h-screen">
-               
-                    <SidebarProvider>
+                <FlowProvider>
+                <SidebarProvider>
                         <AppSidebar />
                         <SidebarInset>
                             <div className="flex flex-col">
@@ -24,8 +24,7 @@ const Layout = ({children}) => {
                             </div>
                         </SidebarInset>
                     </SidebarProvider>
-              
-
+                </FlowProvider>
             </div>
         
     );

@@ -12,7 +12,7 @@ export const FlowProvider = ({ children }) => {
     const [appointments, setAppointments] = useState([])
     const [events, setEvents] = useState([]);
 
-    console.log("Data is",appointments)
+    console.log("Event is:.....",events)
     
 
     return (

@@ -582,7 +582,7 @@ const Calendar = ({ events }) => {
                                         className={`${getPriorityClass(event.priority)} p-2 rounded mb-2 flex justify-center`}
                                     >
                                         {event.title}
-                                        <br/>
+                                        <br></br>
                                         {event.description}
                                     </li>
                                 ))}

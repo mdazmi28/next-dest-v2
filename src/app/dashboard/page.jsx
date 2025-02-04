@@ -3,22 +3,21 @@ import Calendar from '@/components/Calendar';
 import Card from '@/components/Card';
 import cardData from '@/data/cardData';
 import React, { useState, useEffect } from 'react';
-import appointmentData from '@/data/appointmentData';
+// import appointmentData from '@/data/appointmentData';
 import Layout from '@/components/Layout';
+import { useFlowContext } from '@/context/FlowContext';
 
 const page = () => {
-  const [events, setEvents] = useState([]);
+  const {events} = useFlowContext()
+  console.log("events are", events)
 
-  useEffect(() => {
-    setEvents(appointmentData);
-  }, []);
 
   // Format events to match the calendar's expected structure
-  const formattedEvents = events.map((event) => ({
-    start: new Date(event.start_date),
-    end: new Date(event.end_date),
-    title: event.summary,
-  }));
+  // const formattedEvents = events.map((event) => ({
+  //   start: new Date(event.start_date),
+  //   end: new Date(event.end_date),
+  //   title: event.summary,
+  // }));
 
   return (
     <Layout>
