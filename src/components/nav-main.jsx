@@ -1,5 +1,5 @@
 "use client"
-
+import Link from "next/link";
 import {
   Collapsible,
   CollapsibleContent,
@@ -33,7 +33,7 @@ export function NavMain({
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton className="hover:bg-[#0BBFBF]" tooltip={item.title}>
                   {item.icon &&
-                    <a href={item.url}><item.icon /></a>
+                    <Link href={item.url}><item.icon /></Link>
                   }
                   <span className=""><a href={item.url}>
                     <span>{item.title}</span>
