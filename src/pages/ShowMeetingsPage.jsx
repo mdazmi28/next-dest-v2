@@ -9,7 +9,7 @@ import base_url from '@/base_url';
 const ShowMeetings = () => {
   const { addMeetingInfoStage, setMeetingInfoStage } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
   // const [events, setEvents] = useState([]);
-  const {appointments, setAppointments, events, setEvents} = useFlowContext()
+  const { appointments, setAppointments, events, setEvents } = useFlowContext()
 
   const isTokenExpired = (token) => {
     try {
@@ -114,49 +114,91 @@ const ShowMeetings = () => {
 
 
   return (
-    <div>
-      <div className='flex flex-col md:flex-row gap-4'>
-        <div className='w-full md:w-3/4 p-4'>
-          <div className='flex justify-end' onClick={() => setMeetingInfoStage(!addMeetingInfoStage)}>
-            {/* <Button>+ Add New Meeting</Button> */}
-            <button className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110">+ Add New Meeting</button>
+    // <div className='min-h-screen'>
+    //   <div className='flex flex-col md:flex-row gap-4 h-1/2'>
+    //     <div className='w-full md:w-3/4 p-4'>
+    //       <div className='flex justify-end' onClick={() => setMeetingInfoStage(!addMeetingInfoStage)}>
+    //         {/* <Button>+ Add New Meeting</Button> */}
+    //         <button className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110">+ Add New Meeting</button>
+    //       </div>
+    //       {/* <div className='w-full overflow-x-scroll'>
+    //         <AppointmentTable
+    //           appointmentData={appointment}
+    //           setAppointmentData={setAppointment}
+    //         />
+    //       </div> */}
+    //       <div className="w-full">
+    //         <div className="overflow-x-auto">
+    //           <AppointmentTable
+    //             appointmentData={appointments}
+    //             setAppointmentData={setAppointments}
+    //           />
+    //         </div>
+    //       </div>
+
+
+
+    //     </div>
+    //     <div className='w-full md:w-1/4 border shadow-2xl'>
+    //     </div>
+
+    //   </div>
+    //   <div className='flex flex-col md:flex-row h-1/2'>
+    //     <div className='w-full md:w-3/4'>
+    //       <Calendar events={events} />
+    //     </div>
+    //     <div className='w-full md:w-1/4'>
+    //       This is the rest
+    //     </div>
+    //   </div>
+    // </div>
+
+    <div className="h-screen flex flex-col">
+      {/* Top Half - Appointments Table & Sidebar */}
+      <div className="flex flex-row gap-4 h-1/2">
+        {/* Left - Appointment Table */}
+        <div className="w-3/4 p-4 flex flex-col">
+          {/* Add Meeting Button */}
+          <div className="flex justify-end mb-2">
+            <button
+              className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110"
+              onClick={() => setMeetingInfoStage(!addMeetingInfoStage)}
+            >
+              + Add New Meeting
+            </button>
           </div>
-          {/* <div className='w-full overflow-x-scroll'>
-            <AppointmentTable
-              appointmentData={appointment}
-              setAppointmentData={setAppointment}
-            />
-          </div> */}
-          <div className="w-full">
-            <div className="overflow-x-auto">
+
+          {/* Table Wrapper */}
+          <div className="flex-1 overflow-hidden">
+            <div className="overflow-x-auto h-full">
               <AppointmentTable
                 appointmentData={appointments}
                 setAppointmentData={setAppointments}
               />
             </div>
           </div>
-
-
-
-        </div>
-        <div className='w-full md:w-1/4 border shadow-2xl'>
-
-
         </div>
 
+        {/* Right - Sidebar */}
+        <div className="w-1/4 border shadow-2xl p-4">
+          {/* Sidebar Content (if any) */}
+        </div>
       </div>
-      <div className='flex flex-col md:flex-row'>
-        <div className='w-full md:w-3/4'>
+
+      {/* Bottom Half - Calendar & Another Section */}
+      <div className="flex flex-row h-1/2">
+        {/* Left - Calendar */}
+        <div className="w-3/4 ">
           <Calendar events={events} />
         </div>
-        <div className='w-full md:w-1/4'>
-          This is the rest
+
+        {/* Right - Additional Section */}
+        <div className="w-1/4">
+          <p>This is the rest</p>
         </div>
-
       </div>
-
-
     </div>
+
   );
 };
 

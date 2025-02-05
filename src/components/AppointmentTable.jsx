@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -14,7 +14,30 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
     const [editData, setEditData] = useState(null);
-     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+    const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                setIsEditOpen(false);
+                setIsDeleteOpen(false)
+                setIsViewOpen(false)
+                setEditData(null);
+            }
+        };
+
+        if (isEditOpen) {
+            window.addEventListener("keydown", handleKeyDown);
+        } else if (isDeleteOpen) {
+            window.addEventListener("keydown", handleKeyDown);
+        } else if (isViewOpen) {
+            window.addEventListener("keydown", handleKeyDown);
+        }
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [isEditOpen, isDeleteOpen, isViewOpen]);
 
     const isTokenExpired = (token) => {
         try {

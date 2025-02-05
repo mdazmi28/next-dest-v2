@@ -20,18 +20,24 @@ const Table = ({ contactData, setContactData }) => {
         const handleKeyDown = (event) => {
             if (event.key === "Escape") {
                 setIsEditOpen(false);
+                setIsDeleteOpen(false)
+                setIsViewOpen(false)
                 setEditData(null);
             }
         };
 
         if (isEditOpen) {
             window.addEventListener("keydown", handleKeyDown);
+        }else if(isDeleteOpen){
+            window.addEventListener("keydown", handleKeyDown);
+        }else if(isViewOpen){
+            window.addEventListener("keydown", handleKeyDown);
         }
 
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [isEditOpen]);
+    }, [isEditOpen, isDeleteOpen, isViewOpen]);
 
     const isTokenExpired = (token) => {
         try {

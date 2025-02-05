@@ -575,8 +575,8 @@ const Calendar = ({ events }) => {
                     <div className="mt-4">
                         <div className="font-bold mb-2 flex justify-center">Selected Date: {selectedDate}</div>
                         {selectedEvents.length > 0 ? (
-                            <ul>
-                                {selectedEvents.map((event, index) => (
+                            <ul className="md:h-[250px] overflow-y-auto">
+                                {selectedEvents.slice().reverse().map((event, index) => (
                                     <li
                                         key={index}
                                         className={`${getPriorityClass(event.priority)} p-2 rounded mb-2 flex justify-center`}
