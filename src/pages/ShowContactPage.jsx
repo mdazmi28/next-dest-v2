@@ -32,7 +32,7 @@ const ShowContactPage = () => {
                 return;
             }
 
-            console.log("Fetching contacts for user:", userId);
+            // console.log("Fetching contacts for user:", userId);
             let authToken = localStorage.getItem('authToken');
             const refreshToken = localStorage.getItem('refreshToken');
 

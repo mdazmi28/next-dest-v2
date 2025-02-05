@@ -30,7 +30,7 @@ const page = () => {
         return;
       }
 
-      console.log("Fetching appointments for user:", userId);
+      // console.log("Fetching appointments for user:", userId);
       let authToken = localStorage.getItem('authToken');
       const refreshToken = localStorage.getItem('refreshToken');
 

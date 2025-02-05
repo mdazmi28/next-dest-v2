@@ -15,6 +15,7 @@ const AddMeetingsPage = () => {
         start_time: '',
         end_time: '',
         location: '',
+        meeting_type: "physical",
         is_recurring: false,
         note: '',
     });
@@ -35,6 +36,25 @@ const AddMeetingsPage = () => {
         }
     };
 
+    const formatDateTime = (date, hour, minute, ampm) => {
+        if (!date || !hour || !minute || !ampm) return '';
+
+        // Convert 12-hour format to 24-hour format
+        let hours = parseInt(hour, 10);
+        if (ampm.toLowerCase() === "pm" && hours !== 12) {
+            hours += 12;
+        } else if (ampm.toLowerCase() === "am" && hours === 12) {
+            hours = 0;
+        }
+    
+        // Ensure two-digit formatting for hours and minutes
+        const formattedHour = String(hours).padStart(2, '0');
+        const formattedMinute = String(minute).padStart(2, '0');
+    
+        // Create an ISO-formatted date string
+        return `${date}T${formattedHour}:${formattedMinute}:00Z`;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -48,12 +68,15 @@ const AddMeetingsPage = () => {
             return;
         }
 
+        const formattedStartTime = formatDateTime(meetingData.start_time, meetingData.hour, meetingData.minute, meetingData.ampm);
+        const formattedEndTime = formatDateTime(meetingData.end_time, meetingData.hour, meetingData.minute, meetingData.ampm);
+
         const data = {
             user: parseInt(userId),
             title: meetingData.title,
             description: meetingData.description,
-            start_time: meetingData.start_time,
-            end_time: meetingData.end_time,
+            start_time: formattedStartTime,
+            end_time: formattedEndTime,
             location: meetingData.location,
             is_recurring: meetingData.is_recurring,
             note: meetingData.note || "",

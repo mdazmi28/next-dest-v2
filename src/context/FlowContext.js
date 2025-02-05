@@ -12,7 +12,6 @@ export const FlowProvider = ({ children }) => {
     const [appointments, setAppointments] = useState([])
     const [events, setEvents] = useState([]);
 
-    console.log("Event is:.....",addMeetingInfoStage)
     
 
     return (
