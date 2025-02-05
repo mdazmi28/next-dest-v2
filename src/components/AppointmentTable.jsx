@@ -10,11 +10,11 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const [isViewOpen, setIsViewOpen] = useState(false);
-    const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
     const [editData, setEditData] = useState(null);
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+    const [isEditOpen, setIsEditOpen] = useState(false);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -56,7 +56,8 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     };
 
     const handleEdit = (data) => {
-        setEditData(data);
+        setEditData({ ...data });
+        setSelectedAppointmentId(data.appointment_id);
         setIsEditOpen(true);
     };
 
@@ -69,16 +70,106 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         const { name, value } = e.target;
         setEditData((prev) => ({
             ...prev,
-            [name]: value,
+            [name]: value || "",
         }));
     };
 
-    const saveEdit = () => {
-        const updatedAppointments = appointmentData.map((appointment) =>
-            appointment.appointment_id === editData.appointment_id ? editData : appointment
-        );
-        setAppointmentData(updatedAppointments);
-        setIsEditOpen(false);
+    const saveEdit = async (id) => {
+        const userId = Cookies.get("user_id");
+        let authToken = localStorage.getItem("authToken");
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        if (!userId || !editData) {
+            toast.error("User ID or contact data is missing!");
+            return;
+        }
+
+        const requestBody = {
+            user: parseInt(userId),
+            name: editData.name || "",
+            email: editData.email || "",
+            phone: editData.phone || "",
+            designation: editData.designation || "",
+            organization: editData.organization || "",
+            tags: [],
+            note: editData.note || "",
+        };
+
+        const updateContactWithToken = async (token) => {
+            try {
+                const response = await fetch(`${base_url}/users/${userId}/appointments/${id}/`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(requestBody),
+                });
+
+                if (response.ok) {
+                    const updatedAppointment = await response.json();
+
+                    // Update the contact in the state immediately
+                    setContactData((prevContacts) =>
+                        prevContacts.map((appointment) =>
+                            appointment.appointment_id === id
+                                ? {
+                                    ...contact,
+                                    name: updatedAppointment.name,
+                                    email: updatedAppointment.email,
+                                    phone: updatedAppointment.phone,
+                                    designation: updatedAppointment.designation,
+                                    organization: updatedAppointment.organization,
+                                    note: updatedAppointment.note
+                                }
+                                : contact
+                        )
+                    );
+
+                    // toast.success("Contact updated successfully!");
+                    setIsEditOpen(false);
+                    setEditData(null); // Clear the edit data
+                } else {
+                    const errorData = await response.json();
+                    toast.error(errorData.message || "Failed to update contact.");
+                }
+            } catch (error) {
+                console.error("Error updating contact:", error);
+                toast.error("An error occurred while updating.");
+            }
+        };
+
+        const refreshAndRetry = async () => {
+            try {
+                const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ refresh: refreshToken }),
+                });
+
+                if (!refreshResponse.ok) {
+                    throw new Error("Token refresh failed. Please log in again.");
+                }
+
+                const refreshData = await refreshResponse.json();
+                authToken = refreshData.access;
+                localStorage.setItem("authToken", authToken);
+                await updateContactWithToken(authToken);
+            } catch (err) {
+                console.error("Refresh and Retry Error:", err);
+                toast.error("Session expired. Please log in again.");
+            }
+        };
+
+        if (authToken && !isTokenExpired(authToken)) {
+            await updateContactWithToken(authToken);
+        } else if (refreshToken) {
+            await refreshAndRetry();
+        } else {
+            toast.error("Authentication error. Please log in.");
+        }
     };
 
     const confirmDelete = async (id) => {
@@ -244,7 +335,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                     <div className="modal-box">
                         <h4 className="text-2xl font-bold">Edit Appointment</h4>
                         <form>
-                            <div className="form-control">
+                            {/* <div className="form-control">
                                 <label>Title</label>
                                 <input
                                     type="text"
@@ -283,6 +374,244 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                     onChange={handleEditChange}
                                     className="input input-bordered"
                                 />
+                            </div> */}
+
+                            <div className="space-y-4">
+                                {/* Appointment Subject */}
+                                <div className="form-group">
+                                    <label className="block text-sm font-medium text-gray-600">Appointment Subject</label>
+                                    <input
+                                        type="text"
+                                        name="title"
+                                        value={editData.title}
+                                        onChange={handleEditChange}
+                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Appointment Details */}
+                                <div className="form-group">
+                                    <label className="block text-sm font-medium text-gray-600">Appointment Details</label>
+                                    <input
+                                        type="text"
+                                        name="description"
+                                        value={editData.description}
+                                        onChange={handleEditChange}
+                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Start Date */}
+                                <div className="flex flex-col md:flex-row gap-4">
+                                    {/* Start Date Input */}
+                                    <div className="w-full md:w-1/2">
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Start Date</label>
+                                        <input
+                                            type="date"
+                                            name="start_time"
+                                            value={editData.start_time}
+                                            onChange={handleEditChange}
+                                            className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            required
+                                        />
+                                    </div>
+
+                                    {/* Time Selection */}
+                                    <div className="w-full md:w-1/2">
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Start Time</label>
+                                        <div className="flex gap-2">
+                                            {/* Hour Selection */}
+                                            <select
+                                                name="hour"
+                                                value={editData.hour}
+                                                onChange={handleEditChange}
+                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                required
+                                            >
+                                                <option value="">Hour</option>
+                                                {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
+                                                    <option key={hour} value={hour}>{hour}</option>
+                                                ))}
+                                            </select>
+
+                                            {/* Minute Selection */}
+                                            <select
+                                                name="minute"
+                                                value={editData.minute}
+                                                onChange={handleEditChange}
+                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                required
+                                            >
+                                                <option value="">Minute</option>
+                                                {["00", "15", "30", "45"].map((minute) => (
+                                                    <option key={minute} value={minute}>{minute}</option>
+                                                ))}
+                                            </select>
+
+                                            {/* AM/PM Selection */}
+                                            <select
+                                                name="ampm"
+                                                value={editData.ampm}
+                                                onChange={handleEditChange}
+                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                required
+                                            >
+                                                <option value="">AM/PM</option>
+                                                <option value="AM">AM</option>
+                                                <option value="PM">PM</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                {/* End Date */}
+                                <div className="flex flex-col md:flex-row gap-4">
+                                    {/* Start Date Input */}
+                                    <div className="w-full md:w-1/2">
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">End Date</label>
+                                        <input
+                                            type="date"
+                                            name="end_time"
+                                            value={editData.end_time}
+                                            onChange={handleEditChange}
+                                            className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            required
+                                        />
+                                    </div>
+
+                                    {/* Time Selection */}
+                                    <div className="w-full md:w-1/2">
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Start Time</label>
+                                        <div className="flex gap-2">
+                                            {/* Hour Selection */}
+                                            <select
+                                                name="end_hour"
+                                                value={editData.end_hour}
+                                                onChange={handleEditChange}
+                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                required
+                                            >
+                                                <option value="">Hour</option>
+                                                {Array.from({ length: 12 }, (_, i) => i + 1).map((end_hour) => (
+                                                    <option key={end_hour} value={end_hour}>{end_hour}</option>
+                                                ))}
+                                            </select>
+
+                                            {/* Minute Selection */}
+                                            <select
+                                                name="end_minute"
+                                                value={editData.end_minute}
+                                                onChange={handleEditChange}
+                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                required
+                                            >
+                                                <option value="">Minute</option>
+                                                {["00", "15", "30", "45"].map((end_minute) => (
+                                                    <option key={end_minute} value={end_minute}>{end_minute}</option>
+                                                ))}
+                                            </select>
+
+                                            {/* AM/PM Selection */}
+                                            <select
+                                                name="end_ampm"
+                                                value={editData.end_ampm}
+                                                onChange={handleEditChange}
+                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                required
+                                            >
+                                                <option value="">AM/PM</option>
+                                                <option value="AM">AM</option>
+                                                <option value="PM">PM</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                {/* Meeting Type */}
+                                <div className="form-group">
+                                    <label className="block text-sm font-medium text-gray-600">Meeting Type</label>
+                                    <select
+                                        name="meeting_type"
+                                        value={editData.meeting_type}
+                                        onChange={handleEditChange}
+                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                        required
+                                    >
+                                        <option value="physical">Physical</option>
+                                        <option value="online">Online</option>
+                                    </select>
+                                </div>
+
+                                {/* Conditional Location Input */}
+                                {editData.meeting_type === 'physical' ? (
+                                    <div className="form-group">
+                                        <label className="block text-sm font-medium text-gray-600">Physical Location</label>
+                                        <input
+                                            type="text"
+                                            name="location"
+                                            value={editData.location}
+                                            onChange={handleEditChange}
+                                            placeholder="Enter the location address"
+                                            className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                            required
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="form-group">
+                                        <label className="block text-sm font-medium text-gray-600">Online Meeting Link</label>
+                                        <input
+                                            type="url"
+                                            name="location"
+                                            value={editData.location}
+                                            onChange={handleEditChange}
+                                            placeholder="Enter the online meeting link"
+                                            className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                            required
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="form-group">
+                                    <label className="block text-sm font-medium text-gray-600">Is Recurring</label>
+                                    <select
+                                        name="is_recurring"
+                                        value={editData.is_recurring}
+                                        onChange={handleEditChange}
+                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                        required
+                                    >
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="block text-sm font-medium text-gray-600">Note</label>
+                                    <input
+                                        type="text"
+                                        name="note"
+                                        value={editData.note}
+                                        onChange={handleEditChange}
+                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Submit Button */}
+                                <div className="text-center mt-6">
+                                    <button
+                                        type="submit"
+                                        className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+                                    >
+                                        Submit
+                                    </button>
+                                </div>
                             </div>
                         </form>
                         <div className="modal-action">
