@@ -362,7 +362,7 @@ const AddMeetingsPage = () => {
                         )}
 
                         <div className="form-group">
-                            <label className="block text-sm font-medium text-gray-600">Meeting Type</label>
+                            <label className="block text-sm font-medium text-gray-600">Is Recurring</label>
                             <select
                                 name="is_recurring"
                                 value={meetingData.is_recurring}
