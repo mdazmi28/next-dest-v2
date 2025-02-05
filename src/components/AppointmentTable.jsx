@@ -50,6 +50,27 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         }
     };
 
+    const formatDateTime = (date, hour, minute, ampm) => {
+        if (!date || !hour || !minute || !ampm) return '';
+
+        // Convert 12-hour format to 24-hour format
+        let hours = parseInt(hour, 10);
+        if (ampm.toLowerCase() === "pm" && hours !== 12) {
+            hours += 12;
+        } else if (ampm.toLowerCase() === "am" && hours === 12) {
+            hours = 0;
+        }
+
+        // Ensure two-digit formatting for hours and minutes
+        const formattedHour = String(hours).padStart(2, '0');
+        const formattedMinute = String(minute).padStart(2, '0');
+
+        // Create an ISO-formatted date string
+        return `${date}T${formattedHour}:${formattedMinute}:00Z`;
+    };
+
+
+
     const handleView = (data) => {
         setSelectedData(data);
         setIsViewOpen(true);
@@ -84,14 +105,19 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
             return;
         }
 
+        const formattedStartTime = formatDateTime(editData.start_time, editData.hour, editData.minute, editData.ampm);
+        const formattedEndTime = formatDateTime(editData.end_time, editData.end_hour, editData.end_minute, editData.end_ampm);
+
         const requestBody = {
             user: parseInt(userId),
-            name: editData.name || "",
-            email: editData.email || "",
-            phone: editData.phone || "",
-            designation: editData.designation || "",
-            organization: editData.organization || "",
-            tags: [],
+            title: editData.title || "",
+            description: editData.description || "",
+            start_time: editData.start_time || "",
+            // start_time: formattedStartTime || "",
+            end_time: editData.end_time || "",
+            // end_time: formattedEndTime || "",
+            location: editData.location || "",
+            is_recurring: true,
             note: editData.note || "",
         };
 
@@ -110,19 +136,22 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                     const updatedAppointment = await response.json();
 
                     // Update the contact in the state immediately
-                    setContactData((prevContacts) =>
-                        prevContacts.map((appointment) =>
+                    setAppointmentData((prevAppointments) =>
+                        prevAppointments.map((appointment) =>
                             appointment.appointment_id === id
                                 ? {
-                                    ...contact,
-                                    name: updatedAppointment.name,
-                                    email: updatedAppointment.email,
-                                    phone: updatedAppointment.phone,
-                                    designation: updatedAppointment.designation,
-                                    organization: updatedAppointment.organization,
-                                    note: updatedAppointment.note
+                                    ...appointment,
+                                    title: updatedAppointment.title,
+                                    description: updatedAppointment.description,
+                                    start_time: updatedAppointment.start_time,
+                                    start_time: formattedStartTime,
+                                    // end_time: editData.end_time || "",
+                                    end_time: formattedEndTime,
+                                    // location: editData.location || "",
+                                    is_recurring: updatedAppointment.is_recurring,
+                                    note: updatedAppointment.note,
                                 }
-                                : contact
+                                : appointment
                         )
                     );
 
@@ -334,47 +363,10 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 <div className="modal modal-open">
                     <div className="modal-box">
                         <h4 className="text-2xl font-bold">Edit Appointment</h4>
-                        <form>
-                            {/* <div className="form-control">
-                                <label>Title</label>
-                                <input
-                                    type="text"
-                                    name="title"
-                                    value={editData.title}
-                                    onChange={handleEditChange}
-                                    className="input input-bordered"
-                                />
-                            </div>
-                            <div className="form-control">
-                                <label>Description</label>
-                                <input
-                                    type="text"
-                                    name="description"
-                                    value={editData.description}
-                                    onChange={handleEditChange}
-                                    className="input input-bordered"
-                                />
-                            </div>
-                            <div className="form-control">
-                                <label>Location</label>
-                                <input
-                                    type="text"
-                                    name="location"
-                                    value={editData.location}
-                                    onChange={handleEditChange}
-                                    className="input input-bordered"
-                                />
-                            </div>
-                            <div className="form-control">
-                                <label>Start Time</label>
-                                <input
-                                    type="datetime-local"
-                                    name="start_time"
-                                    value={editData.start_time}
-                                    onChange={handleEditChange}
-                                    className="input input-bordered"
-                                />
-                            </div> */}
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            saveEdit(editData.appointment_id);
+                        }}>
 
                             <div className="space-y-4">
                                 {/* Appointment Subject */}
@@ -386,7 +378,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                         value={editData.title}
                                         onChange={handleEditChange}
                                         className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                        required
+                                    // required
                                     />
                                 </div>
 
@@ -399,7 +391,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                         value={editData.description}
                                         onChange={handleEditChange}
                                         className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                        required
+                                    // required
                                     />
                                 </div>
 
@@ -414,7 +406,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                             value={editData.start_time}
                                             onChange={handleEditChange}
                                             className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            required
+                                        // required
                                         />
                                     </div>
 
@@ -428,7 +420,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                 value={editData.hour}
                                                 onChange={handleEditChange}
                                                 className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                required
+                                            // required
                                             >
                                                 <option value="">Hour</option>
                                                 {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
@@ -442,7 +434,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                 value={editData.minute}
                                                 onChange={handleEditChange}
                                                 className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                required
+                                            // required
                                             >
                                                 <option value="">Minute</option>
                                                 {["00", "15", "30", "45"].map((minute) => (
@@ -456,7 +448,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                 value={editData.ampm}
                                                 onChange={handleEditChange}
                                                 className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                required
+                                            // required
                                             >
                                                 <option value="">AM/PM</option>
                                                 <option value="AM">AM</option>
@@ -479,7 +471,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                             value={editData.end_time}
                                             onChange={handleEditChange}
                                             className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            required
+                                        // required
                                         />
                                     </div>
 
@@ -493,7 +485,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                 value={editData.end_hour}
                                                 onChange={handleEditChange}
                                                 className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                required
+                                            // required
                                             >
                                                 <option value="">Hour</option>
                                                 {Array.from({ length: 12 }, (_, i) => i + 1).map((end_hour) => (
@@ -507,7 +499,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                 value={editData.end_minute}
                                                 onChange={handleEditChange}
                                                 className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                required
+                                            // required
                                             >
                                                 <option value="">Minute</option>
                                                 {["00", "15", "30", "45"].map((end_minute) => (
@@ -521,7 +513,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                 value={editData.end_ampm}
                                                 onChange={handleEditChange}
                                                 className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                required
+                                            // required
                                             >
                                                 <option value="">AM/PM</option>
                                                 <option value="AM">AM</option>
@@ -541,7 +533,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                         value={editData.meeting_type}
                                         onChange={handleEditChange}
                                         className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                        required
+                                    // required
                                     >
                                         <option value="physical">Physical</option>
                                         <option value="online">Online</option>
@@ -559,7 +551,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                             onChange={handleEditChange}
                                             placeholder="Enter the location address"
                                             className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                            required
+                                        // required
                                         />
                                     </div>
                                 ) : (
@@ -572,7 +564,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                             onChange={handleEditChange}
                                             placeholder="Enter the online meeting link"
                                             className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                            required
+                                        // required
                                         />
                                     </div>
                                 )}
@@ -584,7 +576,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                         value={editData.is_recurring}
                                         onChange={handleEditChange}
                                         className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                        required
+                                    // required
                                     >
                                         <option value="true">Yes</option>
                                         <option value="false">No</option>
@@ -599,29 +591,27 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                         value={editData.note}
                                         onChange={handleEditChange}
                                         className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                        required
+                                    // required
                                     />
                                 </div>
-
-                                {/* Submit Button */}
-                                <div className="text-center mt-6">
-                                    <button
-                                        type="submit"
-                                        className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
+                            </div>
+                            <div className="modal-action">
+                                <button type="submit" className="btn btn-primary">
+                                    Save
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn"
+                                    onClick={() => {
+                                        setIsEditOpen(false);
+                                        setEditData(null);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
                             </div>
                         </form>
-                        <div className="modal-action">
-                            <button className="btn btn-primary" onClick={saveEdit}>
-                                Save
-                            </button>
-                            <button className="btn" onClick={() => setIsEditOpen(false)}>
-                                Cancel
-                            </button>
-                        </div>
+
                     </div>
                 </div>
             )}
