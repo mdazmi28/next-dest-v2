@@ -13,10 +13,14 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
-    const [editData, setEditData] = useState(null);
+    const [editData, setEditData] = useState({
+        meeting_type: "physical", // Default to physical
+        location: ""
+    });
+
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
-    const {appointments} = useFlowContext()
+    const { appointments } = useFlowContext()
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -150,6 +154,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                     // end_time: editData.end_time || "",
                                     end_time: formattedEndTime,
                                     // location: editData.location || "",
+                                    meeting_type: updatedAppointment.meeting_type || "physical",
                                     is_recurring: updatedAppointment.is_recurring,
                                     note: updatedAppointment.note,
                                 }
@@ -160,6 +165,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                     // toast.success("Contact updated successfully!");
                     setIsEditOpen(false);
                     setEditData(null); // Clear the edit data
+                    location.reload()
                 } else {
                     const errorData = await response.json();
                     toast.error(errorData.message || "Failed to update contact.");
@@ -543,7 +549,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                 </div>
 
                                 {/* Conditional Location Input */}
-                                {editData.meeting_type === 'physical' ? (
+                                {/* {editData.meeting_type === 'physical' ? (
                                     <div className="form-group">
                                         <label className="block text-sm font-medium text-gray-600">Physical Location</label>
                                         <input
@@ -569,7 +575,35 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                         // required
                                         />
                                     </div>
+                                )} */}
+
+                                {/* Conditional Location Input */}
+                                {(editData.meeting_type === 'physical' || !editData.meeting_type) ? (
+                                    <div className="form-group">
+                                        <label className="block text-sm font-medium text-gray-600">Physical Location</label>
+                                        <input
+                                            type="text"
+                                            name="location"
+                                            value={editData.location}
+                                            onChange={handleEditChange}
+                                            placeholder="Enter the location address"
+                                            className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="form-group">
+                                        <label className="block text-sm font-medium text-gray-600">Online Meeting Link</label>
+                                        <input
+                                            type="url"
+                                            name="location"
+                                            value={editData.location}
+                                            onChange={handleEditChange}
+                                            placeholder="Enter the online meeting link"
+                                            className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                        />
+                                    </div>
                                 )}
+
 
                                 <div className="form-group">
                                     <label className="block text-sm font-medium text-gray-600">Is Recurring</label>
