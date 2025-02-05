@@ -7,6 +7,7 @@ import Layout from '@/components/Layout';
 import { useFlowContext } from '@/context/FlowContext';
 import Cookies from 'js-cookie';
 import base_url from '@/base_url';
+import SyncCalendar from '@/components/SyncCalender';
 
 const page = () => {
   const { appointments, setAppointments, events, setEvents } = useFlowContext()
@@ -134,7 +135,8 @@ const page = () => {
           </div>
         </div>
         <div className='w-full md:w-3/4'>
-          <Calendar events={events} />
+          <SyncCalendar events={events} />
+          {/* <Calendar events={events} /> */}
         </div>
       </div>
     </Layout>
