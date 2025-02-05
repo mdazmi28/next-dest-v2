@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { jwtDecode } from 'jwt-decode'
 import base_url from "@/base_url";
 import 'react-toastify/dist/ReactToastify.css';
+import { useFlowContext } from '@/context/FlowContext';
 
 const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const [isViewOpen, setIsViewOpen] = useState(false);
@@ -15,6 +16,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const [editData, setEditData] = useState(null);
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
+    const {appointments} = useFlowContext()
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -112,9 +114,9 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
             user: parseInt(userId),
             title: editData.title || "",
             description: editData.description || "",
-            start_time: editData.start_time || "",
+            start_time: editData.start_time || appointments.start_time,
             // start_time: formattedStartTime || "",
-            end_time: editData.end_time || "",
+            end_time: editData.end_time || appointments.end_time,
             // end_time: formattedEndTime || "",
             location: editData.location || "",
             is_recurring: true,
