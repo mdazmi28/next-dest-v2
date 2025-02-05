@@ -11,7 +11,6 @@ import { FlowProvider } from "@/context/FlowContext";
 const Layout = ({children}) => {
     return (
             <div className="h-screen">
-                <FlowProvider>
                 <SidebarProvider>
                         <AppSidebar />
                         <SidebarInset>
@@ -24,7 +23,6 @@ const Layout = ({children}) => {
                             </div>
                         </SidebarInset>
                     </SidebarProvider>
-                </FlowProvider>
             </div>
         
     );

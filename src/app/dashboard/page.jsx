@@ -54,7 +54,7 @@ const page = () => {
         }
 
         const data = await response.json();
-        console.log("Appointments API Response:", data);
+        // console.log("Appointments API Response:", data);
         setAppointments(data);
         setEvents(data);
       };

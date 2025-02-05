@@ -113,6 +113,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 setAppointmentData(appointmentData.filter((appointment) => appointment.appointment_id !== id));
                 setIsDeleteOpen(false);
                 console.log("Contact deleted successfully");
+                location.reload();
             } else {
                 console.log("Failed to delete contact");
             }
