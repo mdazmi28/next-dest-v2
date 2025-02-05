@@ -2,16 +2,21 @@
 import React, { useState } from 'react';
 import { useFlowContext } from '@/context/FlowContext';
 import { ImCross } from "react-icons/im";
+import { jwtDecode } from 'jwt-decode'
+import Cookies from 'js-cookie';
+import { ToastContainer, toast } from "react-toastify";
+import base_url from '@/base_url';
+
 const AddMeetingsPage = () => {
-    const { addMeetingInfoStage, setMeetingInfoStage } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
+    const { addMeetingInfoStage, setMeetingInfoStage } = useFlowContext() || { addMeetingInfoStage: false, setMeetingInfoStage: () => { } };
     const [meetingData, setMeetingData] = useState({
-        appointment_subject: '',
-        appointment_with: '',
-        date: '',
+        title: '',
+        description: '',
         start_time: '',
         end_time: '',
-        meeting_type: 'physical', // Default to physical
-        meeting_location: '',
+        location: '',
+        is_recurring: false,
+        note: '',
     });
 
     const handleChange = (e) => {
@@ -46,11 +51,11 @@ const AddMeetingsPage = () => {
         const data = {
             user: parseInt(userId),
             title: meetingData.title,
-            description: person.email,
-            start_time: person.phone,
-            end_time: person.designation,
+            description: meetingData.description,
+            start_time: meetingData.start_time,
+            end_time: meetingData.end_time,
             location: meetingData.location,
-            is_recurring: person.tags || [],
+            is_recurring: meetingData.is_recurring,
             note: meetingData.note || "",
         };
 
@@ -58,7 +63,7 @@ const AddMeetingsPage = () => {
 
         const submitContact = async (token) => {
             try {
-                const response = await fetch(`${base_url}/users/${userId}/contacts/`, {
+                const response = await fetch(`${base_url}/users/${userId}/appointments/`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -69,12 +74,12 @@ const AddMeetingsPage = () => {
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(`Error: ${response.status} - ${errorData.message}`);
+                    console.log(`Error: ${response.status} - ${errorData.message}`);
                 }
 
                 console.log("Contact added successfully");
                 toast.success("Contact added successfully!");
-                setAddContactInfoStage(!addContactInfoStage);
+                setMeetingInfoStage(!addMeetingInfoStage);
             } catch (err) {
                 console.error("Error:", err);
                 toast.error(err.message || "An error occurred.");
@@ -93,7 +98,7 @@ const AddMeetingsPage = () => {
                 });
 
                 if (!refreshResponse.ok) {
-                    throw new Error("Token refresh failed. Please log in again.");
+                    console.log("Token refresh failed. Please log in again.");
                 }
 
                 const refreshData = await refreshResponse.json();
@@ -115,7 +120,7 @@ const AddMeetingsPage = () => {
             } else if (refreshToken) {
                 await refreshAndRetry();
             } else {
-                throw new Error("No valid authentication tokens found.");
+                console.log("No valid authentication tokens found.");
             }
         } catch (err) {
             console.error("Error:", err);
@@ -138,7 +143,7 @@ const AddMeetingsPage = () => {
                             <label className="block text-sm font-medium text-gray-600">Appointment Subject</label>
                             <input
                                 type="text"
-                                name="appointment_subject"
+                                name="title"
                                 value={meetingData.title}
                                 onChange={handleChange}
                                 className="mt-1 p-2 w-full border border-gray-300 rounded-md"
@@ -151,7 +156,7 @@ const AddMeetingsPage = () => {
                             <label className="block text-sm font-medium text-gray-600">Appointment Details</label>
                             <input
                                 type="text"
-                                name="appointment_with"
+                                name="description"
                                 value={meetingData.description}
                                 onChange={handleChange}
                                 className="mt-1 p-2 w-full border border-gray-300 rounded-md"
@@ -165,8 +170,8 @@ const AddMeetingsPage = () => {
                                 <label className="block text-sm font-medium text-gray-600">Start Date</label>
                                 <input
                                     type="date"
-                                    name="date"
-                                    value={meetingData.date}
+                                    name="start_time"
+                                    value={meetingData.start_time}
                                     onChange={handleChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                     required
@@ -231,8 +236,8 @@ const AddMeetingsPage = () => {
                                 <label className="block text-sm font-medium text-gray-600">End Date</label>
                                 <input
                                     type="date"
-                                    name="date"
-                                    value={meetingData.date}
+                                    name="end_time"
+                                    value={meetingData.end_time}
                                     onChange={handleChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                     required
@@ -350,10 +355,10 @@ const AddMeetingsPage = () => {
                         </div>
 
                         <div className="form-group">
-                            <label className="block text-sm font-medium text-gray-600">Appointment Details</label>
+                            <label className="block text-sm font-medium text-gray-600">Note</label>
                             <input
                                 type="text"
-                                name="appointment_with"
+                                name="note"
                                 value={meetingData.note}
                                 onChange={handleChange}
                                 className="mt-1 p-2 w-full border border-gray-300 rounded-md"
