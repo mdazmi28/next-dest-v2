@@ -46,11 +46,11 @@ const AddMeetingsPage = () => {
         } else if (ampm.toLowerCase() === "am" && hours === 12) {
             hours = 0;
         }
-    
+
         // Ensure two-digit formatting for hours and minutes
         const formattedHour = String(hours).padStart(2, '0');
         const formattedMinute = String(minute).padStart(2, '0');
-    
+
         // Create an ISO-formatted date string
         return `${date}T${formattedHour}:${formattedMinute}:00Z`;
     };
@@ -69,7 +69,7 @@ const AddMeetingsPage = () => {
         }
 
         const formattedStartTime = formatDateTime(meetingData.start_time, meetingData.hour, meetingData.minute, meetingData.ampm);
-        const formattedEndTime = formatDateTime(meetingData.end_time, meetingData.hour, meetingData.minute, meetingData.ampm);
+        const formattedEndTime = formatDateTime(meetingData.end_time, meetingData.end_hour, meetingData.end_minute, meetingData.end_ampm);
 
         const data = {
             user: parseInt(userId),
@@ -188,35 +188,35 @@ const AddMeetingsPage = () => {
                         </div>
 
                         {/* Start Date */}
-                        <div className='flex fles-col md:flex-row'>
-                            <div className="w-1/2 form-group">
-                                <label className="block text-sm font-medium text-gray-600">Start Date</label>
+                        <div className="flex flex-col md:flex-row gap-4">
+                            {/* Start Date Input */}
+                            <div className="w-full md:w-1/2">
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Start Date</label>
                                 <input
                                     type="date"
                                     name="start_time"
                                     value={meetingData.start_time}
                                     onChange={handleChange}
-                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                    className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                     required
                                 />
                             </div>
 
-                            <div className="w-1/2 form-group mt-3">
-                                {/* <label className="block text-sm font-medium text-gray-600">Time</label> */}
+                            {/* Time Selection */}
+                            <div className="w-full md:w-1/2">
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Start Time</label>
                                 <div className="flex gap-2">
                                     {/* Hour Selection */}
                                     <select
                                         name="hour"
                                         value={meetingData.hour}
                                         onChange={handleChange}
-                                        className="p-2 border border-gray-300 rounded-md"
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                         required
                                     >
                                         <option value="">Hour</option>
                                         {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
-                                            <option key={hour} value={hour}>
-                                                {hour}
-                                            </option>
+                                            <option key={hour} value={hour}>{hour}</option>
                                         ))}
                                     </select>
 
@@ -225,14 +225,12 @@ const AddMeetingsPage = () => {
                                         name="minute"
                                         value={meetingData.minute}
                                         onChange={handleChange}
-                                        className="p-2 border border-gray-300 rounded-md"
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                         required
                                     >
                                         <option value="">Minute</option>
                                         {["00", "15", "30", "45"].map((minute) => (
-                                            <option key={minute} value={minute}>
-                                                {minute}
-                                            </option>
+                                            <option key={minute} value={minute}>{minute}</option>
                                         ))}
                                     </select>
 
@@ -241,7 +239,7 @@ const AddMeetingsPage = () => {
                                         name="ampm"
                                         value={meetingData.ampm}
                                         onChange={handleChange}
-                                        className="p-2 border border-gray-300 rounded-md"
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                         required
                                     >
                                         <option value="">AM/PM</option>
@@ -253,61 +251,60 @@ const AddMeetingsPage = () => {
                         </div>
 
 
+
                         {/* End Date */}
-                        <div className='flex fles-col md:flex-row'>
-                            <div className="w-1/2 form-group">
-                                <label className="block text-sm font-medium text-gray-600">End Date</label>
+                        <div className="flex flex-col md:flex-row gap-4">
+                            {/* Start Date Input */}
+                            <div className="w-full md:w-1/2">
+                                <label className="block text-sm font-medium text-gray-600 mb-1">End Date</label>
                                 <input
                                     type="date"
                                     name="end_time"
                                     value={meetingData.end_time}
                                     onChange={handleChange}
-                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                    className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                     required
                                 />
                             </div>
 
-                            <div className="w-1/2 form-group mt-3">
-                                {/* <label className="block text-sm font-medium text-gray-600">Time</label> */}
+                            {/* Time Selection */}
+                            <div className="w-full md:w-1/2">
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Start Time</label>
                                 <div className="flex gap-2">
                                     {/* Hour Selection */}
                                     <select
-                                        name="hour"
-                                        value={meetingData.hour}
+                                        name="end_hour"
+                                        value={meetingData.end_hour}
                                         onChange={handleChange}
-                                        className="p-2 border border-gray-300 rounded-md"
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                         required
                                     >
                                         <option value="">Hour</option>
-                                        {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
-                                            <option key={hour} value={hour}>
-                                                {hour}
-                                            </option>
+                                        {Array.from({ length: 12 }, (_, i) => i + 1).map((end_hour) => (
+                                            <option key={end_hour} value={end_hour}>{end_hour}</option>
                                         ))}
                                     </select>
 
                                     {/* Minute Selection */}
                                     <select
-                                        name="minute"
-                                        value={meetingData.minute}
+                                        name="end_minute"
+                                        value={meetingData.end_minute}
                                         onChange={handleChange}
-                                        className="p-2 border border-gray-300 rounded-md"
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                         required
                                     >
                                         <option value="">Minute</option>
-                                        {["00", "15", "30", "45"].map((minute) => (
-                                            <option key={minute} value={minute}>
-                                                {minute}
-                                            </option>
+                                        {["00", "15", "30", "45"].map((end_minute) => (
+                                            <option key={end_minute} value={end_minute}>{end_minute}</option>
                                         ))}
                                     </select>
 
                                     {/* AM/PM Selection */}
                                     <select
-                                        name="ampm"
-                                        value={meetingData.ampm}
+                                        name="end_ampm"
+                                        value={meetingData.end_ampm}
                                         onChange={handleChange}
-                                        className="p-2 border border-gray-300 rounded-md"
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                         required
                                     >
                                         <option value="">AM/PM</option>
@@ -317,6 +314,7 @@ const AddMeetingsPage = () => {
                                 </div>
                             </div>
                         </div>
+
 
 
                         {/* Meeting Type */}
