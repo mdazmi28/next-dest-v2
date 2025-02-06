@@ -9,7 +9,7 @@ import base_url from '@/base_url';
 
 const AddDispatchPage = () => {
    const { addDispatchStage, setDispatchStage, } = useFlowContext() || { addDispatchStage: false, setDispatchStage: () => {}};
-   
+
     const [person, setPerson] = useState({
         name: '',
         designation: '',
@@ -142,7 +142,7 @@ const AddDispatchPage = () => {
     return (
         <div className="flex flex-col justify-center items-center">
             <div className="w-full md:w-3/4 lg:w-2/3 bg-white shadow-2xl rounded-lg p-4">
-                <div className='flex justify-end cursor-pointer text-red-500 pb-4' onClick={() => { setAddContactInfoStage(!addContactInfoStage) }}>
+                <div className='flex justify-end cursor-pointer text-red-500 pb-4' onClick={() => { setDispatchStage(!addDispatchStage) }}>
                     <ImCross />
                 </div>
                 <div className='flex justify-end'>

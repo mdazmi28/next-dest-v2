@@ -117,7 +117,7 @@ const ShowDispatchPage = () => {
     };
 
     const changeStage = () => {
-        setAddContactInfoStage(!addContactInfoStage);
+        setDispatchStage(!addDispatchStage);
     };
 
 
@@ -125,7 +125,7 @@ const ShowDispatchPage = () => {
         <div className='flex flex-col w-full'>
         <div className='flex justify-end'>
             <div onClick={changeStage}>
-                <button className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110">+ Add New Contact</button>
+                <button className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110">+ Add New Dispatch</button>
             </div>
         </div>
         <div className='mt-7'>
