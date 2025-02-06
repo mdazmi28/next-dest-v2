@@ -175,88 +175,88 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
     //     }
     // };
 
-    // const confirmDelete = async (id) => {
-    //     const userId = Cookies.get('user_id');
-    //     let authToken = localStorage.getItem('authToken');
-    //     const refreshToken = localStorage.getItem('refreshToken');
+    const confirmDelete = async (id) => {
+        const userId = Cookies.get('user_id');
+        let authToken = localStorage.getItem('authToken');
+        const refreshToken = localStorage.getItem('refreshToken');
 
-    //     console.log("User ID is:", userId);
-    //     console.log("Deleting Contact ID:", id);
+        console.log("User ID is:", userId);
+        console.log("Deleting Contact ID:", id);
 
-    //     if (!id) {
-    //         console.error("ID is undefined or null!");
-    //         return;
-    //     }
+        if (!id) {
+            console.error("ID is undefined or null!");
+            return;
+        }
 
-    //     if (!authToken && !refreshToken) {
-    //         toast.error("Please log in first.");
-    //         return;
-    //     }
+        if (!authToken && !refreshToken) {
+            toast.error("Please log in first.");
+            return;
+        }
 
-    //     const deleteContactWithToken = async (token) => {
-    //         const response = await fetch(`${base_url}/users/${userId}/contacts/${id}`, {
-    //             method: "DELETE",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //                 "Authorization": `Bearer ${token}`,
-    //             },
-    //         });
+        const deleteContactWithToken = async (token) => {
+            const response = await fetch(`${base_url}/users/${userId}/dispatches/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
 
-    //         if (response.ok) {
-    //             // Remove the deleted contact from the local state
-    //             setDispatchData(dispatchData.filter((contact) => contact.contact_id !== id));
-    //             setIsDeleteOpen(false);
-    //             console.log("Contact deleted successfully");
-    //         } else {
-    //             console.log("Failed to delete contact");
-    //         }
-    //     };
+            if (response.ok) {
+                // Remove the deleted contact from the local state
+                setDispatchData(dispatchData.filter((dispatch) => dispatch.dispatch_id !== id));
+                setIsDeleteOpen(false);
+                console.log("Dispatch deleted successfully");
+            } else {
+                console.log("Failed to delete Dispatch");
+            }
+        };
 
-    //     // Function to refresh the token if expired
-    //     const refreshAndRetry = async () => {
-    //         try {
-    //             console.log("Attempting to refresh token...");
-    //             const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //                 body: JSON.stringify({ refresh: refreshToken }),
-    //             });
+        // Function to refresh the token if expired
+        const refreshAndRetry = async () => {
+            try {
+                console.log("Attempting to refresh token...");
+                const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ refresh: refreshToken }),
+                });
 
-    //             if (!refreshResponse.ok) {
-    //                 throw new Error("Token refresh failed. Please log in again.");
-    //             }
+                if (!refreshResponse.ok) {
+                    throw new Error("Token refresh failed. Please log in again.");
+                }
 
-    //             const refreshData = await refreshResponse.json();
-    //             authToken = refreshData.access;
-    //             localStorage.setItem("authToken", authToken);
-    //             console.log("Token refreshed successfully:", authToken);
+                const refreshData = await refreshResponse.json();
+                authToken = refreshData.access;
+                localStorage.setItem("authToken", authToken);
+                console.log("Token refreshed successfully:", authToken);
 
-    //             // Retry the delete request with the new token
-    //             await deleteContactWithToken(authToken);
-    //         } catch (err) {
-    //             console.error("Refresh and Retry Error:", err);
-    //             toast.error(err.message || "An error occurred.");
-    //         }
-    //     };
+                // Retry the delete request with the new token
+                await deleteContactWithToken(authToken);
+            } catch (err) {
+                console.error("Refresh and Retry Error:", err);
+                toast.error(err.message || "An error occurred.");
+            }
+        };
 
-    //     try {
-    //         if (authToken && !isTokenExpired(authToken)) {
-    //             await deleteContactWithToken(authToken);
-    //         } else if (refreshToken) {
-    //             await refreshAndRetry();
-    //         }
-    //     } catch (err) {
-    //         if (err.message.includes("401")) {
-    //             console.log("Token expired, attempting refresh...");
-    //             await refreshAndRetry();
-    //         } else {
-    //             console.error("Error:", err);
-    //             toast.error(err.message || "An error occurred.");
-    //         }
-    //     }
-    // };
+        try {
+            if (authToken && !isTokenExpired(authToken)) {
+                await deleteContactWithToken(authToken);
+            } else if (refreshToken) {
+                await refreshAndRetry();
+            }
+        } catch (err) {
+            if (err.message.includes("401")) {
+                console.log("Token expired, attempting refresh...");
+                await refreshAndRetry();
+            } else {
+                console.error("Error:", err);
+                toast.error(err.message || "An error occurred.");
+            }
+        }
+    };
 
 
     return (
@@ -300,7 +300,7 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                                         />
                                         <MdDelete
                                             className="h-5 w-5 text-red-500 cursor-pointer"
-                                            onClick={() => handleDelete(data.contact_id)}
+                                            onClick={() => handleDelete(data.dispatch_id)}
                                         />
                                     </td>
                                 </tr>
