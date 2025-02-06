@@ -6,11 +6,12 @@ import { useFlowContext } from '@/context/FlowContext';
 import Cookies from 'js-cookie';
 import base_url from '@/base_url';
 import { toast } from 'react-toastify';
+import Scheduler from '@/components/Schedular';
 
 const ShowMeetings = () => {
-  const { addMeetingInfoStage, setMeetingInfoStage } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
+  const { addMeetingInfoStage, setMeetingInfoStage, appointments, setAppointments, events, setEvents  } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
   // const [events, setEvents] = useState([]);
-  const { appointments, setAppointments, events, setEvents } = useFlowContext()
+  // const { appointments, setAppointments, events, setEvents } = useFlowContext()
 
   const isTokenExpired = (token) => {
     try {
@@ -30,7 +31,6 @@ const ShowMeetings = () => {
         return;
       }
 
-      // console.log("Fetching appointments for user:", userId);
       let authToken = localStorage.getItem('authToken');
       const refreshToken = localStorage.getItem('refreshToken');
 
@@ -55,12 +55,21 @@ const ShowMeetings = () => {
         }
 
         const data = await response.json();
-        // console.log("Appointments API Response:", data);
-        setAppointments(data);
-        setEvents(data);
+
+        const formattedEvents = data.map(event => ({
+          title: event.title || "No Title",
+          start: event.start_time.slice(0, -4),
+          end: event.end_time.slice(0, -4),
+          id: event.id,
+          description: event.description || "No Description",  // Include description
+          location: event.location || "No Location"  // Include location
+        }));
+
+        setAppointments(formattedEvents);
+        setEvents(formattedEvents);
+        console.log("Events fetched:", formattedEvents);
       };
 
-      // Function to refresh token and retry API call
       const refreshAndRetry = async () => {
         try {
           console.log("Attempting to refresh token...");
@@ -112,6 +121,10 @@ const ShowMeetings = () => {
   useEffect(() => {
     fetchAppointments();
   }, []);
+
+  useEffect(() => {
+    console.log("Events updated:", events);
+  }, [events]);
 
 
   return (
@@ -190,7 +203,8 @@ const ShowMeetings = () => {
       <div className="flex flex-row h-1/2">
         {/* Left - Calendar */}
         <div className="w-3/4 ">
-          <Calendar events={events} />
+          {/* <Calendar events={events} /> */}
+          <Scheduler events={events} />
         </div>
 
         {/* Right - Additional Section */}
