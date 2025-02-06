@@ -5,6 +5,7 @@ import Calendar from '@/components/Calendar';
 import { useFlowContext } from '@/context/FlowContext';
 import Cookies from 'js-cookie';
 import base_url from '@/base_url';
+import { toast } from 'react-toastify';
 
 const ShowMeetings = () => {
   const { addMeetingInfoStage, setMeetingInfoStage } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };

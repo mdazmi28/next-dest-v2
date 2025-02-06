@@ -52,7 +52,7 @@ const AddMeetingsPage = () => {
         const formattedMinute = String(minute).padStart(2, '0');
 
         // Create an ISO-formatted date string
-        return `${date}T${formattedHour}:${formattedMinute}:00Z`;
+        return `${date}T${formattedHour}:${formattedMinute}:22Z`;
     };
 
     const handleSubmit = async (e) => {
