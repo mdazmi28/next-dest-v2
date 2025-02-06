@@ -271,21 +271,22 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                                 <th>Type</th>
                                 <th>Subject</th>
                                 <th>Sender/Reciver</th>
-                                <th>Date</th>
+                                {/* <th>Date</th> */}
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {dispatchData.map((data) => (
-                                <tr key={data.contact_id}>
+                                <tr key={data.dispatch_id}>
                                     <td>
-                                        <div className="font-bold">{data.name}</div>
+                                        <div className="font-bold">{data.reference_number}</div>
                                     </td>
-                                    <td>{data.designation}</td>
-                                    <td>{data.organization}</td>
-                                    <td>{data.email}</td>
-                                    <td>{data.phone}</td>
+                                    <td>{data.type}</td>
+                                    <td>{data.subject}</td>
+                                    <td>{data.sender}</td>
+                                    {/* <td>{data.sender}</td> */}
+                                    <td>{data.status}</td>
                                     {/* <td>{data.phone}</td> */}
 
                                     <td className="flex justify-between gap-5">
