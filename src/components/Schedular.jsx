@@ -131,7 +131,7 @@ const Scheduler = () => {
             <div className="w-full h-screen">
                 <FullCalendar
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                    initialView="timeGrid"
+                    initialView="timeGridWeek"
                     timeZone="local"
                     headerToolbar={{
                         left: 'prev,next',
