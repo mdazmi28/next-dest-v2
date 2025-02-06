@@ -6,6 +6,7 @@ const FlowContext = createContext();
 export const FlowProvider = ({ children }) => {
     const [addContactInfoStage, setAddContactInfoStage] = useState(true);
     const [addMeetingInfoStage, setMeetingInfoStage] = useState(true);
+    const [addDispatchStage, setDispatchStage] = useState(true);
     const [checkLogin, setCheckLogin] = useState(true);
     const [loading, setLoading] = useState("");
     const [error, setError] = useState("");
@@ -22,6 +23,7 @@ export const FlowProvider = ({ children }) => {
                 error, setError,
                 addContactInfoStage, setAddContactInfoStage,
                 addMeetingInfoStage, setMeetingInfoStage,
+                addDispatchStage, setDispatchStage,
                 appointments, setAppointments,
                 events, setEvents
             }}

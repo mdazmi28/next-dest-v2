@@ -10,8 +10,6 @@ import Scheduler from '@/components/Schedular';
 
 const ShowMeetings = () => {
   const { addMeetingInfoStage, setMeetingInfoStage, appointments, setAppointments, events, setEvents  } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
-  // const [events, setEvents] = useState([]);
-  // const { appointments, setAppointments, events, setEvents } = useFlowContext()
 
   const isTokenExpired = (token) => {
     try {

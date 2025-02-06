@@ -48,8 +48,8 @@ const data = {
       icon: BookOpen,
     },
     {
-      title: "Settings",
-      url: "#",
+      title: "Dispatch",
+      url: "/dispatch",
       icon: Settings2,
 
     },
