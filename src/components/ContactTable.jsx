@@ -376,7 +376,7 @@ const Table = ({ contactData, setContactData }) => {
                                         className="input input-bordered"
                                     />
                                 </div>
-                                <h1 className="text-xl pt-5">Organizational Information</h1>
+                                {/* <h1 className="text-xl pt-5">Organizational Information</h1>
                                 <div className="form-control">
                                     <label>Organization</label>
                                     <input
@@ -386,7 +386,7 @@ const Table = ({ contactData, setContactData }) => {
                                         onChange={handleEditChange}
                                         className="input input-bordered"
                                     />
-                                </div>
+                                </div> */}
                                 <div className="modal-action">
                                     <button type="submit" className="btn btn-primary">
                                         Save
