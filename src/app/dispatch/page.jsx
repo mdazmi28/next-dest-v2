@@ -2,6 +2,7 @@
 import Layout from '@/components/Layout';
 import { useFlowContext } from '@/context/FlowContext';
 import AddContactPage from '@/pages/AddContactPage';
+import AddDispatchPage from '@/pages/AddDispatchPage';
 import ShowContactPage from '@/pages/ShowContactPage';
 import ShowDispatchPage from '@/pages/ShowDispatchPage';
 
@@ -13,7 +14,7 @@ const page = () => {
     return (
         <Layout>
             {
-                addDispatchStage ? (<ShowDispatchPage />) : ("No ")
+                addDispatchStage ? (<ShowDispatchPage />) : (<AddDispatchPage/>)
             }
         </Layout>
 

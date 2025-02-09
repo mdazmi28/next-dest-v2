@@ -8,31 +8,21 @@ import { ToastContainer, toast } from "react-toastify";
 import base_url from '@/base_url';
 
 const AddDispatchPage = () => {
-   const { addDispatchStage, setDispatchStage, } = useFlowContext() || { addDispatchStage: false, setDispatchStage: () => {}};
+    const { addDispatchStage, setDispatchStage, } = useFlowContext() || { addDispatchStage: false, setDispatchStage: () => { } };
 
-    const [person, setPerson] = useState({
-        name: '',
-        designation: '',
-        email: '',
-        phone: '',
+    const [dispatchData, setDispatchData] = useState({
+        reference_number: '',
+        type: '',
+        subject: '',
+        sender: '',
+        recipient: '',
+        status: '',
+        note: '',
     });
 
-    const [organization, setOrganization] = useState({
-        name: '',
-        address: '',
-        email: '',
-        web: '',
-        phone: '',
-    });
-
-    const handlePersonChange = (e) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
-        setPerson((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleOrganizationChange = (e) => {
-        const { name, value } = e.target;
-        setOrganization((prev) => ({ ...prev, [name]: value }));
+        setDispatchData((prev) => ({ ...prev, [name]: value }));
     };
 
     const isTokenExpired = (token) => {
@@ -61,20 +51,20 @@ const AddDispatchPage = () => {
 
         const data = {
             user: parseInt(userId),
-            name: person.name,
-            email: person.email,
-            phone: person.phone,
-            designation: person.designation,
-            organization: organization.id,
-            tags: person.tags || [],
-            note: person.note || "",
+            reference_number: dispatchData.reference_number,
+            type: dispatchData.type,
+            subject: dispatchData.subject,
+            sender: dispatchData.sender,
+            recipient: dispatchData.recipient,
+            status: dispatchData.status,
+            note: dispatchData.note || "",
         };
 
         console.log('Form Data Submitted:', data);
 
         const submitContact = async (token) => {
             try {
-                const response = await fetch(`${base_url}/users/${userId}/contacts/`, {
+                const response = await fetch(`${base_url}/users/${userId}/dispatches/`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -88,9 +78,9 @@ const AddDispatchPage = () => {
                     throw new Error(`Error: ${response.status} - ${errorData.message}`);
                 }
 
-                console.log("Contact added successfully");
-                toast.success("Contact added successfully!");
-                setAddContactInfoStage(!addContactInfoStage);
+                console.log("Dispatch added successfully");
+                toast.success("Dispatch added successfully!");
+                setDispatchStage(!addDispatchStage);
             } catch (err) {
                 console.error("Error:", err);
                 toast.error(err.message || "An error occurred.");
@@ -152,16 +142,16 @@ const AddDispatchPage = () => {
                 <form onSubmit={handleSubmit}>
                     <div className='flex flex-col md:flex-row md:justify-around'>
 
-                        {/* Person Information */}
+                        {/* dispatchData Information */}
                         <div className="space-y-4">
-                            <h3 className="text-2xl font-semibold text-gray-700">Person Information</h3>
+                            <h3 className="text-2xl font-semibold text-gray-700">dispatchData Information</h3>
                             <div className="form-group">
                                 <label className="block text-sm font-medium text-gray-600">Name</label>
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={person.name}
-                                    onChange={handlePersonChange}
+                                    name="reference_number"
+                                    value={dispatchData.reference_number}
+                                    onChange={handleChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                     required
                                 />
@@ -170,9 +160,9 @@ const AddDispatchPage = () => {
                                 <label className="block text-sm font-medium text-gray-600">Designation</label>
                                 <input
                                     type="text"
-                                    name="designation"
-                                    value={person.designation}
-                                    onChange={handlePersonChange}
+                                    name="type"
+                                    value={dispatchData.type}
+                                    onChange={handleChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                 // required
                                 />
@@ -180,37 +170,48 @@ const AddDispatchPage = () => {
                             <div className="form-group">
                                 <label className="block text-sm font-medium text-gray-600">Email</label>
                                 <input
-                                    type="email"
-                                    name="email"
-                                    value={person.email}
-                                    onChange={handlePersonChange}
+                                    type="text"
+                                    name="subject"
+                                    value={dispatchData.subject}
+                                    onChange={handleChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                 // required
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="block text-sm font-medium text-gray-600">Phone</label>
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    value={person.phone}
-                                    onChange={handlePersonChange}
-                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                // required
-                                />
-                            </div>
-                        </div>
-
-                        {/* Organization Information */}
-                        <div className="space-y-4">
-                            <h3 className="text-2xl font-semibold text-gray-700">Organization Information</h3>
-                            <div className="form-group">
-                                <label className="block text-sm font-medium text-gray-600">Organization Name</label>
+                                <label className="block text-sm font-medium text-gray-600">Email</label>
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={organization.name}
-                                    onChange={handleOrganizationChange}
+                                    name="sender"
+                                    value={dispatchData.sender}
+                                    onChange={handleChange}
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                // required
+                                />
+                            </div>
+                            {/* <div className="form-group">
+                                <label className="block text-sm font-medium text-gray-600">Phone</label>
+                                <input
+                                    type="text"
+                                    name="sender"
+                                    value={dispatchData.sender}
+                                    onChange={handleChange}
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                // required
+                                />
+                            </div> */}
+                        </div>
+
+                        {/* dispatchData Information */}
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-semibold text-gray-700">dispatchData Information</h3>
+                            <div className="form-group">
+                                <label className="block text-sm font-medium text-gray-600">dispatchData Name</label>
+                                <input
+                                    type="text"
+                                    name="recipient"
+                                    value={dispatchData.recipient}
+                                    onChange={handleChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                 // required
                                 />
@@ -219,9 +220,9 @@ const AddDispatchPage = () => {
                                 <label className="block text-sm font-medium text-gray-600">Address</label>
                                 <input
                                     type="text"
-                                    name="address"
-                                    value={organization.address}
-                                    onChange={handleOrganizationChange}
+                                    name="status"
+                                    value={dispatchData.status}
+                                    onChange={handleChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                 // required
                                 />
@@ -229,45 +230,39 @@ const AddDispatchPage = () => {
                             <div className="form-group">
                                 <label className="block text-sm font-medium text-gray-600">Email</label>
                                 <input
-                                    type="email"
-                                    name="email"
-                                    value={organization.email}
-                                    onChange={handleOrganizationChange}
+                                    type="text"
+                                    name="note"
+                                    value={dispatchData.note}
+                                    onChange={handleChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                 // required
                                 />
                             </div>
-                            <div className="form-group">
+                            {/* <div className="form-group">
                                 <label className="block text-sm font-medium text-gray-600">Website</label>
                                 <input
                                     type="url"
                                     name="web"
-                                    value={organization.web}
-                                    onChange={handleOrganizationChange}
+                                    value={dispatchData.web}
+                                    onChange={handleChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                 // required
                                 />
-                            </div>
-                            <div className="form-group">
+                            </div> */}
+                            {/* <div className="form-group">
                                 <label className="block text-sm font-medium text-gray-600">Phone</label>
                                 <input
                                     type="tel"
                                     name="phone"
-                                    value={organization.phone}
-                                    onChange={handleOrganizationChange}
+                                    value={dispatchData.phone}
+                                    onChange={handleChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                 // required
                                 />
-                            </div>
+                            </div> */}
                         </div>
 
                     </div>
-
-
-
-
-
-
                     {/* Submit Button */}
                     <div className="col-span-2 text-center mt-6">
                         <button
