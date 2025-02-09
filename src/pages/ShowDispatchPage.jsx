@@ -4,7 +4,6 @@ import { useFlowContext } from '@/context/FlowContext';
 import Cookies from 'js-cookie';
 import base_url from '@/base_url';
 import { toast } from 'react-toastify';
-import Scheduler from '@/components/Schedular';
 import DispatchTable from '@/components/DispatchTable';
 
 const ShowDispatchPage = () => {

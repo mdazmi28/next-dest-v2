@@ -314,10 +314,13 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                     <div className="modal modal-open">
                         <div className="modal-box">
                             <h4 className="text-md font-bold">Person</h4>
-                            <p>Name: {selectedData.name}</p>
-                            <p>Designation: {selectedData.designation}</p>
-                            <p>Email: {selectedData.email}</p>
-                            <p>Phone: {selectedData.phone}</p>
+                            <p>Name: {selectedData.reference_number}</p>
+                            <p>Designation: {selectedData.type}</p>
+                            <p>Email: {selectedData.subject}</p>
+                            <p>Phone: {selectedData.sender}</p>
+                            <p>Phone: {selectedData.recipient}</p>
+                            <p>Phone: {selectedData.status}</p>
+                            <p>Phone: {selectedData.note}</p>
 
                             {/* <h4 className="text-md font-bold mt-4">Organization</h4>
                         <p>Name: {selectedData.name}</p>
@@ -360,7 +363,7 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                                     <input
                                         type="text"
                                         name="name"
-                                        value={editData.name || ""}
+                                        value={editData.reference_number || ""}
                                         onChange={handleEditChange}
                                         className="input input-bordered"
                                     />
