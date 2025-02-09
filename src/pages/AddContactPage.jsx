@@ -16,6 +16,8 @@ const AddContactPage = () => {
         designation: '',
         email: '',
         phone: '',
+        note: "",
+        tags: []
     });
 
     const [organization, setOrganization] = useState({
@@ -66,9 +68,14 @@ const AddContactPage = () => {
             email: person.email,
             phone: person.phone,
             designation: person.designation,
-            organization: organization.id,
+            note: person.note,
             tags: person.tags || [],
-            note: person.note || "",
+            organization_name: organization.name,
+            organization_address: organization.address,
+            organization_email : organization.email,
+            organization_website : organization.web,
+            organization_phone : organization.phone
+
         };
 
         console.log('Form Data Submitted:', data);
@@ -263,10 +270,6 @@ const AddContactPage = () => {
                         </div>
 
                     </div>
-
-
-
-
 
 
                     {/* Submit Button */}

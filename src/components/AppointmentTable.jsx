@@ -8,6 +8,7 @@ import { jwtDecode } from 'jwt-decode'
 import base_url from "@/base_url";
 import 'react-toastify/dist/ReactToastify.css';
 import { useFlowContext } from '@/context/FlowContext';
+import dayjs from "dayjs";
 
 const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const [isViewOpen, setIsViewOpen] = useState(false);
@@ -21,6 +22,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const { appointments } = useFlowContext()
+    // console.log(appointmentData)
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -311,11 +313,13 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                             <tr key={data.appointment_id || index}>
                                 {/* Time */}
                                 <td>
+                                    {/* <div className="font-bold">
+                                        {data.appointment_id}
+                                    </div> */}
                                     <div className="font-bold">
-                                        {new Date(data.start_time).toLocaleDateString("en-GB")}
+                                    {dayjs(data.start_time).format("DD-MM-YYYY")}
                                         {/* {new Date(data.start_time).toISOString().split("T")[0].split("-").reverse().join("-")} */}
-
-
+                                    
                                     </div>
                                 </td>
                                 {/* With */}
@@ -355,7 +359,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                         <p>Description: {selectedData.description}</p>
                         <p>Location: {selectedData.location}</p>
                         <p>
-                            On: {format(new Date(selectedData.start_time), 'dd-MM-yyyy HH:mm')}
+                            On: {dayjs(selectedData.start_time).format("DD-MM-YYYY")}
                         </p>
                         <div className="modal-action">
                             <button className="btn" onClick={() => setIsViewOpen(false)}>

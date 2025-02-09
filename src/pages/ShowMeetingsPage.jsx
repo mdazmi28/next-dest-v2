@@ -53,8 +53,10 @@ const ShowMeetings = () => {
         }
 
         const data = await response.json();
+        // console.log("Appointments fetched:", data);
 
         const formattedEvents = data.map(event => ({
+          appointment_id: event.appointment_id,
           title: event.title || "No Title",
           start: event.start_time.slice(0, -4),
           end: event.end_time.slice(0, -4),
