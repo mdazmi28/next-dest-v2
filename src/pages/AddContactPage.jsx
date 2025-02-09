@@ -8,7 +8,6 @@ import { ToastContainer, toast } from "react-toastify";
 import base_url from '@/base_url';
 
 const AddContactPage = () => {
-    // const { addContactInfoStage, setAddContactInfoStage } = useFlowContext()
     const { addContactInfoStage, setAddContactInfoStage } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
 
     const [person, setPerson] = useState({
@@ -91,20 +90,6 @@ const AddContactPage = () => {
         setOrganization((prev) => ({ ...prev, [name]: value }));
     };
 
-    // const handleOrganizationSelect = (e) => {
-    //     const selectedOrgName = e.target.value;
-    //     const selectedOrg = organizations.find((org) => org.name === selectedOrgName);
-
-    //     if (selectedOrg) {
-    //         setOrganization({
-    //             name: selectedOrg.name,
-    //             address: selectedOrg.address,
-    //             email: selectedOrg.email,
-    //             phone: selectedOrg.phone,
-    //             web: selectedOrg.web
-    //         });
-    //     }
-    // };
 
     const handleOrganizationSelect = (e) => {
         const selectedOrgName = e.target.value;
@@ -139,108 +124,7 @@ const AddContactPage = () => {
         }
     };
 
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-
-    //     const userId = Cookies.get('user_id');
-    //     let authToken = localStorage.getItem('authToken');
-    //     const refreshToken = localStorage.getItem('refreshToken');
-    //     const existingOrg = organizations.find(org => org.name === organization.name);
-
-
-    //     if (!userId) {
-    //         console.error("User ID not found in cookies.");
-    //         toast.error("User ID is missing. Please log in again.");
-    //         return;
-    //     }
-
-    //     const data = {
-    //         user: parseInt(userId),
-    //         name: person.name,
-    //         email: person.email,
-    //         phone: person.phone,
-    //         designation: person.designation,
-    //         note: person.note,
-    //         tags: person.tags || [],
-    //         organization_name: organization.name,
-    //         // Conditionally include organization details only if it's new
-    //         ...(!existingOrg ? {
-    //             organization_address: organization.address || null,
-    //             organization_email: organization.email|| null,
-    //             organization_website: organization.website || null,
-    //             organization_phone: organization.phone || null,
-    //         } : {})
-    //     };
-
-    //     console.log('Form Data Submitted:', data);
-
-    //     const submitContact = async (token) => {
-    //         try {
-    //             const response = await fetch(`${base_url}/users/${userId}/contacts/`, {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     "Authorization": `Bearer ${token}`,
-    //                 },
-    //                 body: JSON.stringify(data),
-    //             });
-
-    //             if (!response.ok) {
-    //                 const errorData = await response.json();
-    //                 throw new Error(`Error: ${response.status} - ${errorData.message}`);
-    //             }
-
-    //             console.log("Contact added successfully");
-    //             toast.success("Contact added successfully!");
-    //             setAddContactInfoStage(!addContactInfoStage);
-    //         } catch (err) {
-    //             console.error("Error:", err);
-    //             toast.error(err.message || "An error occurred.");
-    //         }
-    //     };
-
-    //     const refreshAndRetry = async () => {
-    //         try {
-    //             console.log("Attempting to refresh token...");
-    //             const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //                 body: JSON.stringify({ refresh_token: refreshToken }),
-    //             });
-
-    //             if (!refreshResponse.ok) {
-    //                 throw new Error("Token refresh failed. Please log in again.");
-    //             }
-
-    //             const refreshData = await refreshResponse.json();
-    //             authToken = refreshData.token;
-    //             localStorage.setItem("authToken", authToken);
-    //             console.log("Token refreshed successfully:", authToken);
-
-    //             // Retry submitting the contact with the new token
-    //             await submitContact(authToken);
-    //         } catch (err) {
-    //             console.error("Refresh and Retry Error:", err);
-    //             toast.error(err.message || "An error occurred.");
-    //         }
-    //     };
-
-    //     try {
-    //         if (authToken && !isTokenExpired(authToken)) {
-    //             await submitContact(authToken);
-    //         } else if (refreshToken) {
-    //             await refreshAndRetry();
-    //         } else {
-    //             throw new Error("No valid authentication tokens found.");
-    //         }
-    //     } catch (err) {
-    //         console.error("Error:", err);
-    //         toast.error(err.message || "An error occurred.");
-    //     }
-    // };
-
+   
     const handleSubmit = async (e) => {
         e.preventDefault();
     
