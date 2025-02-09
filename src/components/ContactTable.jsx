@@ -276,7 +276,7 @@ const Table = ({ contactData, setContactData }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {contactData.map((data) => (
+                            {contactData.slice().reverse().map((data) => (
                                 <tr key={data.contact_id}>
                                     <td>
                                         <div className="font-bold">{data.name}</div>
@@ -316,23 +316,6 @@ const Table = ({ contactData, setContactData }) => {
                             <p>Designation: {selectedData.designation}</p>
                             <p>Email: {selectedData.email}</p>
                             <p>Phone: {selectedData.phone}</p>
-
-                            {/* <h4 className="text-md font-bold mt-4">Organization</h4>
-                        <p>Name: {selectedData.name}</p>
-                        <p>Address: {}</p>
-                        <p>Email: {}</p>
-                        <p>
-                            Website:{" "}
-                            <a
-                                href={selectedData.organization.web}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500 underline"
-                            >
-                                {selectedData}
-                            </a>
-                        </p>
-                        <p>Phone: {selectedData.organization.phone}</p>*/}
                             <div className="modal-action">
                                 <button className="btn" onClick={() => setIsViewOpen(false)}>
                                     Close
