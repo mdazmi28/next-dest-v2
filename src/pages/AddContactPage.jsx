@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFlowContext } from '@/context/FlowContext';
 import { ImCross } from "react-icons/im";
 import { jwtDecode } from 'jwt-decode'
@@ -17,16 +17,69 @@ const AddContactPage = () => {
         email: '',
         phone: '',
         note: "",
-        tags: []
+        tags: [],
     });
 
     const [organization, setOrganization] = useState({
         name: '',
         address: '',
         email: '',
-        web: '',
+        website: '',
         phone: '',
     });
+
+    const [organizations, setOrganizations] = useState([]);
+
+    const fetchOrganizations = async () => {
+        const userId = Cookies.get('user_id');
+        if (!userId) return;
+
+        let authToken = localStorage.getItem('authToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        const fetchOrgs = async (token) => {
+            try {
+                const response = await fetch(`${base_url}/users/${userId}/organizations/`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (!response.ok) console.log('Failed to fetch organizations');
+                const data = await response.json();
+                setOrganizations(data);
+            } catch (error) {
+                console.error('Fetch Organizations Error:', error);
+                toast.error('Failed to load organizations');
+            }
+        };
+
+        const refreshAndFetch = async () => {
+            try {
+                const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ refresh_token: refreshToken }),
+                });
+                if (!refreshResponse.ok) throw new Error('Token refresh failed');
+                const { token } = await refreshResponse.json();
+                localStorage.setItem("authToken", token);
+                await fetchOrgs(token);
+            } catch (error) {
+                console.error('Refresh Token Error:', error);
+                toast.error('Session expired. Please log in again.');
+            }
+        };
+
+        if (authToken && !isTokenExpired(authToken)) {
+            await fetchOrgs(authToken);
+        } else if (refreshToken) {
+            await refreshAndFetch();
+        } else {
+            toast.error('Please log in again.');
+        }
+    };
+
+    useEffect(() => {
+        fetchOrganizations();
+    }, []);
 
     const handlePersonChange = (e) => {
         const { name, value } = e.target;
@@ -36,6 +89,43 @@ const AddContactPage = () => {
     const handleOrganizationChange = (e) => {
         const { name, value } = e.target;
         setOrganization((prev) => ({ ...prev, [name]: value }));
+    };
+
+    // const handleOrganizationSelect = (e) => {
+    //     const selectedOrgName = e.target.value;
+    //     const selectedOrg = organizations.find((org) => org.name === selectedOrgName);
+
+    //     if (selectedOrg) {
+    //         setOrganization({
+    //             name: selectedOrg.name,
+    //             address: selectedOrg.address,
+    //             email: selectedOrg.email,
+    //             phone: selectedOrg.phone,
+    //             web: selectedOrg.web
+    //         });
+    //     }
+    // };
+
+    const handleOrganizationSelect = (e) => {
+        const selectedOrgName = e.target.value;
+        const selectedOrg = organizations.find((org) => org.name === selectedOrgName);
+
+        if (selectedOrg) {
+            // If an organization is selected from the list, set its details
+            setOrganization({
+                name: selectedOrg.name,
+                address: selectedOrg.address,
+                email: selectedOrg.email,
+                phone: selectedOrg.phone,
+                website: selectedOrg.website
+            });
+        } else {
+            // Allow the user to input a custom organization name
+            setOrganization((prev) => ({
+                ...prev,
+                name: selectedOrgName
+            }));
+        }
     };
 
     const isTokenExpired = (token) => {
@@ -49,19 +139,122 @@ const AddContactPage = () => {
         }
     };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+
+    //     const userId = Cookies.get('user_id');
+    //     let authToken = localStorage.getItem('authToken');
+    //     const refreshToken = localStorage.getItem('refreshToken');
+    //     const existingOrg = organizations.find(org => org.name === organization.name);
+
+
+    //     if (!userId) {
+    //         console.error("User ID not found in cookies.");
+    //         toast.error("User ID is missing. Please log in again.");
+    //         return;
+    //     }
+
+    //     const data = {
+    //         user: parseInt(userId),
+    //         name: person.name,
+    //         email: person.email,
+    //         phone: person.phone,
+    //         designation: person.designation,
+    //         note: person.note,
+    //         tags: person.tags || [],
+    //         organization_name: organization.name,
+    //         // Conditionally include organization details only if it's new
+    //         ...(!existingOrg ? {
+    //             organization_address: organization.address || null,
+    //             organization_email: organization.email|| null,
+    //             organization_website: organization.website || null,
+    //             organization_phone: organization.phone || null,
+    //         } : {})
+    //     };
+
+    //     console.log('Form Data Submitted:', data);
+
+    //     const submitContact = async (token) => {
+    //         try {
+    //             const response = await fetch(`${base_url}/users/${userId}/contacts/`, {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     "Authorization": `Bearer ${token}`,
+    //                 },
+    //                 body: JSON.stringify(data),
+    //             });
+
+    //             if (!response.ok) {
+    //                 const errorData = await response.json();
+    //                 throw new Error(`Error: ${response.status} - ${errorData.message}`);
+    //             }
+
+    //             console.log("Contact added successfully");
+    //             toast.success("Contact added successfully!");
+    //             setAddContactInfoStage(!addContactInfoStage);
+    //         } catch (err) {
+    //             console.error("Error:", err);
+    //             toast.error(err.message || "An error occurred.");
+    //         }
+    //     };
+
+    //     const refreshAndRetry = async () => {
+    //         try {
+    //             console.log("Attempting to refresh token...");
+    //             const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //                 body: JSON.stringify({ refresh_token: refreshToken }),
+    //             });
+
+    //             if (!refreshResponse.ok) {
+    //                 throw new Error("Token refresh failed. Please log in again.");
+    //             }
+
+    //             const refreshData = await refreshResponse.json();
+    //             authToken = refreshData.token;
+    //             localStorage.setItem("authToken", authToken);
+    //             console.log("Token refreshed successfully:", authToken);
+
+    //             // Retry submitting the contact with the new token
+    //             await submitContact(authToken);
+    //         } catch (err) {
+    //             console.error("Refresh and Retry Error:", err);
+    //             toast.error(err.message || "An error occurred.");
+    //         }
+    //     };
+
+    //     try {
+    //         if (authToken && !isTokenExpired(authToken)) {
+    //             await submitContact(authToken);
+    //         } else if (refreshToken) {
+    //             await refreshAndRetry();
+    //         } else {
+    //             throw new Error("No valid authentication tokens found.");
+    //         }
+    //     } catch (err) {
+    //         console.error("Error:", err);
+    //         toast.error(err.message || "An error occurred.");
+    //     }
+    // };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const userId = Cookies.get('user_id');
         let authToken = localStorage.getItem('authToken');
         const refreshToken = localStorage.getItem('refreshToken');
-
+    
         if (!userId) {
             console.error("User ID not found in cookies.");
             toast.error("User ID is missing. Please log in again.");
             return;
         }
-
+    
+        // Create data object for the form
         const data = {
             user: parseInt(userId),
             name: person.name,
@@ -71,15 +264,31 @@ const AddContactPage = () => {
             note: person.note,
             tags: person.tags || [],
             organization_name: organization.name,
-            organization_address: organization.address,
-            organization_email : organization.email,
-            organization_website : organization.web,
-            organization_phone : organization.phone
-
+            organization_address: organization.address ,
+            organization_email: organization.email ,
+            organization_website: organization.website ,
+            organization_phone: organization.phone,
         };
-
+    
+        // If an organization is selected from suggestions, include organization fields
+        const selectedOrg = organizations.find(org => org.name === organization.name);
+    
+        if (selectedOrg) {
+            // If the organization is from suggestions, send all its details
+            data.organization_address = selectedOrg.address ;
+            data.organization_email = selectedOrg.email ;
+            data.organization_website = selectedOrg.website ;
+            data.organization_phone = selectedOrg.phone ;
+        } else {
+            // If it's a custom organization input, pass null for these fields
+            data.organization_address = organization.address ;
+            data.organization_email = organization.email ;
+            data.organization_website = organization.website ;
+            data.organization_phone = organization.phone ;
+        }
+    
         console.log('Form Data Submitted:', data);
-
+    
         const submitContact = async (token) => {
             try {
                 const response = await fetch(`${base_url}/users/${userId}/contacts/`, {
@@ -90,12 +299,12 @@ const AddContactPage = () => {
                     },
                     body: JSON.stringify(data),
                 });
-
+    
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(`Error: ${response.status} - ${errorData.message}`);
                 }
-
+    
                 console.log("Contact added successfully");
                 toast.success("Contact added successfully!");
                 setAddContactInfoStage(!addContactInfoStage);
@@ -104,7 +313,7 @@ const AddContactPage = () => {
                 toast.error(err.message || "An error occurred.");
             }
         };
-
+    
         const refreshAndRetry = async () => {
             try {
                 console.log("Attempting to refresh token...");
@@ -115,16 +324,16 @@ const AddContactPage = () => {
                     },
                     body: JSON.stringify({ refresh_token: refreshToken }),
                 });
-
+    
                 if (!refreshResponse.ok) {
                     throw new Error("Token refresh failed. Please log in again.");
                 }
-
+    
                 const refreshData = await refreshResponse.json();
                 authToken = refreshData.token;
                 localStorage.setItem("authToken", authToken);
                 console.log("Token refreshed successfully:", authToken);
-
+    
                 // Retry submitting the contact with the new token
                 await submitContact(authToken);
             } catch (err) {
@@ -132,7 +341,7 @@ const AddContactPage = () => {
                 toast.error(err.message || "An error occurred.");
             }
         };
-
+    
         try {
             if (authToken && !isTokenExpired(authToken)) {
                 await submitContact(authToken);
@@ -146,7 +355,7 @@ const AddContactPage = () => {
             toast.error(err.message || "An error occurred.");
         }
     };
-
+    
     return (
         <div className="flex flex-col justify-center items-center">
             <div className="w-full md:w-3/4 lg:w-2/3 bg-white shadow-2xl rounded-lg p-4">
@@ -207,6 +416,17 @@ const AddContactPage = () => {
                                 // required
                                 />
                             </div>
+                            <div className="form-group">
+                                <label className="block text-sm font-medium text-gray-600">Tags</label>
+                                <input
+                                    type="tag"
+                                    name="tags"
+                                    value={person.tags}
+                                    onChange={handlePersonChange}
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                // required
+                                />
+                            </div>
                         </div>
 
                         {/* Organization Information */}
@@ -218,10 +438,16 @@ const AddContactPage = () => {
                                     type="text"
                                     name="name"
                                     value={organization.name}
-                                    onChange={handleOrganizationChange}
+                                    onChange={handleOrganizationSelect}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                // required
+                                    list="organization-suggestions"
                                 />
+
+                                <datalist id="organization-suggestions">
+                                    {organizations.map((org) => (
+                                        <option key={`${org.id}-${org.name}`} value={org.name} />
+                                    ))}
+                                </datalist>
                             </div>
                             <div className="form-group">
                                 <label className="block text-sm font-medium text-gray-600">Address</label>
@@ -248,9 +474,9 @@ const AddContactPage = () => {
                             <div className="form-group">
                                 <label className="block text-sm font-medium text-gray-600">Website</label>
                                 <input
-                                    type="url"
-                                    name="web"
-                                    value={organization.web}
+                                    type="text"
+                                    name="website"
+                                    value={organization.website}
                                     onChange={handleOrganizationChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                 // required
@@ -298,3 +524,5 @@ const AddContactPage = () => {
 };
 
 export default AddContactPage;
+
+
