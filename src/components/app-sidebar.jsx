@@ -53,6 +53,12 @@ const data = {
       icon: Settings2,
 
     },
+    {
+      title: "Attachment",
+      url: "/attachment",
+      icon: Settings2,
+
+    },
   ],
 
 }
