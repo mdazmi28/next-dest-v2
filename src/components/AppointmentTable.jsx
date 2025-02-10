@@ -9,8 +9,16 @@ import base_url from "@/base_url";
 import 'react-toastify/dist/ReactToastify.css';
 import { useFlowContext } from '@/context/FlowContext';
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+// Extend dayjs with the necessary plugins
+dayjs.extend(utc);
+dayjs.extend(customParseFormat);
+
 
 const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
+    console.log(appointmentData)
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
@@ -317,9 +325,12 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                         {data.appointment_id}
                                     </div> */}
                                     <div className="font-bold">
-                                    {dayjs(data.start_time).format("DD-MM-YYYY")}
-                                        {/* {new Date(data.start_time).toISOString().split("T")[0].split("-").reverse().join("-")} */}
+                                    {/* {data.start} */}
+                                    {dayjs(data.start).format('DD-MM-YY hh:mm A')}
                                     
+                                        {/* {new Date(data.start_time).toISOString().split("T")[0].split("-").reverse().join("-")} */}
+                                        {/* {dayjs(data.start_time).utc().format("DD-MM-YYYY")} */}
+
                                     </div>
                                 </td>
                                 {/* With */}
@@ -359,7 +370,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                         <p>Description: {selectedData.description}</p>
                         <p>Location: {selectedData.location}</p>
                         <p>
-                            On: {dayjs(selectedData.start_time).format("DD-MM-YYYY")}
+                            From:  {dayjs(selectedData.start).format('DD-MM-YY hh:mm A')} To: {dayjs(selectedData.end).format('DD-MM-YY hh:mm A')}
                         </p>
                         <div className="modal-action">
                             <button className="btn" onClick={() => setIsViewOpen(false)}>
