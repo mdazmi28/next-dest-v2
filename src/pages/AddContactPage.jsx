@@ -554,7 +554,7 @@ const AddContactPage = () => {
             });
 
             if (!response.ok) {
-                throw new Error('OCR processing failed');
+                toast.error('OCR processing failed');
             }
 
             const data = await response.json();
@@ -615,7 +615,7 @@ const AddContactPage = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ refresh_token: refreshToken }),
                 });
-                if (!refreshResponse.ok) throw new Error('Token refresh failed');
+                if (!refreshResponse.ok) toast.error('Token refresh failed');
                 const { token } = await refreshResponse.json();
                 localStorage.setItem("authToken", token);
                 await fetchOrgs(token);
@@ -646,7 +646,7 @@ const AddContactPage = () => {
                 const response = await fetch(`${base_url}/users/${userId}/tags/`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                if (!response.ok) throw new Error('Failed to fetch tags');
+                if (!response.ok) toast.error('Failed to fetch tags');
                 const data = await response.json();
                 console.log("Fetched tags:", data); // Debug log
                 setTags(data); // Make sure data is an array of tag objects
@@ -663,7 +663,7 @@ const AddContactPage = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ refresh_token: refreshToken }),
                 });
-                if (!refreshResponse.ok) throw new Error('Token refresh failed');
+                if (!refreshResponse.ok) toast.error('Token refresh failed');
                 const { token } = await refreshResponse.json();
                 localStorage.setItem("authToken", token);
                 await fetchTag(token);
@@ -791,7 +791,7 @@ const AddContactPage = () => {
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(`Error: ${response.status} - ${errorData.message}`);
+                    console.log(`Error: ${response.status} - ${errorData.message}`);
                 }
 
                 toast.success("Contact added successfully!");
@@ -813,7 +813,7 @@ const AddContactPage = () => {
                 });
 
                 if (!refreshResponse.ok) {
-                    throw new Error("Token refresh failed. Please log in again.");
+                    console.log("Token refresh failed. Please log in again.");
                 }
 
                 const refreshData = await refreshResponse.json();
@@ -821,7 +821,7 @@ const AddContactPage = () => {
                 localStorage.setItem("authToken", authToken);
                 await submitContact(authToken);
             } else {
-                throw new Error("No valid authentication tokens found.");
+                console.log("No valid authentication tokens found.");
             }
         } catch (err) {
             console.error("Error:", err);
@@ -903,44 +903,44 @@ const AddContactPage = () => {
                                 />
                             </div>
                             <div className="form-group">
-    <label className="block text-sm font-medium text-gray-600">Tags</label>
-    <div className="relative">
-        <input
-            type="text"
-            name="tags"
-            onKeyDown={handleTagSelect}
-            list="tag-suggestions"
-            className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-            placeholder="Type tag and press Enter or comma to add"
-        />
-        <datalist id="tag-suggestions">
-            {tags && tags.map((tag) => (
-                <option key={tag.tag_id} value={tag.name}>
-                    {tag.name}
-                </option>
-            ))}
-        </datalist>
-    </div>
+                                <label className="block text-sm font-medium text-gray-600">Tags</label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        name="tags"
+                                        onKeyDown={handleTagSelect}
+                                        list="tag-suggestions"
+                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                        placeholder="Type tag and press Enter or comma to add"
+                                    />
+                                    <datalist id="tag-suggestions">
+                                        {tags && tags.map((tag) => (
+                                            <option key={tag.tag_id} value={tag.name}>
+                                                {tag.name}
+                                            </option>
+                                        ))}
+                                    </datalist>
+                                </div>
 
-    {/* Display Selected Tags */}
-    <div className="mt-2 flex flex-wrap gap-2">
-        {selectedTags.map((tag, index) => (
-            <span 
-                key={index} 
-                className="bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center"
-            >
-                {tag}
-                <button
-                    type="button"
-                    onClick={() => removeTag(tag)}
-                    className="ml-2 text-red-500 hover:text-red-700"
-                >
-                    ×
-                </button>
-            </span>
-        ))}
-    </div>
-</div>
+                                {/* Display Selected Tags */}
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    {selectedTags.map((tag, index) => (
+                                        <span
+                                            key={index}
+                                            className="bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center"
+                                        >
+                                            {tag}
+                                            <button
+                                                type="button"
+                                                onClick={() => removeTag(tag)}
+                                                className="ml-2 text-red-500 hover:text-red-700"
+                                            >
+                                                ×
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
 
                         {/* Organization Information */}
