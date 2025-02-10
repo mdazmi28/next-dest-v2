@@ -8,6 +8,7 @@ import { jwtDecode } from 'jwt-decode'
 import 'react-toastify/dist/ReactToastify.css';
 
 const Table = ({ contactData, setContactData }) => {
+    console.log("Contact Data:", contactData);
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
@@ -282,7 +283,7 @@ const Table = ({ contactData, setContactData }) => {
                                         <div className="font-bold">{data.name}</div>
                                     </td>
                                     <td>{data.designation}</td>
-                                    <td>{data.organization}</td>
+                                    <td>{data.organization?.name || "N/A"}</td>
                                     <td>{data.email}</td>
                                     <td>{data.phone}</td>
                                     {/* <td>{data.phone}</td> */}
