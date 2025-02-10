@@ -564,7 +564,7 @@ const AddContactPage = () => {
                     name: ocrData['Name']?.trim() || '',
                     designation: ocrData['Designation']?.trim() || '',
                     email: ocrData['Email']?.trim() || '',
-                    phone: ocrData['Phone Number']?.trim() || '',
+                    phone: ocrData['Phone Number']?.trim().replace(/\s/g, '') || '',
                     note: person.note
                 });
 
