@@ -4,8 +4,11 @@ import { useFlowContext } from '@/context/FlowContext';
 import { ImCross } from "react-icons/im";
 import { jwtDecode } from 'jwt-decode'
 import Cookies from 'js-cookie';
-import { ToastContainer, toast } from "react-toastify";
+
 import base_url from '@/base_url';
+import dayjs from "dayjs";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddMeetingsPage = () => {
     const { addMeetingInfoStage, setMeetingInfoStage } = useFlowContext() || { addMeetingInfoStage: false, setMeetingInfoStage: () => { } };
@@ -14,15 +17,75 @@ const AddMeetingsPage = () => {
         description: '',
         start_time: '',
         end_time: '',
+        hour: '',
+        minute: '',
+        ampm: '',
+        end_hour: '',
+        end_minute: '',
+        end_ampm: '',
         location: '',
         meeting_type: "physical",
         is_recurring: false,
         note: '',
     });
 
+    const isEndTimeValid = (startDate, startHour, startMinute, startAMPM, endDate, endHour, endMinute, endAMPM) => {
+        if (!startDate || !startHour || !startMinute || !startAMPM ||
+            !endDate || !endHour || !endMinute || !endAMPM) {
+            return true; // Skip validation if any field is empty
+        }
+
+        // Convert to 24-hour format
+        const convertTo24Hour = (hour, ampm) => {
+            hour = parseInt(hour);
+            if (ampm === 'PM' && hour !== 12) hour += 12;
+            if (ampm === 'AM' && hour === 12) hour = 0;
+            return hour;
+        };
+
+        const startHour24 = convertTo24Hour(startHour, startAMPM);
+        const endHour24 = convertTo24Hour(endHour, endAMPM);
+
+        // Create Date objects for comparison
+        const start = new Date(startDate);
+        start.setHours(startHour24, parseInt(startMinute), 0);
+
+        const end = new Date(endDate);
+        end.setHours(endHour24, parseInt(endMinute), 0);
+
+        return end > start;
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setMeetingData((prev) => ({ ...prev, [name]: value }));
+
+        const newMeetingData = {
+            ...meetingData,
+            [name]: value
+        };
+
+        // Validate end time when any date/time field changes
+        const timeRelatedFields = ['start_time', 'hour', 'minute', 'ampm',
+            'end_time', 'end_hour', 'end_minute', 'end_ampm'];
+
+        if (timeRelatedFields.includes(name)) {
+            const isValid = isEndTimeValid(
+                newMeetingData.start_time,
+                newMeetingData.hour,
+                newMeetingData.minute,
+                newMeetingData.ampm,
+                newMeetingData.end_time,
+                newMeetingData.end_hour,
+                newMeetingData.end_minute,
+                newMeetingData.end_ampm
+            );
+
+            if (!isValid && name.startsWith('end')) {
+                toast.error("End date and time must be after start date and time");
+            }
+        }
+
+        setMeetingData(newMeetingData);
     };
 
     const isTokenExpired = (token) => {
@@ -38,39 +101,72 @@ const AddMeetingsPage = () => {
 
     const formatDateTime = (date, hour, minute, ampm) => {
         if (!date || !hour || !minute || !ampm) return '';
-
-        // Convert 12-hour format to 24-hour format
+    
         let hours = parseInt(hour, 10);
         if (ampm.toLowerCase() === "pm" && hours !== 12) {
             hours += 12;
         } else if (ampm.toLowerCase() === "am" && hours === 12) {
             hours = 0;
         }
-
-        // Ensure two-digit formatting for hours and minutes
+    
         const formattedHour = String(hours).padStart(2, '0');
         const formattedMinute = String(minute).padStart(2, '0');
-
-        // Create an ISO-formatted date string
-        return `${date}T${formattedHour}:${formattedMinute}:22Z`;
+    
+        return `${date}T${formattedHour}:${formattedMinute}:00Z`;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
+        // Check if all required fields are filled
+        if (!meetingData.title || !meetingData.description || 
+            !meetingData.start_time || !meetingData.end_time ||
+            !meetingData.hour || !meetingData.minute || !meetingData.ampm ||
+            !meetingData.end_hour || !meetingData.end_minute || !meetingData.end_ampm ||
+            !meetingData.location) {
+            toast.error("Please fill in all required fields");
+            return;
+        }
+    
+        // Validate end time
+        const isValid = isEndTimeValid(
+            meetingData.start_time,
+            meetingData.hour,
+            meetingData.minute,
+            meetingData.ampm,
+            meetingData.end_time,
+            meetingData.end_hour,
+            meetingData.end_minute,
+            meetingData.end_ampm
+        );
+    
+        if (!isValid) {
+            toast.error("End date and time must be after start date and time");
+            return;
+        }
+    
         const userId = Cookies.get('user_id');
         let authToken = localStorage.getItem('authToken');
         const refreshToken = localStorage.getItem('refreshToken');
-
+    
         if (!userId) {
-            console.error("User ID not found in cookies.");
             toast.error("User ID is missing. Please log in again.");
             return;
         }
-
-        const formattedStartTime = formatDateTime(meetingData.start_time, meetingData.hour, meetingData.minute, meetingData.ampm);
-        const formattedEndTime = formatDateTime(meetingData.end_time, meetingData.end_hour, meetingData.end_minute, meetingData.end_ampm);
-
+    
+        const formattedStartTime = formatDateTime(
+            meetingData.start_time, 
+            meetingData.hour, 
+            meetingData.minute, 
+            meetingData.ampm
+        );
+        const formattedEndTime = formatDateTime(
+            meetingData.end_time, 
+            meetingData.end_hour, 
+            meetingData.end_minute, 
+            meetingData.end_ampm
+        );
+    
         const data = {
             user: parseInt(userId),
             title: meetingData.title,
@@ -78,13 +174,12 @@ const AddMeetingsPage = () => {
             start_time: formattedStartTime,
             end_time: formattedEndTime,
             location: meetingData.location,
-            is_recurring: meetingData.is_recurring,
+            meeting_type: meetingData.meeting_type,
+            is_recurring: meetingData.is_recurring === 'true',
             note: meetingData.note || "",
         };
-
-        console.log('Form Data Submitted:', data);
-
-        const submitContact = async (token) => {
+    
+        const submitAppointment = async (token) => {
             try {
                 const response = await fetch(`${base_url}/users/${userId}/appointments/`, {
                     method: "POST",
@@ -94,60 +189,70 @@ const AddMeetingsPage = () => {
                     },
                     body: JSON.stringify(data),
                 });
-
-                if (!response.ok) {
+    
+                if (response.ok) {
+                    toast.success("Appointment added successfully!");
+                    setMeetingInfoStage(false);
+                    // Optionally reset form
+                    setMeetingData({
+                        title: '',
+                        description: '',
+                        start_time: '',
+                        end_time: '',
+                        hour: '',
+                        minute: '',
+                        ampm: '',
+                        end_hour: '',
+                        end_minute: '',
+                        end_ampm: '',
+                        location: '',
+                        meeting_type: "physical",
+                        is_recurring: false,
+                        note: '',
+                    });
+                    setMeetingInfoStage(!addMeetingInfoStage);
+                } else {
                     const errorData = await response.json();
-                    console.log(`Error: ${response.status} - ${errorData.message}`);
+                    toast.error(errorData.message || "Failed to add appointment");
                 }
-
-                console.log("Contact added successfully");
-                toast.success("Contact added successfully!");
-                setMeetingInfoStage(!addMeetingInfoStage);
-            } catch (err) {
-                console.error("Error:", err);
-                toast.error(err.message || "An error occurred.");
+            } catch (error) {
+                console.error("Error:", error);
+                toast.error("An error occurred while adding the appointment");
             }
         };
-
-        const refreshAndRetry = async () => {
-            try {
-                console.log("Attempting to refresh token...");
-                const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ refresh_token: refreshToken }),
-                });
-
-                if (!refreshResponse.ok) {
-                    console.log("Token refresh failed. Please log in again.");
-                }
-
-                const refreshData = await refreshResponse.json();
-                authToken = refreshData.token;
-                localStorage.setItem("authToken", authToken);
-                console.log("Token refreshed successfully:", authToken);
-
-                // Retry submitting the contact with the new token
-                await submitContact(authToken);
-            } catch (err) {
-                console.error("Refresh and Retry Error:", err);
-                toast.error(err.message || "An error occurred.");
-            }
-        };
-
+    
         try {
             if (authToken && !isTokenExpired(authToken)) {
-                await submitContact(authToken);
+                await submitAppointment(authToken);
             } else if (refreshToken) {
-                await refreshAndRetry();
+                // Refresh token logic
+                try {
+                    const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ refresh: refreshToken }),
+                    });
+    
+                    if (refreshResponse.ok) {
+                        const refreshData = await refreshResponse.json();
+                        authToken = refreshData.access;
+                        localStorage.setItem("authToken", authToken);
+                        await submitAppointment(authToken);
+                    } else {
+                        toast.error("Session expired. Please log in again.");
+                    }
+                } catch (err) {
+                    console.error("Refresh Error:", err);
+                    toast.error("Authentication failed. Please log in again.");
+                }
             } else {
-                console.log("No valid authentication tokens found.");
+                toast.error("Please log in to add appointments");
             }
         } catch (err) {
             console.error("Error:", err);
-            toast.error(err.message || "An error occurred.");
+            toast.error("An error occurred. Please try again.");
         }
     };
 
@@ -156,7 +261,6 @@ const AddMeetingsPage = () => {
             <div className="w-full md:w-3/4 lg:w-2/3 bg-white shadow-2xl rounded-lg p-4">
                 <div className='flex justify-end cursor-pointer text-red-500' onClick={() => { setMeetingInfoStage(!addMeetingInfoStage) }}>
                     <ImCross />
-
                 </div>
                 <h2 className="text-3xl font-bold text-center mb-6">Add New Meeting</h2>
                 <form onSubmit={handleSubmit}>
@@ -187,7 +291,7 @@ const AddMeetingsPage = () => {
                             />
                         </div>
 
-                        {/* Start Date */}
+                        {/* Start Date and Time */}
                         <div className="flex flex-col md:flex-row gap-4">
                             {/* Start Date Input */}
                             <div className="w-full md:w-1/2">
@@ -197,12 +301,13 @@ const AddMeetingsPage = () => {
                                     name="start_time"
                                     value={meetingData.start_time}
                                     onChange={handleChange}
+                                    min={new Date().toISOString().split('T')[0]}
                                     className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                     required
                                 />
                             </div>
 
-                            {/* Time Selection */}
+                            {/* Start Time Selection */}
                             <div className="w-full md:w-1/2">
                                 <label className="block text-sm font-medium text-gray-600 mb-1">Start Time</label>
                                 <div className="flex gap-2">
@@ -215,9 +320,14 @@ const AddMeetingsPage = () => {
                                         required
                                     >
                                         <option value="">Hour</option>
-                                        {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
-                                            <option key={hour} value={hour}>{hour}</option>
-                                        ))}
+                                        {Array.from({ length: 12 }, (_, i) => {
+                                            const hour = i + 1;
+                                            return (
+                                                <option key={hour} value={String(hour).padStart(2, '0')}>
+                                                    {String(hour).padStart(2, '0')}
+                                                </option>
+                                            );
+                                        })}
                                     </select>
 
                                     {/* Minute Selection */}
@@ -250,11 +360,9 @@ const AddMeetingsPage = () => {
                             </div>
                         </div>
 
-
-
-                        {/* End Date */}
+                        {/* End Date and Time */}
                         <div className="flex flex-col md:flex-row gap-4">
-                            {/* Start Date Input */}
+                            {/* End Date Input */}
                             <div className="w-full md:w-1/2">
                                 <label className="block text-sm font-medium text-gray-600 mb-1">End Date</label>
                                 <input
@@ -262,16 +370,17 @@ const AddMeetingsPage = () => {
                                     name="end_time"
                                     value={meetingData.end_time}
                                     onChange={handleChange}
+                                    min={meetingData.start_time || new Date().toISOString().split('T')[0]}
                                     className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                     required
                                 />
                             </div>
 
-                            {/* Time Selection */}
+                            {/* End Time Selection */}
                             <div className="w-full md:w-1/2">
-                                <label className="block text-sm font-medium text-gray-600 mb-1">Start Time</label>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">End Time</label>
                                 <div className="flex gap-2">
-                                    {/* Hour Selection */}
+                                    {/* End Hour Selection */}
                                     <select
                                         name="end_hour"
                                         value={meetingData.end_hour}
@@ -280,12 +389,17 @@ const AddMeetingsPage = () => {
                                         required
                                     >
                                         <option value="">Hour</option>
-                                        {Array.from({ length: 12 }, (_, i) => i + 1).map((end_hour) => (
-                                            <option key={end_hour} value={end_hour}>{end_hour}</option>
-                                        ))}
+                                        {Array.from({ length: 12 }, (_, i) => {
+                                            const hour = i + 1;
+                                            return (
+                                                <option key={hour} value={String(hour).padStart(2, '0')}>
+                                                    {String(hour).padStart(2, '0')}
+                                                </option>
+                                            );
+                                        })}
                                     </select>
 
-                                    {/* Minute Selection */}
+                                    {/* End Minute Selection */}
                                     <select
                                         name="end_minute"
                                         value={meetingData.end_minute}
@@ -294,12 +408,12 @@ const AddMeetingsPage = () => {
                                         required
                                     >
                                         <option value="">Minute</option>
-                                        {["00", "15", "30", "45"].map((end_minute) => (
-                                            <option key={end_minute} value={end_minute}>{end_minute}</option>
+                                        {["00", "15", "30", "45"].map((minute) => (
+                                            <option key={minute} value={minute}>{minute}</option>
                                         ))}
                                     </select>
 
-                                    {/* AM/PM Selection */}
+                                    {/* End AM/PM Selection */}
                                     <select
                                         name="end_ampm"
                                         value={meetingData.end_ampm}
@@ -316,6 +430,21 @@ const AddMeetingsPage = () => {
                         </div>
 
 
+                        {/* Time Validation Message */}
+                        {!isEndTimeValid(
+                            meetingData.start_time,
+                            meetingData.hour,
+                            meetingData.minute,
+                            meetingData.ampm,
+                            meetingData.end_time,
+                            meetingData.end_hour,
+                            meetingData.end_minute,
+                            meetingData.end_ampm
+                        ) && (
+                                <div className="text-red-500 text-sm mt-1">
+                                    End date and time must be after start date and time
+                                </div>
+                            )}
 
                         {/* Meeting Type */}
                         <div className="form-group">
@@ -333,34 +462,25 @@ const AddMeetingsPage = () => {
                         </div>
 
                         {/* Conditional Location Input */}
-                        {meetingData.meeting_type === 'physical' ? (
-                            <div className="form-group">
-                                <label className="block text-sm font-medium text-gray-600">Physical Location</label>
-                                <input
-                                    type="text"
-                                    name="location"
-                                    value={meetingData.location}
-                                    onChange={handleChange}
-                                    placeholder="Enter the location address"
-                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                    required
-                                />
-                            </div>
-                        ) : (
-                            <div className="form-group">
-                                <label className="block text-sm font-medium text-gray-600">Online Meeting Link</label>
-                                <input
-                                    type="url"
-                                    name="location"
-                                    value={meetingData.location}
-                                    onChange={handleChange}
-                                    placeholder="Enter the online meeting link"
-                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                    required
-                                />
-                            </div>
-                        )}
+                        <div className="form-group">
+                            <label className="block text-sm font-medium text-gray-600">
+                                {meetingData.meeting_type === 'online' ? 'Online Meeting Link' : 'Physical Location'}
+                            </label>
+                            <input
+                                type={meetingData.meeting_type === 'online' ? 'url' : 'text'}
+                                name="location"
+                                value={meetingData.location}
+                                onChange={handleChange}
+                                placeholder={meetingData.meeting_type === 'online'
+                                    ? "Enter the online meeting link"
+                                    : "Enter the location address"
+                                }
+                                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                required
+                            />
+                        </div>
 
+                        {/* Is Recurring */}
                         <div className="form-group">
                             <label className="block text-sm font-medium text-gray-600">Is Recurring</label>
                             <select
@@ -375,6 +495,7 @@ const AddMeetingsPage = () => {
                             </select>
                         </div>
 
+                        {/* Note */}
                         <div className="form-group">
                             <label className="block text-sm font-medium text-gray-600">Note</label>
                             <input
@@ -392,6 +513,7 @@ const AddMeetingsPage = () => {
                             <button
                                 type="submit"
                                 className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+                               
                             >
                                 Submit
                             </button>
