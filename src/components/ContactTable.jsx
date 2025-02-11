@@ -102,7 +102,7 @@ const Table = ({ contactData, setContactData }) => {
         const updateContactWithToken = async (token) => {
             try {
                 const response = await fetch(`${base_url}/users/${userId}/contacts/${id}/`, {
-                    method: "PUT",
+                    method: "PATCH",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,

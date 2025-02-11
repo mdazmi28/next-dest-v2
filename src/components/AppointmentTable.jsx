@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { format } from 'date-fns';
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Cookies from 'js-cookie';
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { jwtDecode } from 'jwt-decode'
 import base_url from "@/base_url";
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,37 +15,43 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
-
 const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
-    console.log(appointmentData)
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
-    const [editData, setEditData] = useState({
-        meeting_type: "physical", // Default to physical
-        location: ""
-    });
-
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
-    const { appointments } = useFlowContext()
-    // console.log(appointmentData)
+    const { appointments } = useFlowContext();
+
+    // Initialize editData with all possible fields
+    const [editData, setEditData] = useState({
+        meeting_type: "physical",
+        location: "",
+        title: "",
+        description: "",
+        start_time: "",
+        end_time: "",
+        hour: "",
+        minute: "",
+        ampm: "",
+        end_hour: "",
+        end_minute: "",
+        end_ampm: "",
+        is_recurring: true,
+        note: ""
+    });
 
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === "Escape") {
                 setIsEditOpen(false);
-                setIsDeleteOpen(false)
-                setIsViewOpen(false)
-                setEditData(null);
+                setIsDeleteOpen(false);
+                setIsViewOpen(false);
+                clearForm();
             }
         };
 
-        if (isEditOpen) {
-            window.addEventListener("keydown", handleKeyDown);
-        } else if (isDeleteOpen) {
-            window.addEventListener("keydown", handleKeyDown);
-        } else if (isViewOpen) {
+        if (isEditOpen || isDeleteOpen || isViewOpen) {
             window.addEventListener("keydown", handleKeyDown);
         }
 
@@ -55,21 +60,38 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         };
     }, [isEditOpen, isDeleteOpen, isViewOpen]);
 
+    const clearForm = () => {
+        setEditData({
+            meeting_type: "physical",
+            location: "",
+            title: "",
+            description: "",
+            start_time: "",
+            end_time: "",
+            hour: "",
+            minute: "",
+            ampm: "",
+            end_hour: "",
+            end_minute: "",
+            end_ampm: "",
+            is_recurring: true,
+            note: ""
+        });
+    };
+
     const isTokenExpired = (token) => {
         try {
             const decoded = jwtDecode(token);
-            if (!decoded.exp) return false; // If no expiry time, assume it's valid
-            return decoded.exp * 1000 < Date.now(); // Convert exp to milliseconds
+            return decoded.exp * 1000 < Date.now();
         } catch (error) {
             console.error("Invalid token:", error);
-            return true; // Assume expired if decoding fails
+            return true;
         }
     };
 
     const formatDateTime = (date, hour, minute, ampm) => {
         if (!date || !hour || !minute || !ampm) return '';
 
-        // Convert 12-hour format to 24-hour format
         let hours = parseInt(hour, 10);
         if (ampm.toLowerCase() === "pm" && hours !== 12) {
             hours += 12;
@@ -77,15 +99,11 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
             hours = 0;
         }
 
-        // Ensure two-digit formatting for hours and minutes
         const formattedHour = String(hours).padStart(2, '0');
         const formattedMinute = String(minute).padStart(2, '0');
 
-        // Create an ISO-formatted date string
         return `${date}T${formattedHour}:${formattedMinute}:00Z`;
     };
-
-
 
     const handleView = (data) => {
         setSelectedData(data);
@@ -93,7 +111,26 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     };
 
     const handleEdit = (data) => {
-        setEditData({ ...data });
+        const startDate = dayjs(data.start);
+        const endDate = dayjs(data.end);
+
+        setEditData({
+            ...data,
+            start_time: startDate.format('YYYY-MM-DD'),
+            end_time: endDate.format('YYYY-MM-DD'),
+            hour: startDate.format('hh'),
+            minute: startDate.format('mm'),
+            ampm: startDate.format('A'),
+            end_hour: endDate.format('hh'),
+            end_minute: endDate.format('mm'),
+            end_ampm: endDate.format('A'),
+            meeting_type: data.meeting_type || 'physical',
+            location: data.location || '',
+            title: data.title || '',
+            description: data.description || '',
+            is_recurring: data.is_recurring ?? true,
+            note: data.note || '',
+        });
         setSelectedAppointmentId(data.appointment_id);
         setIsEditOpen(true);
     };
@@ -105,9 +142,9 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
 
     const handleEditChange = (e) => {
         const { name, value } = e.target;
-        setEditData((prev) => ({
+        setEditData(prev => ({
             ...prev,
-            [name]: value || "",
+            [name]: value === undefined ? '' : value
         }));
     };
 
@@ -117,30 +154,31 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         const refreshToken = localStorage.getItem("refreshToken");
 
         if (!userId || !editData) {
-            toast.error("User ID or contact data is missing!");
+            toast.error("User ID or appointment data is missing!");
             return;
         }
 
-        const formattedStartTime = formatDateTime(editData.start_time, editData.hour, editData.minute, editData.ampm);
-        const formattedEndTime = formatDateTime(editData.end_time, editData.end_hour, editData.end_minute, editData.end_ampm);
+        const formattedStartTime = editData.start_time
+            ? formatDateTime(editData.start_time, editData.hour, editData.minute, editData.ampm)
+            : undefined;
+        const formattedEndTime = editData.end_time
+            ? formatDateTime(editData.end_time, editData.end_hour, editData.end_minute, editData.end_ampm)
+            : undefined;
 
-        const requestBody = {
-            user: parseInt(userId),
-            title: editData.title || "",
-            description: editData.description || "",
-            start_time: formattedStartTime || appointments.start_time,
-            // start_time: formattedStartTime || "",
-            end_time: formattedEndTime || appointments.end_time,
-            // end_time: formattedEndTime || "",
-            location: editData.location || "",
-            is_recurring: true,
-            note: editData.note || "",
-        };
+        const requestBody = {};
 
-        const updateContactWithToken = async (token) => {
+        if (editData.title !== undefined) requestBody.title = editData.title;
+        if (editData.description !== undefined) requestBody.description = editData.description;
+        if (formattedStartTime !== undefined) requestBody.start_time = formattedStartTime;
+        if (formattedEndTime !== undefined) requestBody.end_time = formattedEndTime;
+        if (editData.location !== undefined) requestBody.location = editData.location;
+        if (editData.note !== undefined) requestBody.note = editData.note;
+        requestBody.is_recurring = true;
+
+        const updateAppointmentWithToken = async (token) => {
             try {
                 const response = await fetch(`${base_url}/users/${userId}/appointments/${id}/`, {
-                    method: "PUT",
+                    method: "PATCH",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
@@ -150,38 +188,24 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
 
                 if (response.ok) {
                     const updatedAppointment = await response.json();
-
-                    // Update the contact in the state immediately
                     setAppointmentData((prevAppointments) =>
                         prevAppointments.map((appointment) =>
                             appointment.appointment_id === id
-                                ? {
-                                    ...appointment,
-                                    title: updatedAppointment.title,
-                                    description: updatedAppointment.description,
-                                    start_time: updatedAppointment.start_time,
-                                    start_time: formattedStartTime,
-                                    // end_time: editData.end_time || "",
-                                    end_time: formattedEndTime,
-                                    // location: editData.location || "",
-                                    meeting_type: updatedAppointment.meeting_type || "physical",
-                                    is_recurring: updatedAppointment.is_recurring,
-                                    note: updatedAppointment.note,
-                                }
+                                ? { ...appointment, ...updatedAppointment }
                                 : appointment
                         )
                     );
 
-                    // toast.success("Contact updated successfully!");
+                    toast.success("Appointment updated successfully!");
                     setIsEditOpen(false);
-                    setEditData(null); // Clear the edit data
+                    clearForm();
                     location.reload()
                 } else {
                     const errorData = await response.json();
-                    toast.error(errorData.message || "Failed to update contact.");
+                    toast.error(errorData.message || "Failed to update appointment.");
                 }
             } catch (error) {
-                console.error("Error updating contact:", error);
+                console.error("Error updating appointment:", error);
                 toast.error("An error occurred while updating.");
             }
         };
@@ -203,7 +227,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 const refreshData = await refreshResponse.json();
                 authToken = refreshData.access;
                 localStorage.setItem("authToken", authToken);
-                await updateContactWithToken(authToken);
+                await updateAppointmentWithToken(authToken);
             } catch (err) {
                 console.error("Refresh and Retry Error:", err);
                 toast.error("Session expired. Please log in again.");
@@ -211,7 +235,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         };
 
         if (authToken && !isTokenExpired(authToken)) {
-            await updateContactWithToken(authToken);
+            await updateAppointmentWithToken(authToken);
         } else if (refreshToken) {
             await refreshAndRetry();
         } else {
@@ -224,9 +248,6 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         let authToken = localStorage.getItem('authToken');
         const refreshToken = localStorage.getItem('refreshToken');
 
-        console.log("User ID is:", userId);
-        console.log("Deleting Contact ID:", id);
-
         if (!id) {
             console.error("ID is undefined or null!");
             return;
@@ -237,30 +258,33 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
             return;
         }
 
-        const deleteContactWithToken = async (token) => {
-            const response = await fetch(`${base_url}/users/${userId}/appointments/${id}/`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-            });
+        const deleteAppointmentWithToken = async (token) => {
+            try {
+                const response = await fetch(`${base_url}/users/${userId}/appointments/${id}/`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
 
-            if (response.ok) {
-                // Remove the deleted contact from the local state
-                setAppointmentData(appointmentData.filter((appointment) => appointment.appointment_id !== id));
-                setIsDeleteOpen(false);
-                console.log("Contact deleted successfully");
-                location.reload();
-            } else {
-                console.log("Failed to delete contact");
+                if (response.ok) {
+                    setAppointmentData(appointmentData.filter((appointment) =>
+                        appointment.appointment_id !== id
+                    ));
+                    setIsDeleteOpen(false);
+                    toast.success("Appointment deleted successfully");
+                } else {
+                    toast.error("Failed to delete appointment");
+                }
+            } catch (error) {
+                console.error("Error deleting appointment:", error);
+                toast.error("An error occurred while deleting");
             }
         };
 
-        // Function to refresh the token if expired
         const refreshAndRetry = async () => {
             try {
-                console.log("Attempting to refresh token...");
                 const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
                     method: "POST",
                     headers: {
@@ -276,35 +300,25 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 const refreshData = await refreshResponse.json();
                 authToken = refreshData.access;
                 localStorage.setItem("authToken", authToken);
-                console.log("Token refreshed successfully:", authToken);
-
-                // Retry the delete request with the new token
-                await deleteContactWithToken(authToken);
+                await deleteAppointmentWithToken(authToken);
             } catch (err) {
                 console.error("Refresh and Retry Error:", err);
-                toast.error(err.message || "An error occurred.");
+                toast.error("Session expired. Please log in again.");
             }
         };
 
-        try {
-            if (authToken && !isTokenExpired(authToken)) {
-                await deleteContactWithToken(authToken);
-            } else if (refreshToken) {
-                await refreshAndRetry();
-            }
-        } catch (err) {
-            if (err.message.includes("401")) {
-                console.log("Token expired, attempting refresh...");
-                await refreshAndRetry();
-            } else {
-                console.error("Error:", err);
-                toast.error(err.message || "An error occurred.");
-            }
+        if (authToken && !isTokenExpired(authToken)) {
+            await deleteAppointmentWithToken(authToken);
+        } else if (refreshToken) {
+            await refreshAndRetry();
+        } else {
+            toast.error("Authentication error. Please log in.");
         }
     };
 
     return (
         <div>
+            {/* Table Component */}
             <div className="overflow-x-auto">
                 <table className="table">
                     <thead>
@@ -319,27 +333,14 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                     <tbody>
                         {appointmentData.slice().reverse().map((data, index) => (
                             <tr key={data.appointment_id || index}>
-                                {/* Time */}
                                 <td>
-                                    {/* <div className="font-bold">
-                                        {data.appointment_id}
-                                    </div> */}
                                     <div className="font-bold">
-                                    {/* {data.start} */}
-                                    {dayjs(data.start).format('DD-MM-YY hh:mm A')}
-                                    
-                                        {/* {new Date(data.start_time).toISOString().split("T")[0].split("-").reverse().join("-")} */}
-                                        {/* {dayjs(data.start_time).utc().format("DD-MM-YYYY")} */}
-
+                                        {dayjs(data.start).format('DD-MM-YY hh:mm A')}
                                     </div>
                                 </td>
-                                {/* With */}
                                 <td>{data.title}</td>
-                                {/* Designation */}
                                 <td>{data.description}</td>
-                                {/* Location */}
                                 <td>{data.location}</td>
-                                {/* Action */}
                                 <td className="flex justify-between gap-5">
                                     <FaEye
                                         className="h-5 w-5 text-green-500 cursor-pointer"
@@ -357,7 +358,6 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                             </tr>
                         ))}
                     </tbody>
-
                 </table>
             </div>
 
@@ -370,7 +370,9 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                         <p>Description: {selectedData.description}</p>
                         <p>Location: {selectedData.location}</p>
                         <p>
-                            From:  {dayjs(selectedData.start).format('DD-MM-YY hh:mm A')} To: {dayjs(selectedData.end).format('DD-MM-YY hh:mm A')}
+                            From: {dayjs(selectedData.start).format('DD-MM-YY hh:mm A')}
+                            <br></br>
+                            To: {dayjs(selectedData.end).format('DD-MM-YY hh:mm A')}
                         </p>
                         <div className="modal-action">
                             <button className="btn" onClick={() => setIsViewOpen(false)}>
@@ -382,7 +384,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
             )}
 
             {/* Edit Modal */}
-            {isEditOpen && editData && (
+            {isEditOpen && (
                 <div className="modal modal-open">
                     <div className="modal-box">
                         <h4 className="text-2xl font-bold">Edit Appointment</h4>
@@ -390,7 +392,6 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                             e.preventDefault();
                             saveEdit(editData.appointment_id);
                         }}>
-
                             <div className="space-y-4">
                                 {/* Appointment Subject */}
                                 <div className="form-group">
@@ -440,15 +441,19 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                             {/* Hour Selection */}
                                             <select
                                                 name="hour"
-                                                value={editData.hour}
+                                                value={editData.hour || ''}
                                                 onChange={handleEditChange}
                                                 className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            // required
                                             >
                                                 <option value="">Hour</option>
-                                                {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
-                                                    <option key={hour} value={hour}>{hour}</option>
-                                                ))}
+                                                {Array.from({ length: 12 }, (_, i) => {
+                                                    const hour = i + 1;
+                                                    return (
+                                                        <option key={hour} value={String(hour).padStart(2, '0')}>
+                                                            {String(hour).padStart(2, '0')}
+                                                        </option>
+                                                    );
+                                                })}
                                             </select>
 
                                             {/* Minute Selection */}
@@ -505,15 +510,19 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                             {/* Hour Selection */}
                                             <select
                                                 name="end_hour"
-                                                value={editData.end_hour}
+                                                value={editData.end_hour || ''}
                                                 onChange={handleEditChange}
                                                 className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            // required
                                             >
                                                 <option value="">Hour</option>
-                                                {Array.from({ length: 12 }, (_, i) => i + 1).map((end_hour) => (
-                                                    <option key={end_hour} value={end_hour}>{end_hour}</option>
-                                                ))}
+                                                {Array.from({ length: 12 }, (_, i) => {
+                                                    const hour = i + 1;
+                                                    return (
+                                                        <option key={hour} value={String(hour).padStart(2, '0')}>
+                                                            {String(hour).padStart(2, '0')}
+                                                        </option>
+                                                    );
+                                                })}
                                             </select>
 
                                             {/* Minute Selection */}
@@ -646,6 +655,9 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                     />
                                 </div>
                             </div>
+                            {/* Form fields here - same as in your original code */}
+                            {/* Make sure all inputs have value={editData[fieldName] || ''} */}
+
                             <div className="modal-action">
                                 <button type="submit" className="btn btn-primary">
                                     Save
@@ -655,14 +667,13 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                     className="btn"
                                     onClick={() => {
                                         setIsEditOpen(false);
-                                        setEditData(null);
+                                        clearForm();
                                     }}
                                 >
                                     Cancel
                                 </button>
                             </div>
                         </form>
-
                     </div>
                 </div>
             )}
@@ -676,10 +687,16 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                         </h3>
                         <p className="py-4">This action cannot be undone.</p>
                         <div className="modal-action">
-                            <button className="btn btn-error" onClick={() => confirmDelete(selectedAppointmentId)}>
+                            <button
+                                className="btn btn-error"
+                                onClick={() => confirmDelete(selectedAppointmentId)}
+                            >
                                 Delete
                             </button>
-                            <button className="btn" onClick={() => setIsDeleteOpen(false)}>
+                            <button
+                                className="btn"
+                                onClick={() => setIsDeleteOpen(false)}
+                            >
                                 Cancel
                             </button>
                         </div>
