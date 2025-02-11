@@ -496,7 +496,7 @@ const AddMeetingsPage = () => {
                         </div>
 
                         {/* Note */}
-                        <div className="form-group">
+                        {/* <div className="form-group">
                             <label className="block text-sm font-medium text-gray-600">Note</label>
                             <input
                                 type="text"
@@ -506,7 +506,7 @@ const AddMeetingsPage = () => {
                                 className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                 required
                             />
-                        </div>
+                        </div> */}
 
                         {/* Submit Button */}
                         <div className="text-center mt-6">

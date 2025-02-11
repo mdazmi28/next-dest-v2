@@ -683,7 +683,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                     </div>
 
                     {/* Note */}
-                    <div className="form-group">
+                    {/* <div className="form-group">
                         <label className="block text-sm font-medium text-gray-600">Note</label>
                         <input
                             type="text"
@@ -692,7 +692,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                             onChange={handleEditChange}
                             className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="modal-action">
