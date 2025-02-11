@@ -554,7 +554,7 @@ const AddContactPage = () => {
             });
 
             if (!response.ok) {
-                toast.error('OCR processing failed');
+                toast.error('File processing failed');
             }
 
             const data = await response.json();
