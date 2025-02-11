@@ -841,7 +841,7 @@ const AddContactPage = () => {
                         type="file"
                         className="file-input file-input-bordered file-input-info w-full max-w-xs"
                         onChange={handleFileUpload}
-                        accept="image/*"
+                        // accept="image/*"
                         disabled={isProcessing}
                     />
                     {isProcessing && (
