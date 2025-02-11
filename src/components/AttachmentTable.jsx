@@ -3,8 +3,8 @@ import React from 'react';
 const AttachmentTable = ({ attachmentData }) => {
     return (
         <div>
-            <h2>Attachments</h2>
-            <table border="1" cellPadding="10" cellSpacing="0">
+          
+            <table className='table'>
                 <thead>
                     <tr>
                         <th>Attachment ID</th>
