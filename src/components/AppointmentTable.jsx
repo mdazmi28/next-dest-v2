@@ -404,7 +404,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {appointmentData.slice().reverse().map((data, index) => (
+                        {appointmentData.map((data, index) => (
                             <tr key={data.appointment_id || index}>
                                 <td>
                                     <div className="font-bold">
