@@ -206,7 +206,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
 
     const handleEditChange = (e) => {
         const { name, value } = e.target;
-    
+
         // Special handling for is_recurring
         if (name === 'is_recurring') {
             const boolValue = value === 'true'; // Convert string to boolean
@@ -216,17 +216,17 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
             }));
             return;
         }
-    
+
         // Create new state with the changed value
         const newEditData = {
             ...editData,
             [name]: value === undefined ? '' : value
         };
-    
+
         // Validate end time when any date/time field changes
         const timeRelatedFields = ['start_time', 'hour', 'minute', 'ampm',
             'end_time', 'end_hour', 'end_minute', 'end_ampm'];
-    
+
         if (timeRelatedFields.includes(name)) {
             const isValid = isEndTimeValid(
                 newEditData.start_time,
@@ -238,7 +238,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 newEditData.end_minute,
                 newEditData.end_ampm
             );
-    
+
             if (!isValid) {
                 toast.error("End time cannot be earlier than start time");
                 // Optionally, prevent the change or reset the end time
@@ -247,7 +247,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 }
             }
         }
-    
+
         setEditData(newEditData);
     };
 
@@ -716,17 +716,17 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
 
                                 {/* Is Recurring */}
                                 <div className="form-group">
-    <label className="block text-sm font-medium text-gray-600">Is Recurring</label>
-    <select
-        name="is_recurring"
-        value={String(editData.is_recurring)} // Convert boolean to string
-        onChange={handleEditChange}
-        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-    >
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-    </select>
-</div>
+                                    <label className="block text-sm font-medium text-gray-600">Is Recurring</label>
+                                    <select
+                                        name="is_recurring"
+                                        value={String(editData.is_recurring)} // Convert boolean to string
+                                        onChange={handleEditChange}
+                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                    >
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
 
                                 {/* Note */}
                                 {/* <div className="form-group">

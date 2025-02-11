@@ -312,11 +312,16 @@ const Table = ({ contactData, setContactData }) => {
                 {isViewOpen && selectedData && (
                     <div className="modal modal-open">
                         <div className="modal-box">
-                            <h4 className="text-md font-bold">Person</h4>
+                            <h4 className="text-md font-bold">Personal Data</h4>
                             <p>Name: {selectedData.name}</p>
                             <p>Designation: {selectedData.designation}</p>
                             <p>Email: {selectedData.email}</p>
                             <p>Phone: {selectedData.phone}</p>
+                            <h4 className="text-md font-bold pt-4">Organizational  Data</h4>
+                            <p>Name: {selectedData.organization.name}</p>
+                            <p>Address: {selectedData.organization.address}</p>
+                            <p>Email: {selectedData.organization.email}</p>
+                            <p>Phone: {selectedData.organization.website}</p>
                             <div className="modal-action">
                                 <button className="btn" onClick={() => setIsViewOpen(false)}>
                                     Close
