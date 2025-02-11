@@ -394,6 +394,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                     ));
                     setIsDeleteOpen(false);
                     toast.success("Appointment deleted successfully");
+                    location.reload();
                 } else {
                     toast.error("Failed to delete appointment");
                 }
