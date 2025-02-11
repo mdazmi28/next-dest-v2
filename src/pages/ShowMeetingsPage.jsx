@@ -9,8 +9,10 @@ import { toast } from 'react-toastify';
 import Scheduler from '@/components/Schedular';
 
 const ShowMeetings = () => {
-  const { addMeetingInfoStage, setMeetingInfoStage, appointments, setAppointments, events, setEvents  } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
+  const { addMeetingInfoStage, setMeetingInfoStage  } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
 
+  const[appointments, setAppointments] = useState([]);
+const [events, setEvents] = useState([]);
   const isTokenExpired = (token) => {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));

@@ -21,7 +21,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const [selectedData, setSelectedData] = useState(null);
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
-    const { appointments } = useFlowContext();
+    // const { appointments } = useFlowContext();
 
     // Initialize editData with all possible fields
     const [editData, setEditData] = useState({

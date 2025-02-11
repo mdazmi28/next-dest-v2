@@ -14,7 +14,9 @@ import Scheduler from '@/components/Schedular';
 
 
 const page = () => {
-  const { setAppointments, events, setEvents } = useFlowContext();
+  // const { setAppointments, events, setEvents } = useFlowContext();
+  const[appointments, setAppointments] = useState([]);
+  const [events, setEvents] = useState([]);
 
   const isTokenExpired = (token) => {
     try {
@@ -53,7 +55,7 @@ const page = () => {
 
         if (!response.ok) {
           const errorText = await response.text();
-          toast.error(`Error ${response.status}: ${errorText}`);
+          console.log(`Error ${response.status}: ${errorText}`);
           return;
         }
 
