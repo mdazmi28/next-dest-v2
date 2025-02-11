@@ -29,9 +29,9 @@ const Table = ({ contactData, setContactData }) => {
 
         if (isEditOpen) {
             window.addEventListener("keydown", handleKeyDown);
-        }else if(isDeleteOpen){
+        } else if (isDeleteOpen) {
             window.addEventListener("keydown", handleKeyDown);
-        }else if(isViewOpen){
+        } else if (isViewOpen) {
             window.addEventListener("keydown", handleKeyDown);
         }
 
@@ -72,10 +72,23 @@ const Table = ({ contactData, setContactData }) => {
 
     const handleEditChange = (e) => {
         const { name, value } = e.target;
-        setEditData((prev) => ({
-            ...prev,
-            [name]: value || "",
-        }));
+        if (name.startsWith('organization_')) {
+            // Handle organization fields
+            const orgField = name.replace('organization_', '');
+            setEditData(prev => ({
+                ...prev,
+                organization: {
+                    ...prev.organization,
+                    [orgField]: value
+                }
+            }));
+        } else {
+            // Handle other fields
+            setEditData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
     };
 
     const saveEdit = async (id) => {
@@ -94,10 +107,18 @@ const Table = ({ contactData, setContactData }) => {
             email: editData.email || "",
             phone: editData.phone || "",
             designation: editData.designation || "",
-            organization: editData.organization || "",
             tags: [],
             note: editData.note || "",
+            organization_data: {
+                name: editData.organization?.name || "",
+                email: editData.organization?.email || "",
+                address: editData.organization?.address || "",
+                website: editData.organization?.website || "",
+                phone: editData.organization?.phone || "",
+                note: editData.organization?.note || ""
+            }
         };
+    
 
         const updateContactWithToken = async (token) => {
             try {
@@ -112,8 +133,6 @@ const Table = ({ contactData, setContactData }) => {
 
                 if (response.ok) {
                     const updatedContact = await response.json();
-
-                    // Update the contact in the state immediately
                     setContactData((prevContacts) =>
                         prevContacts.map((contact) =>
                             contact.contact_id === id
@@ -129,10 +148,9 @@ const Table = ({ contactData, setContactData }) => {
                                 : contact
                         )
                     );
-
-                    // toast.success("Contact updated successfully!");
                     setIsEditOpen(false);
-                    setEditData(null); // Clear the edit data
+                    setEditData(null);
+                    toast.success("Contact updated successfully!");
                 } else {
                     const errorData = await response.json();
                     toast.error(errorData.message || "Failed to update contact.");
@@ -393,6 +411,67 @@ const Table = ({ contactData, setContactData }) => {
                                         className="input input-bordered"
                                     />
                                 </div> */}
+                                <h1 className="text-xl pt-5">Organization Information</h1>
+                                <div className="form-control">
+                                    <label>Organization Name</label>
+                                    <input
+                                        type="text"
+                                        name="organization_name"
+                                        value={editData.organization?.name || ""}
+                                        onChange={handleEditChange}
+                                        className="input input-bordered"
+                                    />
+                                </div>
+                                <div className="form-control">
+                                    <label>Organization Email</label>
+                                    <input
+                                        type="email"
+                                        name="organization_email"
+                                        value={editData.organization?.email || ""}
+                                        onChange={handleEditChange}
+                                        className="input input-bordered"
+                                    />
+                                </div>
+                                <div className="form-control">
+                                    <label>Organization Address</label>
+                                    <input
+                                        type="text"
+                                        name="organization_address"
+                                        value={editData.organization?.address || ""}
+                                        onChange={handleEditChange}
+                                        className="input input-bordered"
+                                    />
+                                </div>
+                                <div className="form-control">
+                                    <label>Organization Website</label>
+                                    <input
+                                        type="text"
+                                        name="organization_website"
+                                        value={editData.organization?.website || ""}
+                                        onChange={handleEditChange}
+                                        className="input input-bordered"
+                                    />
+                                </div>
+                                <div className="form-control">
+                                    <label>Organization Phone</label>
+                                    <input
+                                        type="text"
+                                        name="organization_phone"
+                                        value={editData.organization?.phone || ""}
+                                        onChange={handleEditChange}
+                                        className="input input-bordered"
+                                    />
+                                </div>
+                                <div className="form-control">
+                                    <label>Organization Note</label>
+                                    <input
+                                        type="text"
+                                        name="organization_note"
+                                        value={editData.organization?.note || ""}
+                                        onChange={handleEditChange}
+                                        className="input input-bordered"
+                                    />
+                                </div>
                                 <div className="modal-action">
                                     <button type="submit" className="btn btn-primary">
                                         Save
