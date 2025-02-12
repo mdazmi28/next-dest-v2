@@ -366,7 +366,8 @@ const Table = ({ contactData, setContactData }) => {
                             <p>Name: {selectedData.organization.name}</p>
                             <p>Address: {selectedData.organization.address}</p>
                             <p>Email: {selectedData.organization.email}</p>
-                            <p>Phone: {selectedData.organization.website}</p>
+                            <p>Website: {selectedData.organization.website}</p>
+                            <p>Phone: {selectedData.organization.phone}</p>
                             <div className="modal-action">
                                 <button className="btn" onClick={() => setIsViewOpen(false)}>
                                     Close
