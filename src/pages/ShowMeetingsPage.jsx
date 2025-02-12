@@ -7,10 +7,11 @@ import Cookies from 'js-cookie';
 import base_url from '@/base_url';
 import { toast } from 'react-toastify';
 import Scheduler from '@/components/Schedular';
+import AddAppointmentModal from '@/components/modals/appointment/AddAppointmentModal';
 
 const ShowMeetings = () => {
-  const { addMeetingInfoStage, setMeetingInfoStage  } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
-
+  // const { addMeetingInfoStage, setMeetingInfoStage  } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const[appointments, setAppointments] = useState([]);
 const [events, setEvents] = useState([]);
   const isTokenExpired = (token) => {
@@ -130,44 +131,7 @@ const [events, setEvents] = useState([]);
 
 
   return (
-    // <div className='min-h-screen'>
-    //   <div className='flex flex-col md:flex-row gap-4 h-1/2'>
-    //     <div className='w-full md:w-3/4 p-4'>
-    //       <div className='flex justify-end' onClick={() => setMeetingInfoStage(!addMeetingInfoStage)}>
-    //         {/* <Button>+ Add New Meeting</Button> */}
-    //         <button className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110">+ Add New Meeting</button>
-    //       </div>
-    //       {/* <div className='w-full overflow-x-scroll'>
-    //         <AppointmentTable
-    //           appointmentData={appointment}
-    //           setAppointmentData={setAppointment}
-    //         />
-    //       </div> */}
-    //       <div className="w-full">
-    //         <div className="overflow-x-auto">
-    //           <AppointmentTable
-    //             appointmentData={appointments}
-    //             setAppointmentData={setAppointments}
-    //           />
-    //         </div>
-    //       </div>
 
-
-
-    //     </div>
-    //     <div className='w-full md:w-1/4 border shadow-2xl'>
-    //     </div>
-
-    //   </div>
-    //   <div className='flex flex-col md:flex-row h-1/2'>
-    //     <div className='w-full md:w-3/4'>
-    //       <Calendar events={events} />
-    //     </div>
-    //     <div className='w-full md:w-1/4'>
-    //       This is the rest
-    //     </div>
-    //   </div>
-    // </div>
 
     <div className="h-screen flex flex-col">
       {/* Top Half - Appointments Table & Sidebar */}
@@ -178,7 +142,7 @@ const [events, setEvents] = useState([]);
           <div className="flex justify-end mb-2">
             <button
               className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110"
-              onClick={() => setMeetingInfoStage(!addMeetingInfoStage)}
+              onClick={() => setIsModalOpen(true)}
             >
               + Add New Meeting
             </button>
@@ -214,6 +178,10 @@ const [events, setEvents] = useState([]);
           {/* <p>This is the rest</p> */}
         </div>
       </div>
+      <AddAppointmentModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+            />
     </div>
 
   );
