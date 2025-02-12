@@ -30,7 +30,7 @@ const AttachmentTable = ({ attachmentData }) => {
                 <thead>
                     <tr>
                         <th>Attachment ID</th>
-                        <th>File Path</th>
+                        <th>File Name</th>
                         <th>Note</th>
                         <th>Download</th>
                     </tr>
@@ -39,7 +39,7 @@ const AttachmentTable = ({ attachmentData }) => {
                     {attachmentData.map((attachment) => (
                         <tr key={attachment.attachment_id}>
                             <td>{attachment.attachment_id}</td>
-                            <td>{attachment.file_path}</td>
+                            <td>{attachment.file_path.replace("/media/attachments/", "")}</td>
                             <td>{attachment.note}</td>
                             <td>
                                 <a

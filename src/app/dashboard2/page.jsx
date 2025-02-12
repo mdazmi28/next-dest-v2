@@ -9,11 +9,9 @@ import Cookies from 'js-cookie';
 import base_url from '@/base_url';
 import { toast } from 'react-toastify';
 import Scheduler from '@/components/Schedular';
-import AppointmentTable from '@/components/AppointmentTable';
 import AppointmentShow from '@/components/AppointmentShow';
-import AddContactPage from '@/pages/AddContactPage';
-// import { useFlowContext } from '@/context/FlowContext';
-
+import AddContactModal from '@/components/modals/contact/AddContactModal';
+import AddAppointmentModal from '@/components/modals/appointment/AddAppointmentModal';
 
 
 
@@ -21,7 +19,15 @@ const page = () => {
   // const { setAppointments, events, setEvents } = useFlowContext();
   const [appointments, setAppointments] = useState([]);
   const [events, setEvents] = useState([]);
- 
+  const [showAddContact, setShowAddContact] = useState(false);
+
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+
+  const showAddContactScreen = () => {
+    setShowAddContact(true);
+  }
+
   const isTokenExpired = (token) => {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -135,42 +141,54 @@ const page = () => {
     console.log("Events updated:", events);
   }, [events]);
 
+  const handleContactOpenModal = () => {
+    setIsContactModalOpen(true);
+};
+  const handleAppointmentOpenModal = () => {
+    setIsAppointmentModalOpen(true);
+};
+
+
 
   return (
 
     <Layout>
-      {
-         
-        (<div className='flex flex-col'>
-          <div className='flex flex-col md:flex-row gap-5'>
+      <div className='flex flex-col'>
+        <div className='flex flex-col md:flex-row gap-5'>
 
-            <div className='w-full md:w-3/4'>
-              {/* <div className='flex flex-row justify-end gap-5 pb-4'>
-                <button className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110" onClick={showAddContactScreen}>
-                  + Add New Contact
-                </button>
-                <button className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110">
-                  + Add New Contact
-                </button>
+          <div className='w-full md:w-3/4'>
+            <div className='flex flex-row justify-end gap-5 pb-4'>
+              <button onClick={handleContactOpenModal} className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110" >
+                + Add New Contact
+              </button>
+              <button onClick={handleAppointmentOpenModal} className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110">
+                + Add New Meeting
+              </button>
 
-              </div> */}
-
-              <Scheduler events={events} />
             </div>
 
-            <div className='w-full md:w-1/4 flex border shadow-xl rounded-lg '>
-              <AppointmentShow
-                appointmentData={appointments}
-                setAppointmentData={setAppointments}
-              />
-            </div>
+            <Scheduler events={events} />
           </div>
-          {/* <div className='w-full md:w-3/4'>
-          <Scheduler events={events} />
-        </div> */}
+
+          <div className='w-full md:w-1/4 flex border shadow-xl rounded-lg '>
+            <AppointmentShow
+              appointmentData={appointments}
+              setAppointmentData={setAppointments}
+            />
+          </div>
         </div>
-      )
-      }
+
+      </div>
+
+      <AddContactModal 
+                isOpen={isContactModalOpen} 
+                onClose={() => setIsContactModalOpen(false)} 
+            />
+                <AddAppointmentModal
+                isOpen={isAppointmentModalOpen}
+                onClose={()=>setIsAppointmentModalOpen(false)}
+            />
+
     </Layout>
   );
 };
