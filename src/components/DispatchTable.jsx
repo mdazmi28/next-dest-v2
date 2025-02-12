@@ -1,6 +1,7 @@
 import base_url from "@/base_url";
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaEye } from "react-icons/fa";
+import { FaFilter } from 'react-icons/fa'; // Import filter icon
 import { MdDelete } from "react-icons/md";
 import Cookies from 'js-cookie';
 import { ToastContainer, toast } from "react-toastify";
@@ -158,37 +159,165 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
         }
     };
 
+    const [typeFilter, setTypeFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [showTypeFilter, setShowTypeFilter] = useState(false);
+    const [showStatusFilter, setShowStatusFilter] = useState(false);
+
+    const getFilteredData = () => {
+        return dispatchData.filter(data => {
+            const matchesType = typeFilter === 'all' || data.type === typeFilter;
+            const matchesStatus = statusFilter === 'all' || data.status === statusFilter;
+            return matchesType && matchesStatus;
+        });
+    };
+
+    // Close dropdowns when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (!event.target.closest('.filter-dropdown')) {
+                setShowTypeFilter(false);
+                setShowStatusFilter(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
 
     return (
 
         <>
             <div>
-                <div className="overflow-x-auto">
+                <div className="">
                     <table className="table">
                         <thead>
                             <tr>
                                 <th>Ref No.</th>
-                                <th>Type</th>
+                                <th className="relative">
+                                    <div className="flex items-center gap-2">
+                                        Type
+                                        <div className="filter-dropdown">
+                                            <FaFilter
+                                                className="h-4 w-4 cursor-pointer text-gray-500 hover:text-gray-700"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setShowTypeFilter(!showTypeFilter);
+                                                    setShowStatusFilter(false);
+                                                }}
+                                            />
+                                            {showTypeFilter && (
+                                                <div className="absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                                                    <div className="py-1">
+                                                        <button
+                                                            className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${typeFilter === 'all' ? 'bg-gray-100' : ''}`}
+                                                            onClick={() => {
+                                                                setTypeFilter('all');
+                                                                setShowTypeFilter(false);
+                                                            }}
+                                                        >
+                                                            All Types
+                                                        </button>
+                                                        <button
+                                                            className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${typeFilter === 'incoming' ? 'bg-gray-100' : ''}`}
+                                                            onClick={() => {
+                                                                setTypeFilter('incoming');
+                                                                setShowTypeFilter(false);
+                                                            }}
+                                                        >
+                                                            Incoming
+                                                        </button>
+                                                        <button
+                                                            className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${typeFilter === 'outgoing' ? 'bg-gray-100' : ''}`}
+                                                            onClick={() => {
+                                                                setTypeFilter('outgoing');
+                                                                setShowTypeFilter(false);
+                                                            }}
+                                                        >
+                                                            Outgoing
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </th>
                                 <th>Subject</th>
-                                <th>Sender/Reciver</th>
+                                <th>Sender</th>
                                 <th>Reciver</th>
                                 {/* <th>Date</th> */}
-                                <th>Status</th>
+                                <th className="relative">
+                                    <div className="flex items-center gap-2">
+                                        Status
+                                        <div className="filter-dropdown">
+                                            <FaFilter
+                                                className="h-4 w-4 cursor-pointer text-gray-500 hover:text-gray-700"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setShowStatusFilter(!showStatusFilter);
+                                                    setShowTypeFilter(false);
+                                                }}
+                                            />
+                                            {showStatusFilter && (
+                                                <div className="absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                                                    <div className="py-1">
+                                                        <button
+                                                            className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${statusFilter === 'all' ? 'bg-gray-100' : ''}`}
+                                                            onClick={() => {
+                                                                setStatusFilter('all');
+                                                                setShowStatusFilter(false);
+                                                            }}
+                                                        >
+                                                            All Status
+                                                        </button>
+                                                        <button
+                                                            className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${statusFilter === 'pending' ? 'bg-gray-100' : ''}`}
+                                                            onClick={() => {
+                                                                setStatusFilter('pending');
+                                                                setShowStatusFilter(false);
+                                                            }}
+                                                        >
+                                                            Pending
+                                                        </button>
+                                                        <button
+                                                            className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${statusFilter === 'in_progress' ? 'bg-gray-100' : ''}`}
+                                                            onClick={() => {
+                                                                setStatusFilter('in_progress');
+                                                                setShowStatusFilter(false);
+                                                            }}
+                                                        >
+                                                            In Progress
+                                                        </button>
+                                                        <button
+                                                            className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${statusFilter === 'completed' ? 'bg-gray-100' : ''}`}
+                                                            onClick={() => {
+                                                                setStatusFilter('completed');
+                                                                setShowStatusFilter(false);
+                                                            }}
+                                                        >
+                                                            Completed
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {dispatchData.map((data) => (
+                            {getFilteredData().map((data) => (
                                 <tr key={data.dispatch_id}>
                                     <td>
                                         <div className="font-bold">{data.reference_number}</div>
                                     </td>
                                     <td>{data.type.charAt(0).toUpperCase() + data.type.slice(1)}</td>
-
                                     <td>{data.subject}</td>
                                     <td>{data.sender}</td>
                                     <td>{data.recipient}</td>
-                                    {/* <td>{data.sender}</td> */}
                                     <td>
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${data.status === "pending"
                                                 ? "bg-red-100 text-red-800"
@@ -201,9 +330,6 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                                             {data.status.charAt(0).toUpperCase() + data.status.slice(1).replace('_', ' ')}
                                         </span>
                                     </td>
-                                    {/* <td>{data.status}</td> */}
-                                    {/* <td>{data.phone}</td> */}
-
                                     <td className="flex justify-between gap-5">
                                         <FaEye
                                             className="h-5 w-5 text-green-500 cursor-pointer"
