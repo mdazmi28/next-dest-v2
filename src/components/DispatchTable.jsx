@@ -188,7 +188,19 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                                     <td>{data.sender}</td>
                                     <td>{data.recipient}</td>
                                     {/* <td>{data.sender}</td> */}
-                                    <td>{data.status}</td>
+                                    <td>
+                                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${data.status === "pending"
+                                                ? "bg-red-100 text-red-800"
+                                                : data.status === "in_progress"
+                                                    ? "bg-yellow-100 text-yellow-800"
+                                                    : data.status === "completed"
+                                                        ? "bg-green-100 text-green-800"
+                                                        : "bg-gray-100 text-gray-800"
+                                            }`}>
+                                            {data.status.charAt(0).toUpperCase() + data.status.slice(1).replace('_', ' ')}
+                                        </span>
+                                    </td>
+                                    {/* <td>{data.status}</td> */}
                                     {/* <td>{data.phone}</td> */}
 
                                     <td className="flex justify-between gap-5">
@@ -216,13 +228,13 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                     <div className="modal modal-open">
                         <div className="modal-box">
                             <h4 className="text-md font-bold">Dispatch Data</h4>
-                            <p>Name: {selectedData.reference_number}</p>
-                            <p>Designation: {selectedData.type}</p>
-                            <p>Email: {selectedData.subject}</p>
-                            <p>Phone: {selectedData.sender}</p>
-                            <p>Phone: {selectedData.recipient}</p>
-                            <p>Phone: {selectedData.status}</p>
-                            <p>Phone: {selectedData.note}</p>
+                            <p>Reference No.: {selectedData.reference_number}</p>
+                            <p>Type: {selectedData.type}</p>
+                            <p>Subject: {selectedData.subject}</p>
+                            <p>Sender: {selectedData.sender}</p>
+                            <p>Reciever: {selectedData.recipient}</p>
+                            <p>Status: {selectedData.status}</p>
+                            {/* <p>Phone: {selectedData.note}</p> */}
 
                             <div className="modal-action">
                                 <button className="btn" onClick={() => setIsViewOpen(false)}>
@@ -235,18 +247,18 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
 
                 {/* Edit Modal */}
 
-               {/* Edit Modal */}
-            {isEditOpen && selectedData && (
-                <EditDispatchModal
-                    isOpen={isEditOpen}
-                    onClose={() => {
-                        setIsEditOpen(false);
-                        setSelectedData(null);
-                    }}
-                    data={selectedData}
-                    setDispatchData={setDispatchData}
-                />
-            )}
+                {/* Edit Modal */}
+                {isEditOpen && selectedData && (
+                    <EditDispatchModal
+                        isOpen={isEditOpen}
+                        onClose={() => {
+                            setIsEditOpen(false);
+                            setSelectedData(null);
+                        }}
+                        data={selectedData}
+                        setDispatchData={setDispatchData}
+                    />
+                )}
 
 
                 {/* Delete Confirmation Modal */}
