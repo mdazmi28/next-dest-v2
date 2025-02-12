@@ -184,7 +184,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                             />
                         </div>
 
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Type
                             </label>
@@ -196,7 +196,22 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
                                 required
                             />
-                        </div>
+                        </div> */}
+
+                        <div className="form-control">
+                        <label className="label">Type</label>
+                        <select
+                            name="type"
+                            value={dispatchData.type}
+                            onChange={handleInputChange}
+                            className="select select-bordered w-full"
+                            required
+                        >
+                            <option value="">Select Type</option>
+                            <option value="Incoming">Incoming</option>
+                            <option value="Outgoing">Outgoing</option>
+                        </select>
+                    </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">

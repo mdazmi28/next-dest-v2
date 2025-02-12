@@ -6,15 +6,18 @@ import Cookies from 'js-cookie';
 import { ToastContainer, toast } from "react-toastify";
 import { jwtDecode } from 'jwt-decode'
 import 'react-toastify/dist/ReactToastify.css';
+import EditDispatchModal from "./modals/dispatch/EditDispatchModal";
 
 const DispatchTable = ({ dispatchData, setDispatchData }) => {
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
     // for edit data state
-    const [editData, setEditData] = useState(null);
+    // const [editData, setEditData] = useState(null);
+    // const [isEditOpen, setIsEditOpen] = useState(false);
     const [selectedContactId, setSelectedContactId] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
+    const [selectedDispatchId, setSelectedDispatchId] = useState(null);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -22,15 +25,11 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                 setIsEditOpen(false);
                 setIsDeleteOpen(false)
                 setIsViewOpen(false)
-                setEditData(null);
+                setSelectedData(null);
             }
         };
 
-        if (isEditOpen) {
-            window.addEventListener("keydown", handleKeyDown);
-        }else if(isDeleteOpen){
-            window.addEventListener("keydown", handleKeyDown);
-        }else if(isViewOpen){
+        if (isEditOpen || isDeleteOpen || isViewOpen) {
             window.addEventListener("keydown", handleKeyDown);
         }
 
@@ -57,8 +56,7 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
     };
 
     const handleEdit = (data) => {
-        setEditData({ ...data });
-        setSelectedContactId(data.contact_id);
+        setSelectedData(data);
         setIsEditOpen(true);
     };
 
@@ -76,104 +74,6 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
             [name]: value || "",
         }));
     };
-
-    // const saveEdit = async (id) => {
-    //     const userId = Cookies.get("user_id");
-    //     let authToken = localStorage.getItem("authToken");
-    //     const refreshToken = localStorage.getItem("refreshToken");
-
-    //     if (!userId || !editData) {
-    //         toast.error("User ID or contact data is missing!");
-    //         return;
-    //     }
-
-    //     const requestBody = {
-    //         user: parseInt(userId),
-    //         name: editData.name || "",
-    //         email: editData.email || "",
-    //         phone: editData.phone || "",
-    //         designation: editData.designation || "",
-    //         organization: editData.organization || "",
-    //         tags: [],
-    //         note: editData.note || "",
-    //     };
-
-    //     const updateContactWithToken = async (token) => {
-    //         try {
-    //             const response = await fetch(`${base_url}/users/${userId}/contacts/${id}/`, {
-    //                 method: "PUT",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     Authorization: `Bearer ${token}`,
-    //                 },
-    //                 body: JSON.stringify(requestBody),
-    //             });
-
-    //             if (response.ok) {
-    //                 const updatedContact = await response.json();
-
-    //                 // Update the contact in the state immediately
-    //                 setDispatchData((prevContacts) =>
-    //                     prevContacts.map((contact) =>
-    //                         contact.contact_id === id
-    //                             ? {
-    //                                 ...contact,
-    //                                 name: updatedContact.name,
-    //                                 email: updatedContact.email,
-    //                                 phone: updatedContact.phone,
-    //                                 designation: updatedContact.designation,
-    //                                 organization: updatedContact.organization,
-    //                                 note: updatedContact.note
-    //                             }
-    //                             : contact
-    //                     )
-    //                 );
-
-    //                 // toast.success("Contact updated successfully!");
-    //                 setIsEditOpen(false);
-    //                 setEditData(null); // Clear the edit data
-    //             } else {
-    //                 const errorData = await response.json();
-    //                 toast.error(errorData.message || "Failed to update contact.");
-    //             }
-    //         } catch (error) {
-    //             console.error("Error updating contact:", error);
-    //             toast.error("An error occurred while updating.");
-    //         }
-    //     };
-
-    //     const refreshAndRetry = async () => {
-    //         try {
-    //             const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //                 body: JSON.stringify({ refresh: refreshToken }),
-    //             });
-
-    //             if (!refreshResponse.ok) {
-    //                 throw new Error("Token refresh failed. Please log in again.");
-    //             }
-
-    //             const refreshData = await refreshResponse.json();
-    //             authToken = refreshData.access;
-    //             localStorage.setItem("authToken", authToken);
-    //             await updateContactWithToken(authToken);
-    //         } catch (err) {
-    //             console.error("Refresh and Retry Error:", err);
-    //             toast.error("Session expired. Please log in again.");
-    //         }
-    //     };
-
-    //     if (authToken && !isTokenExpired(authToken)) {
-    //         await updateContactWithToken(authToken);
-    //     } else if (refreshToken) {
-    //         await refreshAndRetry();
-    //     } else {
-    //         toast.error("Authentication error. Please log in.");
-    //     }
-    // };
 
     const confirmDelete = async (id) => {
         const userId = Cookies.get('user_id');
@@ -271,6 +171,7 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                                 <th>Type</th>
                                 <th>Subject</th>
                                 <th>Sender/Reciver</th>
+                                <th>Reciver</th>
                                 {/* <th>Date</th> */}
                                 <th>Status</th>
                                 <th>Action</th>
@@ -285,6 +186,7 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                                     <td>{data.type}</td>
                                     <td>{data.subject}</td>
                                     <td>{data.sender}</td>
+                                    <td>{data.recipient}</td>
                                     {/* <td>{data.sender}</td> */}
                                     <td>{data.status}</td>
                                     {/* <td>{data.phone}</td> */}
@@ -313,7 +215,7 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                 {isViewOpen && selectedData && (
                     <div className="modal modal-open">
                         <div className="modal-box">
-                            <h4 className="text-md font-bold">Person</h4>
+                            <h4 className="text-md font-bold">Dispatch Data</h4>
                             <p>Name: {selectedData.reference_number}</p>
                             <p>Designation: {selectedData.type}</p>
                             <p>Email: {selectedData.subject}</p>
@@ -322,22 +224,6 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                             <p>Phone: {selectedData.status}</p>
                             <p>Phone: {selectedData.note}</p>
 
-                            {/* <h4 className="text-md font-bold mt-4">Organization</h4>
-                        <p>Name: {selectedData.name}</p>
-                        <p>Address: {}</p>
-                        <p>Email: {}</p>
-                        <p>
-                            Website:{" "}
-                            <a
-                                href={selectedData.organization.web}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500 underline"
-                            >
-                                {selectedData}
-                            </a>
-                        </p>
-                        <p>Phone: {selectedData.organization.phone}</p>*/}
                             <div className="modal-action">
                                 <button className="btn" onClick={() => setIsViewOpen(false)}>
                                     Close
@@ -349,85 +235,20 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
 
                 {/* Edit Modal */}
 
-                {isEditOpen && editData && Object.keys(editData).length > 0 && (
-                    <div className="modal modal-open">
-                        <div className="modal-box">
-                            <h4 className="text-2xl font-bold">Edit Contact</h4>
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                saveEdit(editData.contact_id);
-                            }}>
-                                <h1 className="text-xl">Person Information</h1>
-                                <div className="form-control">
-                                    <label>Name</label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={editData.reference_number || ""}
-                                        onChange={handleEditChange}
-                                        className="input input-bordered"
-                                    />
-                                </div>
-                                <div className="form-control">
-                                    <label>Designation</label>
-                                    <input
-                                        type="text"
-                                        name="designation"
-                                        value={editData.designation || ""}
-                                        onChange={handleEditChange}
-                                        className="input input-bordered"
-                                    />
-                                </div>
-                                <div className="form-control">
-                                    <label>Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={editData.email || ""}
-                                        onChange={handleEditChange}
-                                        className="input input-bordered"
-                                    />
-                                </div>
-                                <div className="form-control">
-                                    <label>Phone</label>
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        value={editData.phone || ""}
-                                        onChange={handleEditChange}
-                                        className="input input-bordered"
-                                    />
-                                </div>
-                                <h1 className="text-xl pt-5">Organizational Information</h1>
-                                <div className="form-control">
-                                    <label>Organization</label>
-                                    <input
-                                        type="text"
-                                        name="organization"
-                                        value={editData.organization || ""}
-                                        onChange={handleEditChange}
-                                        className="input input-bordered"
-                                    />
-                                </div>
-                                <div className="modal-action">
-                                    <button type="submit" className="btn btn-primary">
-                                        Save
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="btn"
-                                        onClick={() => {
-                                            setIsEditOpen(false);
-                                            setEditData(null);
-                                        }}
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
+               {/* Edit Modal */}
+            {isEditOpen && selectedData && (
+                <EditDispatchModal
+                    isOpen={isEditOpen}
+                    onClose={() => {
+                        setIsEditOpen(false);
+                        setSelectedData(null);
+                    }}
+                    data={selectedData}
+                    setDispatchData={setDispatchData}
+                />
+            )}
+
+
                 {/* Delete Confirmation Modal */}
                 {isDeleteOpen && (
                     <div className="modal modal-open">

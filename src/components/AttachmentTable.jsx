@@ -31,7 +31,7 @@ const AttachmentTable = ({ attachmentData }) => {
                     <tr>
                         <th>Attachment ID</th>
                         <th>File Name</th>
-                        <th>Note</th>
+                        {/* <th>Note</th> */}
                         <th>Download</th>
                     </tr>
                 </thead>
@@ -40,7 +40,7 @@ const AttachmentTable = ({ attachmentData }) => {
                         <tr key={attachment.attachment_id}>
                             <td>{attachment.attachment_id}</td>
                             <td>{attachment.file_path.replace("/media/attachments/", "")}</td>
-                            <td>{attachment.note}</td>
+                            {/* <td>{attachment.note}</td> */}
                             <td>
                                 <a
                                     href={`https://nd-api.nakhlah.xyz/${attachment.file_path}`}
