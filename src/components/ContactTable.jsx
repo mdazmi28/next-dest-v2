@@ -17,6 +17,9 @@ const Table = ({ contactData, setContactData }) => {
     const [selectedContactId, setSelectedContactId] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
 
+    const [filteredContacts, setFilteredContacts] = useState(contactData);
+
+
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === "Escape") {
