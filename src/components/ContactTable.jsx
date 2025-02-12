@@ -489,9 +489,7 @@ const Table = ({ contactData, setContactData }) => {
                                     />
                                 </div>
                                 <div className="modal-action">
-                                    <button type="submit" className="btn bg-[#0BBFBF]">
-                                        Save
-                                    </button>
+                                    
                                     <button
                                         type="button"
                                         className="btn"
@@ -501,6 +499,9 @@ const Table = ({ contactData, setContactData }) => {
                                         }}
                                     >
                                         Cancel
+                                    </button>
+                                    <button type="submit" className="btn bg-[#0BBFBF]">
+                                        Save
                                     </button>
                                 </div>
                             </form>
