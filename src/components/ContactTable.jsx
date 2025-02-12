@@ -8,7 +8,7 @@ import { jwtDecode } from 'jwt-decode'
 import 'react-toastify/dist/ReactToastify.css';
 
 const Table = ({ contactData, setContactData }) => {
-    console.log("Contact Data:", contactData);
+    // console.log("Contact Data:", contactData);
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
