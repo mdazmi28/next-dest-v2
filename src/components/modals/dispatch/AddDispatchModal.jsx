@@ -9,11 +9,11 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         reference_number: '',
         type: '',
         subject: '',
-        sender: '',
         recipient: '',
         status: '',
         note: '',
     });
+    const [files, setFiles] = useState([]);
     const modalRef = useRef(null);
 
     useEffect(() => {
@@ -40,8 +40,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         };
     }, [isOpen, onClose]);
 
-    const [files, setFiles] = useState([]);
-    const [fileNotes, setFileNotes] = useState([]);
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -51,14 +50,9 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         }));
     };
 
-    const handleFileChange = (e) => {
-        setFiles([...e.target.files]);
-    };
 
-    const handleFileNoteChange = (e, index) => {
-        const newNotes = [...fileNotes];
-        newNotes[index] = e.target.value;
-        setFileNotes(newNotes);
+    const handleFileChange = (e) => {
+        setFiles(Array.from(e.target.files));
     };
 
     const handleSubmit = async (e) => {
@@ -73,41 +67,42 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
             return;
         }
 
-        // Format the data according to API requirements
-        const formData = {
-            user: parseInt(userId),
-            reference_number: dispatchData.reference_number,
-            type: dispatchData.type,
-            subject: dispatchData.subject,
-            sender: dispatchData.sender,
-            recipient: dispatchData.recipient,
-            status: dispatchData.status,
-            note: dispatchData.note || "",
-            attachments: ["http://example.com"], // Replace with actual file URLs if needed
-            attachment_notes: fileNotes.length > 0 ? fileNotes : [""]
-        };
+        // Create FormData instance
+        const formData = new FormData();
+        
+        // Append basic dispatch data
+        formData.append('user', userId);
+        formData.append('reference_number', dispatchData.reference_number);
+        formData.append('type', dispatchData.type);
+        formData.append('subject', dispatchData.subject);
+        formData.append('sender', userId);
+        formData.append('recipient', dispatchData.recipient);
+        formData.append('status', dispatchData.status);
+        formData.append('note', dispatchData.note || "");
 
         console.log("Submitting data:", formData); // Debug log
 
+        if (files.length > 0) {
+            formData.append('attachments', files[0]); // Only taking the first file
+        }
         const submitDispatch = async (token) => {
             try {
                 const response = await fetch(`${base_url}/users/${userId}/dispatches/`, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`,
                     },
-                    body: JSON.stringify(formData),
+                    body: formData,
                 });
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    console.error("API Error Response:", errorData); // Debug log
+                    console.error("API Error Response:", errorData);
                     throw new Error(`Error: ${response.status} - ${JSON.stringify(errorData)}`);
                 }
 
                 const responseData = await response.json();
-                console.log("API Success Response:", responseData); // Debug log
+                console.log("API Success Response:", responseData);
 
                 toast.success("Dispatch added successfully!");
                 onClose();
@@ -217,7 +212,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                             />
                         </div>
 
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Sender
                             </label>
@@ -229,7 +224,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
                                 required
                             />
-                        </div>
+                        </div> */}
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -263,7 +258,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                             </select>
                         </div>
 
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Note
                             </label>
@@ -274,21 +269,27 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                                 rows="4"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
                             />
-                        </div>
+                        </div> */}
 
-                        <div>
+<div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Attachments
+                                Attachment
                             </label>
                             <input
                                 type="file"
-                                multiple
                                 onChange={handleFileChange}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
+                                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
                             />
                         </div>
 
-                        {files.map((file, index) => (
+                        {files.length > 0 && (
+                            <div className="text-sm text-gray-600">
+                                Selected file: {files[0].name} ({(files[0].size / 1024).toFixed(2)} KB)
+                            </div>
+                        )}
+
+                        {/* {files.map((file, index) => (
                             <div key={index}>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Note for {file.name}
@@ -300,7 +301,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
                                 />
                             </div>
-                        ))}
+                        ))} */}
 
                         <div className="flex justify-end space-x-4 pt-4">
                             <button
