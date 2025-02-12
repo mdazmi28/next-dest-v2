@@ -98,31 +98,55 @@ const Table = ({ contactData, setContactData }) => {
         const userId = Cookies.get("user_id");
         let authToken = localStorage.getItem("authToken");
         const refreshToken = localStorage.getItem("refreshToken");
-
+    
         if (!userId || !editData) {
             toast.error("User ID or contact data is missing!");
             return;
         }
-
-        const requestBody = {
+    
+        // Create a helper function to remove empty fields
+        const removeEmptyFields = (obj) => {
+            return Object.fromEntries(
+                Object.entries(obj).filter(([_, value]) => 
+                    value !== "" && value !== null && value !== undefined
+                )
+            );
+        };
+    
+        // Build organization data only with non-empty fields
+        const organizationData = removeEmptyFields({
+            name: editData.organization?.name || "",
+            email: editData.organization?.email || "",
+            address: editData.organization?.address || "",
+            website: editData.organization?.website || "",
+            phone: editData.organization?.phone || "",
+            note: editData.organization?.note || ""
+        });
+    
+        // Build the base request body with non-empty fields
+        const baseRequestBody = removeEmptyFields({
             user: parseInt(userId),
             name: editData.name || "",
             email: editData.email || "",
             phone: editData.phone || "",
             designation: editData.designation || "",
-            tags: [],
             note: editData.note || "",
-            organization_data: {
-                name: editData.organization?.name || "",
-                email: editData.organization?.email || "",
-                address: editData.organization?.address || "",
-                website: editData.organization?.website || "",
-                phone: editData.organization?.phone || "",
-                note: editData.organization?.note || ""
-            }
+        });
+    
+        // Only add organization_data if there are non-empty organization fields
+        const requestBody = {
+            ...baseRequestBody,
+            ...(Object.keys(organizationData).length > 0 && {
+                organization_data: organizationData
+            })
         };
     
-
+        // If the request body is empty (except for user ID), don't proceed
+        if (Object.keys(requestBody).length <= 1) {
+            toast.warning("No changes to update!");
+            return;
+        }
+    
         const updateContactWithToken = async (token) => {
             try {
                 const response = await fetch(`${base_url}/users/${userId}/contacts/${id}/`, {
@@ -133,7 +157,7 @@ const Table = ({ contactData, setContactData }) => {
                     },
                     body: JSON.stringify(requestBody),
                 });
-
+    
                 if (response.ok) {
                     const updatedContact = await response.json();
                     setContactData((prevContacts) =>
@@ -403,17 +427,6 @@ const Table = ({ contactData, setContactData }) => {
                                         className="input input-bordered"
                                     />
                                 </div>
-                                {/* <h1 className="text-xl pt-5">Organizational Information</h1>
-                                <div className="form-control">
-                                    <label>Organization</label>
-                                    <input
-                                        type="text"
-                                        name="organization"
-                                        value={editData.organization || ""}
-                                        onChange={handleEditChange}
-                                        className="input input-bordered"
-                                    />
-                                </div> */}
                                 <h1 className="text-xl pt-5">Organization Information</h1>
                                 <div className="form-control">
                                     <label>Organization Name</label>
@@ -476,7 +489,7 @@ const Table = ({ contactData, setContactData }) => {
                                     />
                                 </div>
                                 <div className="modal-action">
-                                    <button type="submit" className="btn btn-primary">
+                                    <button type="submit" className="btn bg-[#0BBFBF]">
                                         Save
                                     </button>
                                     <button

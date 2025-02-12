@@ -211,6 +211,7 @@ const AddMeetingsPage = () => {
                         note: '',
                     });
                     setMeetingInfoStage(!addMeetingInfoStage);
+                    location.reload();
                 } else {
                     const errorData = await response.json();
                     toast.error(errorData.message || "Failed to add appointment");

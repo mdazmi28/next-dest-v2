@@ -15,7 +15,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
-const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
+const AppointmentShow = ({ appointmentData, setAppointmentData }) => {
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
@@ -444,38 +444,22 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 <table className="table">
                     <thead>
                         <tr>
-                            <th>Time</th>
                             <th>Title</th>
-                            <th>Description</th>
-                            <th>Location</th>
-                            <th>Action</th>
+                            <th>Time</th>
                         </tr>
                     </thead>
                     <tbody>
                         {appointmentData.map((data, index) => (
                             <tr key={data.appointment_id || index}>
+                                 <td className='text-sm'>{data.title}</td>
                                 <td>
-                                    <div className="font-bold">
-                                        {dayjs(data.start).format('DD-MM-YY hh:mm A')} - {dayjs(data.end).format('DD-MM-YY hh:mm A')}
+                                    <div className="text-sm">
+                                        From: {dayjs(data.start).format('DD-MM-YY hh:mm A')} <br></br>To: {dayjs(data.end).format('DD-MM-YY hh:mm A')}
                                     </div>
                                 </td>
-                                <td>{data.title}</td>
-                                <td>{data.description}</td>
-                                <td>{data.location}</td>
-                                <td className="flex justify-between gap-5">
-                                    <FaEye
-                                        className="h-5 w-5 text-green-500 cursor-pointer"
-                                        onClick={() => handleView(data)}
-                                    />
-                                    <FaEdit
-                                        className="h-5 w-5 text-blue-500 cursor-pointer"
-                                        onClick={() => handleEdit(data)}
-                                    />
-                                    <MdDelete
-                                        className="h-5 w-5 text-red-500 cursor-pointer"
-                                        onClick={() => handleDelete(data.appointment_id)}
-                                    />
-                                </td>
+                               
+                                
+                               
                             </tr>
                         ))}
                     </tbody>
@@ -813,4 +797,4 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     );
 };
 
-export default AppointmentTable;
+export default AppointmentShow;

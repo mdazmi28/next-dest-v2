@@ -9,15 +9,19 @@ import Cookies from 'js-cookie';
 import base_url from '@/base_url';
 import { toast } from 'react-toastify';
 import Scheduler from '@/components/Schedular';
+import AppointmentTable from '@/components/AppointmentTable';
+import AppointmentShow from '@/components/AppointmentShow';
+import AddContactPage from '@/pages/AddContactPage';
+// import { useFlowContext } from '@/context/FlowContext';
 
 
 
 
 const page = () => {
   // const { setAppointments, events, setEvents } = useFlowContext();
-  const[appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [events, setEvents] = useState([]);
-
+ 
   const isTokenExpired = (token) => {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -133,34 +137,40 @@ const page = () => {
 
 
   return (
+
     <Layout>
-      <div className='flex flex-col'>
-        <div className='flex flex-col md:flex-row gap-5'>
-          <div className="w-full md:w-3/4 flex items-center justify-center">
-            {/* <div className="p-5 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              {cardData.map((card, i) => (
-                <Card
-                  key={i}
-                  type={card.type}
-                  noOfContact={card.noOfContact}
-                  className="p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 "
-                />
-              ))}
-            </div> */}
-          </div>
+      {
+         
+        (<div className='flex flex-col'>
+          <div className='flex flex-col md:flex-row gap-5'>
 
-          <div className='w-full md:w-1/4 flex items-center justify-center border shadow-xl rounded-lg '>
-dajjdjjd
-          </div>
-        </div>
-        <div className='w-full md:w-3/4'>
-          <Scheduler events={events}/>
-        </div>
-      </div>
-      {/* <div className=''>
-        <Scheduler />
-      </div> */}
+            <div className='w-full md:w-3/4'>
+              {/* <div className='flex flex-row justify-end gap-5 pb-4'>
+                <button className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110" onClick={showAddContactScreen}>
+                  + Add New Contact
+                </button>
+                <button className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110">
+                  + Add New Contact
+                </button>
 
+              </div> */}
+
+              <Scheduler events={events} />
+            </div>
+
+            <div className='w-full md:w-1/4 flex border shadow-xl rounded-lg '>
+              <AppointmentShow
+                appointmentData={appointments}
+                setAppointmentData={setAppointments}
+              />
+            </div>
+          </div>
+          {/* <div className='w-full md:w-3/4'>
+          <Scheduler events={events} />
+        </div> */}
+        </div>
+      )
+      }
     </Layout>
   );
 };

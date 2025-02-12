@@ -6,17 +6,17 @@ import ShowContactPage from '@/pages/ShowContactPage';
 
 
 const page = () => {
-    const {addContactInfoStage} = useFlowContext()
+    const { addContactInfoStage } = useFlowContext()
     // console.log(addContactInfoStage)
-    
+
     return (
         <Layout>
             {
-addContactInfoStage ? (<ShowContactPage/>) : (<AddContactPage/>)
+                addContactInfoStage ? (<ShowContactPage />) : (<AddContactPage />)
             }
         </Layout>
-        
-       
+
+
     );
 };
 

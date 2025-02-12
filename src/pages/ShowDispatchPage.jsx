@@ -5,10 +5,12 @@ import Cookies from 'js-cookie';
 import base_url from '@/base_url';
 import { toast } from 'react-toastify';
 import DispatchTable from '@/components/DispatchTable';
+import AddDispatchModal from '@/components/modals/dispatch/AddDispatchModal';
 
 const ShowDispatchPage = () => {
-    const { addDispatchStage, setDispatchStage, } = useFlowContext() || { addDispatchStage: false, setDispatchStage: () => { } };
+    // const { addDispatchStage, setDispatchStage, } = useFlowContext() || { addDispatchStage: false, setDispatchStage: () => { } };
     const [filteredData, setFilteredData] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false); // Add state for modal
 
     const isTokenExpired = (token) => {
         try {
@@ -119,28 +121,46 @@ const ShowDispatchPage = () => {
         setDispatchStage(!addDispatchStage);
     };
 
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        fetchDispatches(); // Refetch data after modal closes
+    };
+
 
     return (
         <div className='flex flex-col w-full'>
-        <div className='flex justify-end'>
-            <div onClick={changeStage}>
-                <button className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110">+ Add New Dispatch</button>
+            <div className='flex justify-end'>
+                <button
+                    onClick={handleOpenModal}
+                    className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110"
+                >
+                    + Add New Dispatch
+                </button>
             </div>
-        </div>
-        <div className='mt-7'>
-            {/* <div className='flex justify-end'>
+            <div className='mt-7'>
+                {/* <div className='flex justify-end'>
                 <SearchBoxWithSuggestions
                     data={filteredData}
                     onFilter={handleFilter} // Pass filter handler
                 />
             </div> */}
-            <DispatchTable
-                dispatchData={filteredData}
-                setDispatchData={setFilteredData} // Pass setFilteredData for updates
+                <DispatchTable
+                    dispatchData={filteredData}
+                    setDispatchData={setFilteredData} // Pass setFilteredData for updates
+                />
+            </div>
+
+
+            <AddDispatchModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
             />
+
         </div>
-        
-    </div>
 
     );
 };

@@ -211,7 +211,7 @@ const [events, setEvents] = useState([]);
 
         {/* Right - Additional Section */}
         <div className="w-1/4">
-          <p>This is the rest</p>
+          {/* <p>This is the rest</p> */}
         </div>
       </div>
     </div>
