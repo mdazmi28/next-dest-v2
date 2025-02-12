@@ -183,7 +183,8 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                                     <td>
                                         <div className="font-bold">{data.reference_number}</div>
                                     </td>
-                                    <td>{data.type}</td>
+                                    <td>{data.type.charAt(0).toUpperCase() + data.type.slice(1)}</td>
+
                                     <td>{data.subject}</td>
                                     <td>{data.sender}</td>
                                     <td>{data.recipient}</td>
