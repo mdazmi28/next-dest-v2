@@ -32,6 +32,22 @@ const AddContactModal = ({ isOpen, onClose, refreshData }) => {
     const [selectedTags, setSelectedTags] = useState([]);
     const [files, setFiles] = useState([]);
 
+        useEffect(() => {
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    onClose();
+                }
+            };
+    
+            if (isOpen) {
+                document.addEventListener('keydown', handleEscape);
+            }
+    
+            return () => {
+                document.removeEventListener('keydown', handleEscape);
+            };
+        }, [isOpen, onClose]);
+
     const resetForm = () => {
         setPerson(initialPersonState);
         setOrganization(initialOrganizationState);
