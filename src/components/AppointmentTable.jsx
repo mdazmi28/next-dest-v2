@@ -10,6 +10,7 @@ import { useFlowContext } from '@/context/FlowContext';
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import ViewAppointmentModal from './modals/appointment/ViewAppointmentModal';
 
 // Extend dayjs with the necessary plugins
 dayjs.extend(utc);
@@ -483,7 +484,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
             </div>
 
             {/* View Modal */}
-            {isViewOpen && selectedData && (
+            {/* {isViewOpen && selectedData && (
                 <div className="modal modal-open">
                     <div className="modal-box">
                         <h4 className="text-md font-bold">Appointment Details</h4>
@@ -502,7 +503,13 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
+            <ViewAppointmentModal 
+                isOpen={isViewOpen}
+                onClose={() => setIsViewOpen(false)}
+                data={selectedData}
+            />
+
 
             {/* Edit Modal */}
             {isEditOpen && (
