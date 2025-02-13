@@ -1,7 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 
-const ViewAppointmentModal = ({ isOpen, onClose, data }) => {
+const ViewSchedularModal = ({ isOpen, onClose, data }) => {
     if (!isOpen || !data) return null;
 
     return (
@@ -33,4 +33,4 @@ const ViewAppointmentModal = ({ isOpen, onClose, data }) => {
     );
 };
 
-export default ViewAppointmentModal;
+export default ViewSchedularModal;

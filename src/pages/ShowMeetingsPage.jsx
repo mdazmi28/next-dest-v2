@@ -12,8 +12,8 @@ import AddAppointmentModal from '@/components/modals/appointment/AddAppointmentM
 const ShowMeetings = () => {
   // const { addMeetingInfoStage, setMeetingInfoStage  } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const[appointments, setAppointments] = useState([]);
-const [events, setEvents] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [events, setEvents] = useState([]);
   const isTokenExpired = (token) => {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -126,7 +126,7 @@ const [events, setEvents] = useState([]);
   }, []);
 
   useEffect(() => {
-    console.log("Events updated:", events);
+    // console.log("Events updated:", events);
   }, [events]);
 
 
@@ -178,10 +178,11 @@ const [events, setEvents] = useState([]);
           {/* <p>This is the rest</p> */}
         </div>
       </div>
-      <AddAppointmentModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
-            />
+      {/* Open Modal */}
+      <AddAppointmentModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
 
   );
