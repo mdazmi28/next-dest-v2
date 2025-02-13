@@ -497,6 +497,7 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
                                         }}
                                         className="flex-grow outline-none min-w-[120px]"
                                         placeholder={selectedContacts.length === 0 ? "Type to search contacts..." : "Add more contacts..."}
+                                    // required
                                     />
                                 </div>
                             </div>
@@ -525,7 +526,7 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
                                             >
                                                 <div className="font-medium text-sm">{contact.name}</div>
                                                 <div className="text-xs text-gray-500 flex items-center gap-2">
-                                                    {contact.email && <span>{contact.email}</span>}
+                                                    {/* {contact.email && <span>{contact.email}</span>} */}
                                                     {contact.organization && (
                                                         <span>• {contact.organization.name}</span>
                                                     )}
@@ -533,7 +534,7 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="p-2 text-sm text-gray-500">
+                                        <div className="p-2 text-sm text-red-500">
                                             No matching contacts found
                                         </div>
                                     )}
