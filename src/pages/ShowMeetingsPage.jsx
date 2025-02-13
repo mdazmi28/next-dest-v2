@@ -65,7 +65,22 @@ const ShowMeetings = () => {
           end: event.end_time.slice(0, -4),
           id: event.id,
           description: event.description || "No Description",  // Include description
-          location: event.location || "No Location"  // Include location
+          location: event.location || "No Location",  // Include location
+          with_contacts: Array.isArray(event.with_contacts) ? event.with_contacts.map(contact => ({
+            contact_id: contact.contact_id,
+            name: contact.name || "Unknown",
+            email: contact.email || "",
+            phone: contact.phone || "",
+            designation: contact.designation || "",
+            organization: contact.organization ? {
+                organization_id: contact.organization.organization_id,
+                name: contact.organization.name || "",
+                address: contact.organization.address || "",
+                email: contact.organization.email || "",
+                website: contact.organization.website || "",
+                phone: contact.organization.phone || ""
+            } : null
+        })) : [],
         }));
 
         setAppointments(formattedEvents);

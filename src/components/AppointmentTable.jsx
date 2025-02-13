@@ -448,6 +448,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                             <th>Time</th>
                             <th>Title</th>
                             <th>Description</th>
+                            <th>With</th>
                             <th>Location</th>
                             <th>Action</th>
                         </tr>
@@ -462,6 +463,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                 </td>
                                 <td>{data.title}</td>
                                 <td>{data.description}</td>
+                                <td>{data.with_contacts.name}</td>
                                 <td>{data.location}</td>
                                 <td className="flex justify-between gap-5">
                                     <FaEye
