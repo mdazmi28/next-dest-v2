@@ -106,6 +106,7 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
             if (response.ok) {
                 // Remove the deleted contact from the local state
                 setDispatchData(dispatchData.filter((dispatch) => dispatch.dispatch_id !== id));
+                toast.success("Dispatch deleted successfully.");
                 setIsDeleteOpen(false);
                 console.log("Dispatch deleted successfully");
             } else {

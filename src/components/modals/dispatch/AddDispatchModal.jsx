@@ -5,6 +5,15 @@ import { toast } from 'react-toastify';
 import base_url from '@/base_url';
 
 const AddDispatchModal = ({ isOpen, onClose }) => {
+    const initialState = {
+        reference_number: '',
+        type: '',
+        subject: '',
+        recipient: '',
+        status: '',
+        note: '',
+    };
+
     const [dispatchData, setDispatchData] = useState({
         reference_number: '',
         type: '',
@@ -14,6 +23,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         note: '',
     });
     const [files, setFiles] = useState([]);
+    // const [fileNotes, setFileNotes] = useState({}); // Object to store notes for each file
     const modalRef = useRef(null);
 
     useEffect(() => {
@@ -41,6 +51,10 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
     }, [isOpen, onClose]);
 
 
+    const resetForm = () => {
+        setDispatchData(initialState);
+        setFiles([]);
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -52,8 +66,26 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
 
 
     const handleFileChange = (e) => {
-        setFiles(Array.from(e.target.files));
+        const selectedFiles = Array.from(e.target.files);
+        setFiles(prevFiles => [...prevFiles, ...selectedFiles]);
     };
+
+    const handleRemoveFile = (indexToRemove) => {
+        setFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
+        // Also remove the note for this file if it exists
+        // setFileNotes(prevNotes => {
+        //     const newNotes = { ...prevNotes };
+        //     delete newNotes[indexToRemove];
+        //     return newNotes;
+        // });
+    };
+
+    // const handleFileNoteChange = (e, fileIndex) => {
+    //     setFileNotes(prevNotes => ({
+    //         ...prevNotes,
+    //         [fileIndex]: e.target.value
+    //     }));
+    // };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -69,7 +101,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
 
         // Create FormData instance
         const formData = new FormData();
-        
+
         // Append basic dispatch data
         formData.append('user', userId);
         formData.append('reference_number', dispatchData.reference_number);
@@ -80,7 +112,14 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         formData.append('status', dispatchData.status);
         formData.append('note', dispatchData.note || "");
 
-        console.log("Submitting data:", formData); // Debug log
+        // console.log("Submitting data:", formData); // Debug log
+
+        files.forEach((file, index) => {
+            formData.append('attachments', file);
+            // if (fileNotes[index]) {
+            //     formData.append(`attachment_notes_${index}`, fileNotes[index]);
+            // }
+        });
 
         if (files.length > 0) {
             formData.append('attachments', files[0]); // Only taking the first file
@@ -105,6 +144,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                 console.log("API Success Response:", responseData);
 
                 toast.success("Dispatch added successfully!");
+                resetForm();
                 onClose();
             } catch (err) {
                 console.error("Submit Error:", err);
@@ -159,7 +199,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                 <div className="p-6">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold text-gray-800">Add New Dispatch</h2>
-                        <button 
+                        <button
                             onClick={onClose}
                             className="text-gray-500 hover:text-gray-700"
                         >
@@ -199,19 +239,19 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                         </div> */}
 
                         <div className="form-control">
-                        <label className="label">Type</label>
-                        <select
-                            name="type"
-                            value={dispatchData.type}
-                            onChange={handleInputChange}
-                            className="select select-bordered w-full"
-                            required
-                        >
-                            <option value="">Select Type</option>
-                            <option value="Incoming">Incoming</option>
-                            <option value="Outgoing">Outgoing</option>
-                        </select>
-                    </div>
+                            <label className="label">Type</label>
+                            <select
+                                name="type"
+                                value={dispatchData.type}
+                                onChange={handleInputChange}
+                                className="select select-bordered w-full"
+                                required
+                            >
+                                <option value="">Select Type</option>
+                                <option value="Incoming">Incoming</option>
+                                <option value="Outgoing">Outgoing</option>
+                            </select>
+                        </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -226,20 +266,6 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                                 required
                             />
                         </div>
-
-                        {/* <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Sender
-                            </label>
-                            <input
-                                type="text"
-                                name="sender"
-                                value={dispatchData.sender}
-                                onChange={handleInputChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
-                                required
-                            />
-                        </div> */}
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -273,38 +299,60 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                             </select>
                         </div>
 
-                        {/* <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Note
-                            </label>
-                            <textarea
-                                name="note"
-                                value={dispatchData.note}
-                                onChange={handleInputChange}
-                                rows="4"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
-                            />
-                        </div> */}
 
-<div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Attachment
-                            </label>
-                            <input
-                                type="file"
-                                onChange={handleFileChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
-                                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
-                            />
-                        </div>
 
-                        {files.length > 0 && (
-                            <div className="text-sm text-gray-600">
-                                Selected file: {files[0].name} ({(files[0].size / 1024).toFixed(2)} KB)
+                        <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Attachments
+                        </label>
+                        <input
+                            type="file"
+                            onChange={handleFileChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
+                            accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                            multiple // Enable multiple file selection
+                        />
+                </div>
+
+                {/* {files.length > 0 && (
+                    <div className="text-sm text-gray-600">
+                        Selected file: {files[0].name} ({(files[0].size / 1024).toFixed(2)} KB)
+                    </div>
+                )} */}
+
+
+                {files.length > 0 && (
+                    <div className="space-y-3">
+                        <h4 className="font-medium text-gray-700">Selected Files:</h4>
+                        {files.map((file, index) => (
+                            <div key={index} className="flex flex-col space-y-2 p-3 border rounded-md">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm text-gray-600">
+                                        {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveFile(index)}
+                                        className="text-red-500 hover:text-red-700"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                {/* <input
+                                    type="text"
+                                    placeholder="Add a note for this file (optional)"
+                                    value={fileNotes[index] || ''}
+                                    onChange={(e) => handleFileNoteChange(e, index)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
+                                /> */}
                             </div>
-                        )}
+                        ))}
+                    </div>
+                )}
 
-                        {/* {files.map((file, index) => (
+                {/* {files.map((file, index) => (
                             <div key={index}>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Note for {file.name}
@@ -318,25 +366,25 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                             </div>
                         ))} */}
 
-                        <div className="flex justify-end space-x-4 pt-4">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                className="px-4 py-2 bg-[#0BBFBF] text-white rounded-md hover:bg-[#89D9D9]"
-                            >
-                                Submit
-                            </button>
-                        </div>
-                    </form>
+                <div className="flex justify-end space-x-4 pt-4">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        className="px-4 py-2 bg-[#0BBFBF] text-white rounded-md hover:bg-[#89D9D9]"
+                    >
+                        Submit
+                    </button>
                 </div>
-            </div>
+            </form>
         </div>
+            </div >
+        </div >
     );
 };
 
