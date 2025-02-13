@@ -1,6 +1,7 @@
 import React from 'react';
 
 const AttachmentTable = ({ attachmentData }) => {
+
     function handleDownload(event, filePath) {
         event.preventDefault();
 
@@ -26,41 +27,38 @@ const AttachmentTable = ({ attachmentData }) => {
     return (
         <div>
 
-            <table className='table'>
-                <thead>
-                    <tr>
-                        <th>Attachment ID</th>
-                        <th>File Name</th>
-                        {/* <th>Note</th> */}
-                        <th>Download</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {attachmentData.map((attachment) => (
-                        <tr key={attachment.attachment_id}>
-                            <td>{attachment.attachment_id}</td>
-                            <td>{attachment.file_path.replace("/media/attachments/", "")}</td>
-                            {/* <td>{attachment.note}</td> */}
-                            <td>
-                                <a
-                                    href={`https://nd-api.nakhlah.xyz/${attachment.file_path}`}
-                                    target='_blank'
-                                    download={attachment.file_path.split('/').pop()}
-                                >
-                                    Download
-                                </a>
-                            </td>
-
-                            {/* <td>
-    <a href="#" onClick={(e) => handleDownload(e, attachment.file_path)}>
-        Download
-    </a>
-</td> */}
-
+            <div>
+                <table className='table'>
+                    <thead>
+                        <tr>
+                            <th>Dispatch Number</th>
+                            <th>File Name</th>
+                            <th>Download</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {attachmentData.map((dispatch) => (
+                            dispatch.attached_files.map((attachment) => (
+                                <tr key={attachment.attachment_id}>
+                                    <td>{dispatch.reference_number}</td>
+                                    <td>{attachment.file_path.split('/').pop()}</td>
+                                    <td>
+                                        <a
+                                            href={`https://nd-api.nakhlah.xyz${attachment.file_path}`}
+                                            target='_blank'
+                                            rel="noopener noreferrer"
+                                            className="btn btn-sm bg-[#0BBFBF]"
+                                            download
+                                        >
+                                            Download
+                                        </a>
+                                    </td>
+                                </tr>
+                            ))
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

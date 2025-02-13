@@ -11,7 +11,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         subject: '',
         recipient: '',
         status: '',
-        note: '',
+        // note: '',
     };
 
     const [dispatchData, setDispatchData] = useState({
@@ -20,7 +20,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         subject: '',
         recipient: '',
         status: '',
-        note: '',
+        // note: '',
     });
     const [files, setFiles] = useState([]);
     // const [fileNotes, setFileNotes] = useState({}); // Object to store notes for each file
@@ -110,7 +110,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         formData.append('sender', userId);
         formData.append('recipient', dispatchData.recipient);
         formData.append('status', dispatchData.status);
-        formData.append('note', dispatchData.note || "");
+        // formData.append('note', dispatchData.note || "");
 
         // console.log("Submitting data:", formData); // Debug log
 

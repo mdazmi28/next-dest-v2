@@ -23,7 +23,7 @@ const ShowAttachmentPage = () => {
         }
     };
 
-    const fetchContacts = async () => {
+    const fetchAttachments = async () => {
         try {
             const userId = Cookies.get('user_id');
             if (!userId) {
@@ -41,8 +41,8 @@ const ShowAttachmentPage = () => {
                 return;
             }
 
-            const fetchContactsWithToken = async (token) => {
-                const response = await fetch(`${base_url}/users/${userId}/attachments/`, {
+            const fetchAttachmentsWithToken = async (token) => {
+                const response = await fetch(`${base_url}/users/${userId}/dispatches/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const ShowAttachmentPage = () => {
                     console.log("Token refreshed successfully:", authToken);
 
                     // Retry the API request with the new token
-                    await fetchContactsWithToken(authToken);
+                    await fetchAttachmentsWithToken(authToken);
                 } catch (err) {
                     console.error("Refresh and Retry Error:", err);
                     toast.error(err.message || "An error occurred.");
@@ -91,7 +91,7 @@ const ShowAttachmentPage = () => {
 
             try {
                 if (authToken && !isTokenExpired(authToken)) {
-                    await fetchContactsWithToken(authToken);
+                    await fetchAttachmentsWithToken(authToken);
                 } else if (refreshToken) {
                     await refreshAndRetry();
                 }
@@ -112,16 +112,9 @@ const ShowAttachmentPage = () => {
 
 
     useEffect(() => {
-        fetchContacts();
+        fetchAttachments();
     }, []);
 
-    const handleFilter = (filteredResults) => {
-        setFilteredData(filteredResults);
-    };
-
-    const changeStage = () => {
-        setAddContactInfoStage(!addContactInfoStage);
-    };
 
     return (
         <div>
