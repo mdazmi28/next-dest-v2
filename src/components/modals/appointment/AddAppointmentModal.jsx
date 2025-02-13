@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddAppointmentModal = ({ isOpen, onClose }) => {
+
     const [meetingData, setMeetingData] = useState({
         title: '',
         description: '',
@@ -23,7 +24,21 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
         meeting_type: "physical",
         is_recurring: false,
         note: '',
+        contact_ids: [], // This will store contact_id values
     });
+
+    // Contact-related states
+    const [originalData, setOriginalData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
+    const [selectedContacts, setSelectedContacts] = useState([]);
+    const [searchInput, setSearchInput] = useState('');
+    const [showSuggestions, setShowSuggestions] = useState(false);
+
+    // Add this useEffect for debugging
+    useEffect(() => {
+        console.log('Selected Contacts:', selectedContacts);
+        console.log('Contact IDs:', meetingData.contact_ids);
+    }, [selectedContacts, meetingData.contact_ids]);
 
     const modalRef = useRef(null);
     // Handle escape key
@@ -51,11 +66,102 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
         };
     }, [isOpen, onClose]);
     // Handle click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (!event.target.closest('.form-group')) {
+                setShowSuggestions(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     const handleClickOutside = (e) => {
         if (e.target === e.currentTarget) {
             onClose();
         }
     };
+
+    const fetchContacts = async () => {
+        try {
+            const userId = Cookies.get('user_id');
+            if (!userId) {
+                console.error("User ID not found in cookies.");
+                return;
+            }
+
+            let authToken = localStorage.getItem('authToken');
+            const refreshToken = localStorage.getItem('refreshToken');
+
+            if (!authToken && !refreshToken) {
+                toast.error("Please log in first.");
+                return;
+            }
+
+            const fetchContactsWithToken = async (token) => {
+                const response = await fetch(`${base_url}/users/${userId}/contacts/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    toast.error(`Error ${response.status}: ${errorText}`);
+                    return;
+                }
+
+                const data = await response.json();
+                console.log('Fetched contacts:', data); // Add this line
+                setOriginalData(data);
+                setFilteredData(data);
+            };
+
+            const refreshAndRetry = async () => {
+                try {
+                    const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ refresh: refreshToken }),
+                    });
+
+                    if (!refreshResponse.ok) {
+                        throw new Error("Token refresh failed. Please log in again.");
+                    }
+
+                    const refreshData = await refreshResponse.json();
+                    authToken = refreshData.access;
+                    localStorage.setItem("authToken", authToken);
+                    await fetchContactsWithToken(authToken);
+                } catch (err) {
+                    console.error("Refresh and Retry Error:", err);
+                    toast.error(err.message || "An error occurred.");
+                }
+            };
+
+            if (authToken && !isTokenExpired(authToken)) {
+                await fetchContactsWithToken(authToken);
+            } else if (refreshToken) {
+                await refreshAndRetry();
+            }
+        } catch (error) {
+            console.error("Failed to fetch contacts:", error);
+            toast.error("Failed to fetch contacts");
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen) {
+            fetchContacts();
+        }
+    }, [isOpen]);
 
     const isEndTimeValid = (startDate, startHour, startMinute, startAMPM, endDate, endHour, endMinute, endAMPM) => {
         if (!startDate || !startHour || !startMinute || !startAMPM ||
@@ -115,17 +221,17 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
 
     const formatDateTime = (date, hour, minute, ampm) => {
         if (!date || !hour || !minute || !ampm) return '';
-    
+
         let hours = parseInt(hour, 10);
         if (ampm.toLowerCase() === "pm" && hours !== 12) {
             hours += 12;
         } else if (ampm.toLowerCase() === "am" && hours === 12) {
             hours = 0;
         }
-    
+
         const formattedHour = String(hours).padStart(2, '0');
         const formattedMinute = String(minute).padStart(2, '0');
-    
+
         return `${date}T${formattedHour}:${formattedMinute}:00Z`;
     };
 
@@ -142,7 +248,18 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!meetingData.title || !meetingData.description || 
+        if (searchInput.trim()) {
+            toast.error("Please select a contact from the suggestions or clear the input");
+            return;
+        }
+
+        if (meetingData.contact_ids.length === 0) {
+            toast.error("Please select at least one contact");
+            return;
+        }
+
+
+        if (!meetingData.title || !meetingData.description ||
             !meetingData.start_time || !meetingData.end_time ||
             !meetingData.hour || !meetingData.minute || !meetingData.ampm ||
             !meetingData.end_hour || !meetingData.end_minute || !meetingData.end_ampm ||
@@ -177,15 +294,15 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
         }
 
         const formattedStartTime = formatDateTime(
-            meetingData.start_time, 
-            meetingData.hour, 
-            meetingData.minute, 
+            meetingData.start_time,
+            meetingData.hour,
+            meetingData.minute,
             meetingData.ampm
         );
         const formattedEndTime = formatDateTime(
-            meetingData.end_time, 
-            meetingData.end_hour, 
-            meetingData.end_minute, 
+            meetingData.end_time,
+            meetingData.end_hour,
+            meetingData.end_minute,
             meetingData.end_ampm
         );
 
@@ -199,6 +316,8 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
             meeting_type: meetingData.meeting_type,
             is_recurring: meetingData.is_recurring === 'true',
             note: meetingData.note || "",
+            contact_ids: meetingData.contact_ids, // This should now be an array of IDs
+
         };
 
         try {
@@ -229,6 +348,7 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
                     meeting_type: "physical",
                     is_recurring: false,
                     note: '',
+                    contact_ids: [],
                 });
                 window.location.reload();
             } else {
@@ -241,19 +361,49 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
         }
     };
 
+    const resetForm = () => {
+        setMeetingData({
+            title: '',
+            description: '',
+            start_time: '',
+            end_time: '',
+            hour: '',
+            minute: '',
+            ampm: '',
+            end_hour: '',
+            end_minute: '',
+            end_ampm: '',
+            location: '',
+            meeting_type: "physical",
+            is_recurring: false,
+            note: '',
+            contact_ids: [],
+        });
+        setSelectedContacts([]);
+        setSearchInput('');
+        setShowSuggestions(false);
+        setFilteredData([]);
+    };
+
+    const handleClose = () => {
+        resetForm();
+        onClose();
+    };
+
+
     if (!isOpen) return null;
 
     return (
-        <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4"
+        <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
             onClick={handleClickOutside}
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
         >
-            <div ref={modalRef} className="relative w-full max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto">
+            <div ref={modalRef} className="relative w-full max-w-4xl bg-white rounded-lg shadow-2xl max-h-[90vh] overflow-y-auto">
                 {/* Close Button */}
-                <button 
+                <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition-colors"
                     aria-label="Close modal"
@@ -264,10 +414,10 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
                 {/* Modal Content */}
                 <div className="p-6">
                     <h2 id="modal-title" className="text-2xl font-bold text-center mb-6">Add New Meeting</h2>
-                    
+
                     <form onSubmit={handleSubmit} className="space-y-4">
 
-                    <div className="form-group">
+                        <div className="form-group">
                             <label className="block text-sm font-medium text-gray-600">Appointment Subject</label>
                             <input
                                 type="text"
@@ -277,6 +427,118 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
                                 className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                                 required
                             />
+                        </div>
+
+                        {/* Appointment with */}
+                        <div className="form-group relative">
+                            <label className="block text-sm font-medium text-gray-600">Appointment With</label>
+
+                            {/* Input field with selected contacts */}
+                            <div className="relative">
+                                <div className="flex flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-[42px]">
+                                    {selectedContacts.map((contact) => (
+                                        <div
+                                            key={`selected-${contact.contact_id}`}
+                                            className="bg-gray-100 rounded-full px-3 py-1 flex items-center gap-2 text-sm"
+                                        >
+                                            <span>{contact.name}</span>
+                                            {contact.organization && (
+                                                <span className="text-xs text-gray-500">
+                                                    ({contact.organization.name})
+                                                </span>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setSelectedContacts(prev =>
+                                                        prev.filter(c => c.contact_id !== contact.contact_id)
+                                                    );
+                                                    setMeetingData(prev => ({
+                                                        ...prev,
+                                                        contact_ids: prev.contact_ids.filter(id =>
+                                                            id !== contact.contact_id
+                                                        )
+                                                    }));
+                                                }}
+                                                className="text-gray-500 hover:text-red-500"
+                                            >
+                                                <ImCross className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <input
+                                        type="text"
+                                        value={searchInput}
+                                        onChange={(e) => {
+                                            const inputValue = e.target.value;
+                                            setSearchInput(inputValue);
+
+                                            if (inputValue.trim().length >= 1) { // Only show suggestions if input length >= 1
+                                                // Filter based on input
+                                                const filtered = originalData.filter(contact =>
+                                                    (contact.name.toLowerCase().includes(inputValue.toLowerCase()) ||
+                                                        (contact.organization?.name || '').toLowerCase().includes(inputValue.toLowerCase())) &&
+                                                    !selectedContacts.some(selected => selected.contact_id === contact.contact_id)
+                                                );
+                                                setFilteredData(filtered);
+                                                setShowSuggestions(true);
+                                            } else {
+                                                setShowSuggestions(false);
+                                            }
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                if (searchInput.trim() && !showSuggestions) {
+                                                    toast.error("Please select a contact from the suggestions");
+                                                }
+                                            }
+                                        }}
+                                        className="flex-grow outline-none min-w-[120px]"
+                                        placeholder={selectedContacts.length === 0 ? "Type to search contacts..." : "Add more contacts..."}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Suggestions dropdown */}
+                            {showSuggestions && searchInput.trim().length >= 1 && (
+                                <div className="absolute z-50 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto shadow-lg">
+                                    {filteredData.length > 0 ? (
+                                        filteredData.map((contact) => (
+                                            <div
+                                                key={`suggestion-${contact.contact_id}`}
+                                                className="p-2 hover:bg-gray-100 cursor-pointer"
+                                                onClick={() => {
+                                                    if (!selectedContacts.some(selected =>
+                                                        selected.contact_id === contact.contact_id
+                                                    )) {
+                                                        setSelectedContacts(prev => [...prev, contact]);
+                                                        setMeetingData(prev => ({
+                                                            ...prev,
+                                                            contact_ids: [...prev.contact_ids, contact.contact_id]
+                                                        }));
+                                                        setSearchInput('');
+                                                        setShowSuggestions(false);
+                                                    }
+                                                }}
+                                            >
+                                                <div className="font-medium text-sm">{contact.name}</div>
+                                                <div className="text-xs text-gray-500 flex items-center gap-2">
+                                                    {contact.email && <span>{contact.email}</span>}
+                                                    {contact.organization && (
+                                                        <span>• {contact.organization.name}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="p-2 text-sm text-gray-500">
+                                            No matching contacts found
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         {/* Appointment Details */}
