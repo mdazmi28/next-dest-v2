@@ -8,6 +8,7 @@ import { jwtDecode } from 'jwt-decode'
 import 'react-toastify/dist/ReactToastify.css';
 import DeleteContactModal from "./modals/contact/DeleteContactModal";
 import ViewContactModal from "./modals/contact/ViewContactModal";
+import EditContactModal from "./modals/contact/EditContactModal";
 
 const Table = ({ contactData, setContactData }) => {
     // console.log("Contact Data:", contactData);
@@ -356,28 +357,6 @@ const Table = ({ contactData, setContactData }) => {
                 </div>
 
                 {/* View Modal */}
-                {/* {isViewOpen && selectedData && (
-                    <div className="modal modal-open">
-                        <div className="modal-box">
-                            <h4 className="text-md font-bold">Personal Data</h4>
-                            <p>Name: {selectedData.name}</p>
-                            <p>Designation: {selectedData.designation}</p>
-                            <p>Email: {selectedData.email}</p>
-                            <p>Phone: {selectedData.phone}</p>
-                            <h4 className="text-md font-bold pt-4">Organizational  Data</h4>
-                            <p>Name: {selectedData.organization.name}</p>
-                            <p>Address: {selectedData.organization.address}</p>
-                            <p>Email: {selectedData.organization.email}</p>
-                            <p>Website: {selectedData.organization.website}</p>
-                            <p>Phone: {selectedData.organization.phone}</p>
-                            <div className="modal-action">
-                                <button className="btn" onClick={() => setIsViewOpen(false)}>
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )} */}
                 <ViewContactModal
                                 isOpen={isViewOpen}
                                 onClose={() => setIsViewOpen(false)}
@@ -386,7 +365,7 @@ const Table = ({ contactData, setContactData }) => {
 
                 {/* Edit Modal */}
 
-                {isEditOpen && editData && Object.keys(editData).length > 0 && (
+                {/* {isEditOpen && editData && Object.keys(editData).length > 0 && (
                     <div className="modal modal-open">
                         <div className="modal-box">
                             <h4 className="text-2xl font-bold">Edit Contact</h4>
@@ -515,7 +494,19 @@ const Table = ({ contactData, setContactData }) => {
                             </form>
                         </div>
                     </div>
-                )}
+                )} */}
+                <EditContactModal
+    isOpen={isEditOpen}
+    onClose={() => {
+        setIsEditOpen(false);
+        setEditData(null);
+    }}
+    data={{
+        ...editData,
+        handleEditChange: handleEditChange
+    }}
+    onSave={saveEdit}
+/>
                 {/* Delete Confirmation Modal */}
                 <DeleteContactModal
                     isOpen={isDeleteOpen}
