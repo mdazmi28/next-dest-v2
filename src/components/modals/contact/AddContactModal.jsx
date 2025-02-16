@@ -3,10 +3,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { ImCross } from "react-icons/im";
 import { jwtDecode } from 'jwt-decode'
 import Cookies from 'js-cookie';
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import base_url from '@/base_url';
 
 const AddContactModal = ({ isOpen, onClose, refreshData }) => {
+        const [isLoading, setIsLoading] = useState(false);
     const initialPersonState = {
         name: '',
         designation: '',
@@ -328,6 +329,7 @@ const AddContactModal = ({ isOpen, onClose, refreshData }) => {
                 }
                 resetForm();
                 onClose();
+                // location.reload();
             } catch (err) {
                 console.error("Error:", err);
                 toast.error(err.message || "An error occurred.");
@@ -568,21 +570,24 @@ const AddContactModal = ({ isOpen, onClose, refreshData }) => {
                     </div>
 
                     {/* Submit and Cancel Buttons */}
-                    <div className="flex justify-end space-x-4 mt-6">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-[#0BBFBF] text-white rounded-md hover:bg-[#89D9D9]"
-                        >
-                            Submit
-                        </button>
-                    </div>
+                    <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#0BBFBF] text-white hover:bg-[#89D9D9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:col-start-2 sm:text-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
+                            >
+                                {isLoading ? 'Adding...' : 'Add Contact'} 
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                disabled={isLoading}
+                                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:mt-0 sm:col-start-1 sm:text-sm"
+                            >
+                                Cancel
+                            </button>
+                        </div>
                 </form>
             </div>
         </div>
