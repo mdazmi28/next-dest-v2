@@ -103,13 +103,24 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         // Create FormData instance
         const formData = new FormData();
 
+        // Set sender and recipient based on dispatch type
+        let finalSender, finalRecipient;
+
+        if (dispatchData.type === 'Incoming') {
+            finalSender = dispatchData.sender;
+            finalRecipient = userId;
+        } else if (dispatchData.type === 'Outgoing') {
+            finalSender = userId;
+            finalRecipient = dispatchData.recipient;
+        }
+
         // Append basic dispatch data
         formData.append('user', userId);
         formData.append('reference_number', dispatchData.reference_number);
         formData.append('type', dispatchData.type);
         formData.append('subject', dispatchData.subject);
-        formData.append('sender', userId);
-        formData.append('recipient', dispatchData.recipient);
+        formData.append('sender', finalSender);
+        formData.append('recipient', finalRecipient);
         formData.append('status', dispatchData.status);
         // formData.append('note', dispatchData.note || "");
 
@@ -268,6 +279,48 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                             />
                         </div>
 
+                        {dispatchData.type === 'Incoming' ? (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Sender
+                                </label>
+                                <input
+                                    type="text"
+                                    name="sender"
+                                    value={dispatchData.sender}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
+                                    required
+                                />
+                            </div>
+                        ) : dispatchData.type === 'Outgoing' ? (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Recipient
+                                </label>
+                                <input
+                                    type="text"
+                                    name="recipient"
+                                    value={dispatchData.recipient}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
+                                    required
+                                />
+                            </div>
+                        ) : null}
+                        {/* <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Sender
+                            </label>
+                            <input
+                                type="text"
+                                name="recipient"
+                                value={dispatchData.sender}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
+                                required
+                            />
+                        </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Recipient
@@ -280,7 +333,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
                                 required
                             />
-                        </div>
+                        </div> */}
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">

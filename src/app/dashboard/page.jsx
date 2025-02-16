@@ -169,7 +169,7 @@ const page = () => {
     <div className='mb-8'>
       <div className='flex items-center space-x-4'>
         <div className='text-sm text-gray-600'>
-          Last updated: {new Date().toLocaleDateString()}
+          {/* Today is: {new Date().toLocaleDateString()} */}
         </div>
       </div>
     </div>
@@ -226,22 +226,11 @@ const page = () => {
       </div>
 
       {/* Calendar Section */}
-      <div className='bg-white rounded-xl shadow-xl p-6'>
+      <div className='b'>
         <div className='mb-4 flex justify-between items-center'>
           <h2 className='text-xl font-semibold text-gray-800'>Schedule Overview</h2>
-          <div className='flex space-x-2'>
-            <button className='px-3 py-1 text-sm bg-gray-100 rounded-md hover:bg-gray-200'>
-              Day
-            </button>
-            <button className='px-3 py-1 text-sm bg-gray-100 rounded-md hover:bg-gray-200'>
-              Week
-            </button>
-            <button className='px-3 py-1 text-sm bg-gray-100 rounded-md hover:bg-gray-200'>
-              Month
-            </button>
-          </div>
         </div>
-        <div className='w-full'>
+        <div className=''>
           <Scheduler events={events}/>
         </div>
       </div>
