@@ -13,7 +13,14 @@ const ViewAppointmentModal = ({ isOpen, onClose, data }) => {
                     <p><strong>Description:</strong> {data.description}</p>
                     <p><strong>Location:</strong> {data.location}</p>
                     {/* <p><strong>Meeting Type:</strong> {data.meeting_type || 'Not specified'}</p> */}
-                    <p><strong>With:</strong> {data.With || 'Not specified'}</p>
+                    {/* <p><strong>With:</strong> {data.With || 'Not specified'}</p> */}
+                    <p><strong>With:</strong></p>
+                    {data.with_contacts.map((contact, index) => (
+                        <p className='flex flex-col' key={contact.contact_id || index}>
+                            <li className='pl-7'>
+                                {contact.name} - {contact.designation} at {contact.organization?.name}
+                            </li></p>
+                    ))}
                     <div>
                         <strong>Time:</strong>
                         <p>From: {dayjs(data.start).format('DD-MM-YY hh:mm A')}</p>
