@@ -67,7 +67,8 @@ const page = () => {
           end: event.end_time.slice(0, -4),
           id: event.id,
           description: event.description || "No Description",  // Include description
-          location: event.location || "No Location"  // Include location
+          location: event.location || "No Location" , // Include location
+          with_contacts: event.with_contacts || [],  // Include with_contacts
         }));
 
         setAppointments(formattedEvents);
