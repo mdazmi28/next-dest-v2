@@ -36,8 +36,8 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
 
     // Add this useEffect for debugging
     useEffect(() => {
-        console.log('Selected Contacts:', selectedContacts);
-        console.log('Contact IDs:', meetingData.contact_ids);
+        // console.log('Selected Contacts:', selectedContacts);
+        // console.log('Contact IDs:', meetingData.contact_ids);
     }, [selectedContacts, meetingData.contact_ids]);
 
     const modalRef = useRef(null);
@@ -117,7 +117,7 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
                 }
 
                 const data = await response.json();
-                console.log('Fetched contacts:', data); // Add this line
+                // console.log('Fetched contacts:', data); // Add this line
                 setOriginalData(data);
                 setFilteredData(data);
             };

@@ -83,7 +83,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import ViewAppointmentModal from './modals/appointment/ViewAppointmentModal';
 
 const Scheduler = ({ events }) => {
-    console.log("Events are: ", events)
+    // console.log("Events are: ", events)
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
 

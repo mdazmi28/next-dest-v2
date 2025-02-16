@@ -94,7 +94,6 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         e.preventDefault();
 
         const userId = Cookies.get('user_id');
-        // const userNmae = Cookies.get('user_name');
         let authToken = localStorage.getItem('authToken');
         let user_name = localStorage.getItem('userName');
         console.log("User Name is: ", user_name)
@@ -127,20 +126,12 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         formData.append('sender', finalSender);
         formData.append('recipient', finalRecipient);
         formData.append('status', dispatchData.status);
-        // formData.append('note', dispatchData.note || "");
 
-        // console.log("Submitting data:", formData); // Debug log
-
-        files.forEach((file, index) => {
+        // Handle file attachments
+        files.forEach((file) => {
             formData.append('attachments', file);
-            // if (fileNotes[index]) {
-            //     formData.append(`attachment_notes_${index}`, fileNotes[index]);
-            // }
         });
 
-        if (files.length > 0) {
-            formData.append('attachments', files[0]); // Only taking the first file
-        }
         const submitDispatch = async (token) => {
             try {
                 const response = await fetch(`${base_url}/users/${userId}/dispatches/`, {
@@ -270,7 +261,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                             </select>
                         </div>
 
-                      
+
 
                         {dispatchData.type === 'Incoming' ? (
                             <div>
@@ -346,8 +337,6 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                             </select>
                         </div>
 
-
-
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Attachments
@@ -357,16 +346,9 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                                 onChange={handleFileChange}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
                                 accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
-                                multiple // Enable multiple file selection
+                                multiple
                             />
                         </div>
-
-                        {/* {files.length > 0 && (
-                    <div className="text-sm text-gray-600">
-                        Selected file: {files[0].name} ({(files[0].size / 1024).toFixed(2)} KB)
-                    </div>
-                )} */}
-
 
                         {files.length > 0 && (
                             <div className="space-y-3">
@@ -387,13 +369,6 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                                                 </svg>
                                             </button>
                                         </div>
-                                        {/* <input
-                                    type="text"
-                                    placeholder="Add a note for this file (optional)"
-                                    value={fileNotes[index] || ''}
-                                    onChange={(e) => handleFileNoteChange(e, index)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
-                                /> */}
                                     </div>
                                 ))}
                             </div>
