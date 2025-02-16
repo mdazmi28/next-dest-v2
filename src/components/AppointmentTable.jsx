@@ -11,6 +11,7 @@ import utc from 'dayjs/plugin/utc';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import ViewAppointmentModal from './modals/appointment/ViewAppointmentModal';
 import EditAppointmentModal from './modals/appointment/EditAppointmentModal';
+import DeleteAppointmentModal from './modals/appointment/DeleteAppointmentModal';
 
 // Extend dayjs with the necessary plugins
 dayjs.extend(utc);
@@ -167,7 +168,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const handleEdit = (data) => {
         const startDate = dayjs(data.start_time);
         const endDate = dayjs(data.end_time);
-    
+
         const formattedData = {
             ...data,
             start_time: startDate.format('YYYY-MM-DD'),
@@ -187,7 +188,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
             appointment_id: data.appointment_id,
             contacts: data.with_contacts || [] // Include contacts if available
         };
-    
+
         setEditData(formattedData);
         setIsEditOpen(true);
     };
@@ -485,71 +486,54 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 </table>
             </div>
 
-            {/* View Modal */}
-            {/* {isViewOpen && selectedData && (
-                <div className="modal modal-open">
-                    <div className="modal-box">
-                        <h4 className="text-md font-bold">Appointment Details</h4>
-                        <p>Title: {selectedData.title}</p>
-                        <p>Description: {selectedData.description}</p>
-                        <p>Location: {selectedData.location}</p>
-                        <p>
-                            From: {dayjs(selectedData.start).format('DD-MM-YY hh:mm A')}
-                            <br></br>
-                            To: {dayjs(selectedData.end).format('DD-MM-YY hh:mm A')}
-                        </p>
-                        <div className="modal-action">
-                            <button className="btn" onClick={() => setIsViewOpen(false)}>
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )} */}
             <ViewAppointmentModal
                 isOpen={isViewOpen}
                 onClose={() => setIsViewOpen(false)}
                 data={selectedData}
             />
 
-
             {/* Edit Modal */}
-           {/* Edit Modal */}
-<EditAppointmentModal
-    isOpen={isEditOpen}
-    onClose={() => {
-        setIsEditOpen(false);
-        clearForm();
-    }}
-    data={editData}
-    setAppointmentData={setAppointmentData}
-/>
+            <EditAppointmentModal
+                isOpen={isEditOpen}
+                onClose={() => {
+                    setIsEditOpen(false);
+                    clearForm();
+                }}
+                data={editData}
+                setAppointmentData={setAppointmentData}
+            />
 
             {/* Delete Confirmation Modal */}
-            {isDeleteOpen && (
+            {/* {isDeleteOpen && (
                 <div className="modal modal-open">
                     <div className="modal-box">
                         <h3 className="font-bold text-lg">
                             Are you sure you want to delete this appointment?
                         </h3>
                         <p className="py-4">This action cannot be undone.</p>
-                        <div className="modal-action">
-                            <button
-                                className="btn btn-error"
-                                onClick={() => confirmDelete(selectedAppointmentId)}
-                            >
-                                Delete
-                            </button>
+                        <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
                             <button
                                 className="btn"
                                 onClick={() => setIsDeleteOpen(false)}
                             >
                                 Cancel
                             </button>
+                            <button
+                                className="btn btn-error text-white hover:bg-red-400"
+                                onClick={() => confirmDelete(selectedAppointmentId)}
+                            >
+                                Delete
+                            </button>
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
+
+            <DeleteAppointmentModal
+                isOpen={isDeleteOpen}
+                onClose={() => setIsDeleteOpen(false)}
+                onConfirm={() => confirmDelete(selectedAppointmentId)}
+            />
         </div>
     );
 };

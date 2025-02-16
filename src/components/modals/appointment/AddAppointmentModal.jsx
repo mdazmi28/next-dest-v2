@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddAppointmentModal = ({ isOpen, onClose }) => {
-const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [meetingData, setMeetingData] = useState({
         title: '',
         description: '',
@@ -442,8 +442,8 @@ const [isLoading, setIsLoading] = useState(false);
                             />
                         </div>
 
-                         {/* Appointment with */}
-                         <div className="form-group relative">
+                        {/* Appointment with */}
+                        <div className="form-group relative">
                             <label className="block text-sm font-medium text-gray-600">Appointment With</label>
 
                             {/* Input field with selected contacts */}
