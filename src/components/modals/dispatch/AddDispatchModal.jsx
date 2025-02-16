@@ -10,6 +10,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         reference_number: '',
         type: '',
         subject: '',
+        sender: '',
         recipient: '',
         status: '',
         // note: '',
@@ -19,6 +20,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         reference_number: '',
         type: '',
         subject: '',
+        sender: '',
         recipient: '',
         status: '',
         // note: '',
@@ -236,19 +238,19 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                             />
                         </div>
 
-                        {/* <div>
+                        <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Type
+                                Subject
                             </label>
                             <input
                                 type="text"
-                                name="type"
-                                value={dispatchData.type}
+                                name="subject"
+                                value={dispatchData.subject}
                                 onChange={handleInputChange}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
                                 required
                             />
-                        </div> */}
+                        </div>
 
                         <div className="form-control">
                             <label className="label">Type</label>
@@ -265,19 +267,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                             </select>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Subject
-                            </label>
-                            <input
-                                type="text"
-                                name="subject"
-                                value={dispatchData.subject}
-                                onChange={handleInputChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
-                                required
-                            />
-                        </div>
+                      
 
                         {dispatchData.type === 'Incoming' ? (
                             <div>
