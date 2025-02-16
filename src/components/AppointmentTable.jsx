@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import { jwtDecode } from 'jwt-decode'
 import base_url from "@/base_url";
 import 'react-toastify/dist/ReactToastify.css';
-import { useFlowContext } from '@/context/FlowContext';
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -17,6 +16,7 @@ dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
 const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
+    console.log(appointmentData)
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
@@ -168,42 +168,6 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         setIsDeleteOpen(true);
     };
 
-    // const handleEditChange = (e) => {
-    //     const { name, value } = e.target;
-
-    //     // Create new state with the changed value
-    //     const newEditData = {
-    //         ...editData,
-    //         [name]: value === undefined ? '' : value
-    //     };
-
-    //     // Validate end time when any date/time field changes
-    //     const timeRelatedFields = ['start_time', 'hour', 'minute', 'ampm',
-    //         'end_time', 'end_hour', 'end_minute', 'end_ampm'];
-
-    //     if (timeRelatedFields.includes(name)) {
-    //         const isValid = isEndTimeValid(
-    //             newEditData.start_time,
-    //             newEditData.hour,
-    //             newEditData.minute,
-    //             newEditData.ampm,
-    //             newEditData.end_time,
-    //             newEditData.end_hour,
-    //             newEditData.end_minute,
-    //             newEditData.end_ampm
-    //         );
-
-    //         if (!isValid) {
-    //             toast.error("End time cannot be earlier than start time");
-    //             // Optionally, prevent the change or reset the end time
-    //             if (name.startsWith('end')) {
-    //                 return; // Don't update if end time is invalid
-    //             }
-    //         }
-    //     }
-
-    //     setEditData(newEditData);
-    // };
 
     const handleEditChange = (e) => {
         const { name, value } = e.target;
@@ -463,7 +427,12 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                 </td>
                                 <td>{data.title}</td>
                                 <td>{data.description}</td>
-                                <td>{data.with_contacts.name}</td>
+                                {data.with_contacts.map((contact, index) => (
+                                    <td className='flex flex-col' key={contact.contact_id || index}>
+                                        <li>
+                                            {contact.name}
+                                        </li></td>
+                                ))}
                                 <td>{data.location}</td>
                                 <td className="flex justify-between gap-5">
                                     <FaEye
@@ -506,7 +475,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                     </div>
                 </div>
             )} */}
-            <ViewAppointmentModal 
+            <ViewAppointmentModal
                 isOpen={isViewOpen}
                 onClose={() => setIsViewOpen(false)}
                 data={selectedData}

@@ -2,7 +2,6 @@
 import AppointmentTable from '@/components/AppointmentTable';
 import React, { useState, useEffect } from 'react';
 import Calendar from '@/components/Calendar';
-import { useFlowContext } from '@/context/FlowContext';
 import Cookies from 'js-cookie';
 import base_url from '@/base_url';
 import { toast } from 'react-toastify';
@@ -10,7 +9,6 @@ import Scheduler from '@/components/Schedular';
 import AddAppointmentModal from '@/components/modals/appointment/AddAppointmentModal';
 
 const ShowMeetings = () => {
-  // const { addMeetingInfoStage, setMeetingInfoStage  } = useFlowContext() || { addContactInfoStage: false, setAddContactInfoStage: () => { } };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [events, setEvents] = useState([]);
@@ -56,7 +54,7 @@ const ShowMeetings = () => {
         }
 
         const data = await response.json();
-        // console.log("Appointments fetched:", data);
+        // console.log("Appointments fetched Data is:", data);
 
         const formattedEvents = data.map(event => ({
           appointment_id: event.appointment_id,
@@ -85,7 +83,6 @@ const ShowMeetings = () => {
 
         setAppointments(formattedEvents);
         setEvents(formattedEvents);
-        console.log("Events fetched:", formattedEvents);
       };
 
       const refreshAndRetry = async () => {
