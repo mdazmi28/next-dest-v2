@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { jwtDecode } from 'jwt-decode'
 import 'react-toastify/dist/ReactToastify.css';
 import DeleteContactModal from "./modals/contact/DeleteContactModal";
+import ViewContactModal from "./modals/contact/ViewContactModal";
 
 const Table = ({ contactData, setContactData }) => {
     // console.log("Contact Data:", contactData);
@@ -355,7 +356,7 @@ const Table = ({ contactData, setContactData }) => {
                 </div>
 
                 {/* View Modal */}
-                {isViewOpen && selectedData && (
+                {/* {isViewOpen && selectedData && (
                     <div className="modal modal-open">
                         <div className="modal-box">
                             <h4 className="text-md font-bold">Personal Data</h4>
@@ -376,7 +377,12 @@ const Table = ({ contactData, setContactData }) => {
                             </div>
                         </div>
                     </div>
-                )}
+                )} */}
+                <ViewContactModal
+                                isOpen={isViewOpen}
+                                onClose={() => setIsViewOpen(false)}
+                                data={selectedData}
+                            />
 
                 {/* Edit Modal */}
 
