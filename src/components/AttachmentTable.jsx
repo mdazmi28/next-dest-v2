@@ -26,7 +26,6 @@ const AttachmentTable = ({ attachmentData }) => {
 
     return (
         <div>
-
             <div>
                 <table className='table'>
                     <thead>
