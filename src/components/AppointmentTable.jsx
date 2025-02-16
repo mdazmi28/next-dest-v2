@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import ViewAppointmentModal from './modals/appointment/ViewAppointmentModal';
+import EditAppointmentModal from './modals/appointment/EditAppointmentModal';
 
 // Extend dayjs with the necessary plugins
 dayjs.extend(utc);
@@ -61,24 +62,24 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         };
     }, [isEditOpen, isDeleteOpen, isViewOpen]);
 
-    const clearForm = () => {
-        setEditData({
-            meeting_type: "physical",
-            location: "",
-            title: "",
-            description: "",
-            start_time: "",
-            end_time: "",
-            hour: "",
-            minute: "",
-            ampm: "",
-            end_hour: "",
-            end_minute: "",
-            end_ampm: "",
-            is_recurring: true,
-            note: ""
-        });
-    };
+    // const clearForm = () => {
+    //     setEditData({
+    //         meeting_type: "physical",
+    //         location: "",
+    //         title: "",
+    //         description: "",
+    //         start_time: "",
+    //         end_time: "",
+    //         hour: "",
+    //         minute: "",
+    //         ampm: "",
+    //         end_hour: "",
+    //         end_minute: "",
+    //         end_ampm: "",
+    //         is_recurring: true,
+    //         note: ""
+    //     });
+    // };
 
     const isTokenExpired = (token) => {
         try {
@@ -138,11 +139,36 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         setIsViewOpen(true);
     };
 
-    const handleEdit = (data) => {
-        const startDate = dayjs(data.start);
-        const endDate = dayjs(data.end);
+    // const handleEdit = (data) => {
+    //     const startDate = dayjs(data.start);
+    //     const endDate = dayjs(data.end);
 
-        setEditData({
+    //     setEditData({
+    //         ...data,
+    //         start_time: startDate.format('YYYY-MM-DD'),
+    //         end_time: endDate.format('YYYY-MM-DD'),
+    //         hour: startDate.format('hh'),
+    //         minute: startDate.format('mm'),
+    //         ampm: startDate.format('A'),
+    //         end_hour: endDate.format('hh'),
+    //         end_minute: endDate.format('mm'),
+    //         end_ampm: endDate.format('A'),
+    //         meeting_type: data.meeting_type || 'physical',
+    //         location: data.location || '',
+    //         title: data.title || '',
+    //         description: data.description || '',
+    //         is_recurring: Boolean(data.is_recurring), // Ensure it's a boolean
+    //         note: data.note || '',
+    //     });
+    //     setSelectedAppointmentId(data.appointment_id);
+    //     setIsEditOpen(true);
+    // };
+
+    const handleEdit = (data) => {
+        const startDate = dayjs(data.start_time);
+        const endDate = dayjs(data.end_time);
+    
+        const formattedData = {
             ...data,
             start_time: startDate.format('YYYY-MM-DD'),
             end_time: endDate.format('YYYY-MM-DD'),
@@ -156,13 +182,18 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
             location: data.location || '',
             title: data.title || '',
             description: data.description || '',
-            is_recurring: Boolean(data.is_recurring), // Ensure it's a boolean
+            is_recurring: Boolean(data.is_recurring),
             note: data.note || '',
-        });
-        setSelectedAppointmentId(data.appointment_id);
+            appointment_id: data.appointment_id,
+            contacts: data.with_contacts || [] // Include contacts if available
+        };
+    
+        setEditData(formattedData);
         setIsEditOpen(true);
     };
-
+    const clearForm = () => {
+        setEditData(null);
+    };
     const handleDelete = (appointment_id) => {
         setSelectedAppointmentId(appointment_id);
         setIsDeleteOpen(true);
@@ -483,284 +514,16 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
 
 
             {/* Edit Modal */}
-            {isEditOpen && (
-                <div className="modal modal-open">
-                    <div className="modal-box">
-                        <h4 className="text-2xl font-bold">Edit Appointment</h4>
-                        <form onSubmit={(e) => {
-                            e.preventDefault();
-                            saveEdit(editData.appointment_id);
-                        }}>
-                            <div className="space-y-4">
-                                {/* Appointment Subject */}
-                                <div className="form-group">
-                                    <label className="block text-sm font-medium text-gray-600">Appointment Subject</label>
-                                    <input
-                                        type="text"
-                                        name="title"
-                                        value={editData.title || ''}
-                                        onChange={handleEditChange}
-                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                    />
-                                </div>
-
-                                {/* Appointment Details */}
-                                <div className="form-group">
-                                    <label className="block text-sm font-medium text-gray-600">Appointment Details</label>
-                                    <input
-                                        type="text"
-                                        name="description"
-                                        value={editData.description || ''}
-                                        onChange={handleEditChange}
-                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                    />
-                                </div>
-
-                                {/* Start Date and Time */}
-                                <div className="flex flex-col md:flex-row gap-4">
-                                    {/* Start Date Input */}
-                                    <div className="w-full md:w-1/2">
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">Start Date</label>
-                                        <input
-                                            type="date"
-                                            name="start_time"
-                                            value={editData.start_time || ''}
-                                            onChange={handleEditChange}
-                                            className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                        />
-                                    </div>
-
-                                    {/* Start Time Selection */}
-                                    <div className="w-full md:w-1/2">
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">Start Time</label>
-                                        <div className="flex gap-2">
-                                            {/* Hour Selection */}
-                                            <select
-                                                name="hour"
-                                                value={editData.hour || ''}
-                                                onChange={handleEditChange}
-                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            >
-                                                <option value="">Hour</option>
-                                                {Array.from({ length: 12 }, (_, i) => {
-                                                    const hour = i + 1;
-                                                    return (
-                                                        <option key={hour} value={String(hour).padStart(2, '0')}>
-                                                            {String(hour).padStart(2, '0')}
-                                                        </option>
-                                                    );
-                                                })}
-                                            </select>
-
-                                            {/* Minute Selection */}
-                                            <select
-                                                name="minute"
-                                                value={editData.minute || ''}
-                                                onChange={handleEditChange}
-                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            >
-                                                <option value="">Minute</option>
-                                                {["00", "15", "30", "45"].map((minute) => (
-                                                    <option key={minute} value={minute}>{minute}</option>
-                                                ))}
-                                            </select>
-
-                                            {/* AM/PM Selection */}
-                                            <select
-                                                name="ampm"
-                                                value={editData.ampm || ''}
-                                                onChange={handleEditChange}
-                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            >
-                                                <option value="">AM/PM</option>
-                                                <option value="AM">AM</option>
-                                                <option value="PM">PM</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* End Date and Time */}
-                                <div className="flex flex-col md:flex-row gap-4">
-                                    {/* End Date Input */}
-                                    <div className="w-full md:w-1/2">
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">End Date</label>
-                                        <input
-                                            type="date"
-                                            name="end_time"
-                                            value={editData.end_time || ''}
-                                            onChange={handleEditChange}
-                                            min={editData.start_time} // Prevent selecting date before start date
-                                            className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                        />
-                                    </div>
-
-                                    {/* End Time Selection */}
-                                    <div className="w-full md:w-1/2">
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">End Time</label>
-                                        <div className="flex gap-2">
-                                            {/* End Hour Selection */}
-                                            <select
-                                                name="end_hour"
-                                                value={editData.end_hour || ''}
-                                                onChange={handleEditChange}
-                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            >
-                                                <option value="">Hour</option>
-                                                {Array.from({ length: 12 }, (_, i) => {
-                                                    const hour = i + 1;
-                                                    return (
-                                                        <option key={hour} value={String(hour).padStart(2, '0')}>
-                                                            {String(hour).padStart(2, '0')}
-                                                        </option>
-                                                    );
-                                                })}
-                                            </select>
-
-                                            {/* End Minute Selection */}
-                                            <select
-                                                name="end_minute"
-                                                value={editData.end_minute || ''}
-                                                onChange={handleEditChange}
-                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            >
-                                                <option value="">Minute</option>
-                                                {["00", "15", "30", "45"].map((minute) => (
-                                                    <option key={minute} value={minute}>{minute}</option>
-                                                ))}
-                                            </select>
-
-                                            {/* End AM/PM Selection */}
-                                            <select
-                                                name="end_ampm"
-                                                value={editData.end_ampm || ''}
-                                                onChange={handleEditChange}
-                                                className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            >
-                                                <option value="">AM/PM</option>
-                                                <option value="AM">AM</option>
-                                                <option value="PM">PM</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Time Validation Message */}
-                                {!isEndTimeValid(
-                                    editData.start_time,
-                                    editData.hour,
-                                    editData.minute,
-                                    editData.ampm,
-                                    editData.end_time,
-                                    editData.end_hour,
-                                    editData.end_minute,
-                                    editData.end_ampm
-                                ) && (
-                                        <div className="text-red-500 text-sm">
-                                            End time must be after start time
-                                        </div>
-                                    )}
-
-                                {/* Meeting Type */}
-                                <div className="form-group">
-                                    <label className="block text-sm font-medium text-gray-600">Meeting Type</label>
-                                    <select
-                                        name="meeting_type"
-                                        value={editData.meeting_type || 'physical'}
-                                        onChange={handleEditChange}
-                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                    >
-                                        <option value="physical">Physical</option>
-                                        <option value="online">Online</option>
-                                    </select>
-                                </div>
-
-                                {/* Location */}
-                                <div className="form-group">
-                                    <label className="block text-sm font-medium text-gray-600">
-                                        {editData.meeting_type === 'online' ? 'Online Meeting Link' : 'Physical Location'}
-                                    </label>
-                                    <input
-                                        type={editData.meeting_type === 'online' ? 'url' : 'text'}
-                                        name="location"
-                                        value={editData.location || ''}
-                                        onChange={handleEditChange}
-                                        placeholder={editData.meeting_type === 'online'
-                                            ? "Enter the online meeting link"
-                                            : "Enter the location address"
-                                        }
-                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                    />
-                                </div>
-
-                                {/* Is Recurring */}
-                                <div className="form-group">
-                                    <label className="block text-sm font-medium text-gray-600">Is Recurring</label>
-                                    <select
-                                        name="is_recurring"
-                                        value={String(editData.is_recurring)} // Convert boolean to string
-                                        onChange={handleEditChange}
-                                        className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                    >
-                                        <option value="true">Yes</option>
-                                        <option value="false">No</option>
-                                    </select>
-                                </div>
-
-                                {/* Note */}
-                                {/* <div className="form-group">
-                        <label className="block text-sm font-medium text-gray-600">Note</label>
-                        <input
-                            type="text"
-                            name="note"
-                            value={editData.note || ''}
-                            onChange={handleEditChange}
-                            className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                        />
-                    </div> */}
-                            </div>
-
-                            <div className="modal-action">
-                                <button
-                                    type="submit"
-                                    className={`btn btn-primary ${!isEndTimeValid(
-                                        editData.start_time,
-                                        editData.hour,
-                                        editData.minute,
-                                        editData.ampm,
-                                        editData.end_time,
-                                        editData.end_hour,
-                                        editData.end_minute,
-                                        editData.end_ampm
-                                    ) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                    disabled={!isEndTimeValid(
-                                        editData.start_time,
-                                        editData.hour,
-                                        editData.minute,
-                                        editData.ampm,
-                                        editData.end_time,
-                                        editData.end_hour,
-                                        editData.end_minute,
-                                        editData.end_ampm
-                                    )}
-                                >
-                                    Save
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn"
-                                    onClick={() => {
-                                        setIsEditOpen(false);
-                                        clearForm();
-                                    }}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+           {/* Edit Modal */}
+<EditAppointmentModal
+    isOpen={isEditOpen}
+    onClose={() => {
+        setIsEditOpen(false);
+        clearForm();
+    }}
+    data={editData}
+    setAppointmentData={setAppointmentData}
+/>
 
             {/* Delete Confirmation Modal */}
             {isDeleteOpen && (

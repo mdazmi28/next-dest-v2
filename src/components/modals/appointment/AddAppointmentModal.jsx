@@ -769,7 +769,7 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
                             </button>
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-[#0BBFBF] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                className="px-4 py-2 bg-[#0BBFBF] text-white rounded-md hover:bg-[#89D9D9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                             >
                                 Add Meeting
                             </button>
