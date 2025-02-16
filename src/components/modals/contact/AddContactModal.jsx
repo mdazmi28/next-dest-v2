@@ -373,12 +373,28 @@ const AddContactModal = ({ isOpen, onClose, refreshData }) => {
                 >
                     <ImCross className="w-4 h-4" />
                 </button>
-               
+
                 <h2 className="text-3xl font-bold text-center mb-6">Add New Contact</h2>
-                <div className='flex justify-end'>
+                <div className='flex justify-end pb-4'>
+                    {/* <input
+                        type="file"
+                        className="file-input file-input-bordered file-input-info w-full max-w-xs "
+                        onChange={handleFileUpload}
+                        disabled={isProcessing}
+                    /> */}
                     <input
                         type="file"
-                        className="file-input file-input-bordered file-input-info w-full max-w-xs"
+                        className="file-input w-full max-w-xs
+               file:mr-4 
+               file:py-2 
+               file:px-4
+               file:rounded-full
+               file:border-0
+               file:text-sm
+               file:font-semibold
+               file:bg-[#0BBFBF]
+               file:text-white
+               hover:file:bg-[#0BBFBF]/80"
                         onChange={handleFileUpload}
                         disabled={isProcessing}
                     />
