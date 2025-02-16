@@ -65,8 +65,8 @@ const EditAppointmentModal = ({ isOpen, onClose, data, setAppointmentData }) => 
     // Effects
     useEffect(() => {
         if (isOpen && data) {
-            const startDate = dayjs(data.start_time);
-            const endDate = dayjs(data.end_time);
+            const startDate = dayjs(data.start); // or data.start_time
+            const endDate = dayjs(data.end);   // or data.end_time
 
             setEditData({
                 ...data,
@@ -93,6 +93,12 @@ const EditAppointmentModal = ({ isOpen, onClose, data, setAppointmentData }) => 
         }
     }, [isOpen, data]);
 
+    const handleClickOutside = (event) => {
+        if (modalRef.current && !modalRef.current.contains(event.target)) {
+            handleClose();
+        }
+    };
+
     useEffect(() => {
         const handleEscape = (e) => {
             if (e.key === 'Escape') {
@@ -100,11 +106,11 @@ const EditAppointmentModal = ({ isOpen, onClose, data, setAppointmentData }) => 
             }
         };
 
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                handleClose();
-            }
-        };
+        // const handleClickOutside = (event) => {
+        //     if (modalRef.current && !modalRef.current.contains(event.target)) {
+        //         handleClose();
+        //     }
+        // };
 
         if (isOpen) {
             document.addEventListener('keydown', handleEscape);
@@ -326,6 +332,7 @@ const EditAppointmentModal = ({ isOpen, onClose, data, setAppointmentData }) => 
 
             toast.success('Appointment updated successfully');
             handleClose();
+            location.reload();
         } catch (error) {
             setError(error.message);
             toast.error(error.message);
@@ -334,332 +341,389 @@ const EditAppointmentModal = ({ isOpen, onClose, data, setAppointmentData }) => 
         }
     };
 
+    if (!isOpen) return null;
+
     return (
-        <div className={`fixed inset-0 z-50 ${isOpen ? 'visible' : 'invisible'}`}>
-            {/* Backdrop */}
-            <div className="fixed inset-0 bg-black bg-opacity-50" onClick={handleClose}></div>
-
-            {/* Modal */}
-            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div
-                    ref={modalRef}
-                    className="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
+        <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
+            onClick={handleClickOutside}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+        >
+            <div ref={modalRef} className="relative w-full max-w-4xl bg-white rounded-lg shadow-2xl max-h-[90vh] overflow-y-auto">
+                {/* Close Button */}
+                <button
+                    onClick={onClose}
+                    className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition-colors"
+                    aria-label="Close modal"
                 >
-                    {/* Loading Overlay */}
-                    {isLoading && (
-                        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0BBFBF]"></div>
+                    <ImCross className="w-4 h-4" />
+                </button>
+
+                {/* Modal Content */}
+                <div className="p-6">
+                    <h2 id="modal-title" className="text-2xl font-bold text-center mb-6">Edit Meeting</h2>
+
+                    <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+                        {/* Title */}
+                        <div className="form-group">
+                            <label className="block text-sm font-medium text-gray-600">Appointment Subject</label>
+                            <input
+                                type="text"
+                                name="title"
+                                value={editData.title}
+                                onChange={handleEditChange}
+                                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                required
+                            />
                         </div>
-                    )}
 
-                    {/* Close Button */}
-                    <div className="absolute top-0 right-0 pt-4 pr-4">
-                        <button
-                            type="button"
-                            onClick={handleClose}
-                            className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                        >
-                            <span className="sr-only">Close</span>
-                            <ImCross className="w-6 h-6" />
-                        </button>
-                    </div>
+                        {/* Description */}
+                        <div className="form-group">
+                            <label className="block text-sm font-medium text-gray-600">Appointment Details</label>
+                            <textarea
+                                type="text"
+                                name="description"
+                                value={editData.description}
+                                onChange={handleEditChange}
+                                rows={3}
+                                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                            />
+                        </div>
 
-                    {/* Modal Content */}
-                    <div className="sm:flex sm:items-start">
-                        <div className="w-full mt-3 text-center sm:mt-0 sm:text-left">
-                            <h3 className="text-lg font-medium leading-6 text-gray-900">
-                                Edit Appointment
-                            </h3>
-
-                            {/* Error Display */}
-                            {error && (
-                                <div className="mt-2 text-sm text-red-600">
-                                    {error}
-                                </div>
-                            )}
-
-                            <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-                                {/* Title */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Title *
-                                    </label>
+                        {/* Contacts Selection */}
+                        <div className="form-group relative">
+                            <label className="block text-sm font-medium text-gray-600">Appointment With</label>
+                            <div className='relative'>
+                                <div className="flex flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-[42px]">
+                                    {selectedContacts.map((contact) => (
+                                        <div
+                                            key={contact.contact_id}
+                                            className="bg-gray-100 rounded-full px-3 py-1 flex items-center gap-2 text-sm"
+                                        >
+                                            <span>{contact.name}</span>
+                                            {contact.organization && (
+                                                <span className="text-xs text-gray-500">
+                                                    ({contact.organization.name})
+                                                </span>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleContactRemove(contact.contact_id)}
+                                                className="text-gray-500 hover:text-red-500"
+                                            >
+                                                <ImCross className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                    ))}
                                     <input
                                         type="text"
-                                        name="title"
-                                        value={editData.title}
-                                        onChange={handleEditChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                        required
+                                        value={searchInput}
+                                        onChange={handleSearchChange}
+                                        className="flex-1 min-w-[120px] outline-none"
+                                        placeholder={selectedContacts.length === 0 ? "Search participants..." : "Add more participants..."}
                                     />
                                 </div>
 
-                                {/* Description */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Description
-                                    </label>
-                                    <textarea
-                                        name="description"
-                                        value={editData.description}
-                                        onChange={handleEditChange}
-                                        rows={3}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                    />
-                                </div>
+                            </div>
 
-                                {/* Contacts Selection */}
-                                <div className="relative">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Participants
-                                    </label>
-                                    <div className="mt-1 flex flex-wrap gap-2 p-2 border border-gray-300 rounded-md min-h-[42px]">
-                                        {selectedContacts.map((contact) => (
+
+                            {/* Contacts Dropdown */}
+                            {/* {showSuggestions && (
+                                <div className="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-md max-h-60 overflow-auto">
+                                    {filteredData.length > 0 ? (
+                                        filteredData.map((contact) => (
                                             <div
                                                 key={contact.contact_id}
-                                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#E6F7F7] text-[#0BBFBF]"
+                                                onClick={() => handleContactSelect(contact)}
+                                                className="px-4 py-2 hover:bg-gray-50 cursor-pointer"
                                             >
-                                                <span>{contact.name}</span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleContactRemove(contact.contact_id)}
-                                                    className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[#0BBFBF] hover:text-[#89D9D9]"
-                                                >
-                                                    <ImCross className="w-3 h-3" />
-                                                </button>
-                                            </div>
-                                        ))}
-                                        <input
-                                            type="text"
-                                            value={searchInput}
-                                            onChange={handleSearchChange}
-                                            className="flex-1 min-w-[120px] outline-none"
-                                            placeholder={selectedContacts.length === 0 ? "Search participants..." : "Add more participants..."}
-                                        />
-                                    </div>
-
-                                    {/* Contacts Dropdown */}
-                                    {showSuggestions && (
-                                        <div className="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-md max-h-60 overflow-auto">
-                                            {filteredData.length > 0 ? (
-                                                filteredData.map((contact) => (
-                                                    <div
-                                                        key={contact.contact_id}
-                                                        onClick={() => handleContactSelect(contact)}
-                                                        className="px-4 py-2 hover:bg-gray-50 cursor-pointer"
-                                                    >
-                                                        <div className="text-sm font-medium text-gray-900">
-                                                            {contact.name}
-                                                        </div>
-                                                        {contact.organization && (
-                                                            <div className="text-sm text-gray-500">
-                                                                {contact.organization.name}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className="px-4 py-2 text-sm text-gray-500">
-                                                    No matching contacts found
+                                                <div className="text-sm font-medium text-gray-900">
+                                                    {contact.name}
                                                 </div>
-                                            )}
+                                                {contact.organization && (
+                                                    <div className="text-sm text-gray-500">
+                                                        {contact.organization.name}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="px-4 py-2 text-sm text-gray-500">
+                                            No matching contacts found
                                         </div>
                                     )}
                                 </div>
+                            )} */}
 
-                                {/* Date and Time Selection */}
-                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                    {/* Start Date/Time */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">
-                                            Start Date *
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="start_time"
-                                            value={editData.start_time}
-                                            onChange={handleEditChange}
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                            required
-                                        />
-
-                                        <div className="mt-2 grid grid-cols-3 gap-2">
-                                            <select
-                                                name="hour"
-                                                value={editData.hour}
-                                                onChange={handleEditChange}
-                                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                                required
+                            {showSuggestions && searchInput.trim().length >= 1 && (
+                                <div className="absolute z-50 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto shadow-lg">
+                                    {filteredData.length > 0 ? (
+                                        filteredData.map((contact) => (
+                                            <div
+                                                key={`suggestion-${contact.contact_id}`}
+                                                className="p-2 hover:bg-gray-100 cursor-pointer"
+                                                onClick={() => {
+                                                    if (!selectedContacts.some(selected =>
+                                                        selected.contact_id === contact.contact_id
+                                                    )) {
+                                                        setSelectedContacts(prev => [...prev, contact]);
+                                                        seteditData(prev => ({
+                                                            ...prev,
+                                                            contact_ids: [...prev.contact_ids, contact.contact_id]
+                                                        }));
+                                                        setSearchInput('');
+                                                        setShowSuggestions(false);
+                                                    }
+                                                }}
                                             >
-                                                <option value="">Hour</option>
-                                                {Array.from({ length: 12 }, (_, i) => (
-                                                    <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
-                                                        {String(i + 1).padStart(2, '0')}
-                                                    </option>
-                                                ))}
-                                            </select>
-
-                                            <select
-                                                name="minute"
-                                                value={editData.minute}
-                                                onChange={handleEditChange}
-                                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                                required
-                                            >
-                                                <option value="">Minute</option>
-                                                {["00", "15", "30", "45"].map(minute => (
-                                                    <option key={minute} value={minute}>{minute}</option>
-                                                ))}
-                                            </select>
-
-                                            <select
-                                                name="ampm"
-                                                value={editData.ampm}
-                                                onChange={handleEditChange}
-                                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                                required
-                                            >
-                                                <option value="">AM/PM</option>
-                                                <option value="AM">AM</option>
-                                                <option value="PM">PM</option>
-                                            </select>
+                                                <div className="font-medium text-sm">{contact.name}</div>
+                                                <div className="text-xs text-gray-500 flex items-center gap-2">
+                                                    {/* {contact.email && <span>{contact.email}</span>} */}
+                                                    {contact.organization && (
+                                                        <span>• {contact.organization.name}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="p-2 text-sm text-red-500">
+                                            No matching contacts found
                                         </div>
-                                    </div>
-
-                                    {/* End Date/Time */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">
-                                            End Date *
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="end_time"
-                                            value={editData.end_time}
-                                            onChange={handleEditChange}
-                                            min={editData.start_time}
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                            required
-                                        />
-
-                                        <div className="mt-2 grid grid-cols-3 gap-2">
-                                            <select
-                                                name="end_hour"
-                                                value={editData.end_hour}
-                                                onChange={handleEditChange}
-                                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                                required
-                                            >
-                                                <option value="">Hour</option>
-                                                {Array.from({ length: 12 }, (_, i) => (
-                                                    <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
-                                                        {String(i + 1).padStart(2, '0')}
-                                                    </option>
-                                                ))}
-                                            </select>
-
-                                            <select
-                                                name="end_minute"
-                                                value={editData.end_minute}
-                                                onChange={handleEditChange}
-                                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                                required
-                                            >
-                                                <option value="">Minute</option>
-                                                {["00", "15", "30", "45"].map(minute => (
-                                                    <option key={minute} value={minute}>{minute}</option>
-                                                ))}
-                                            </select>
-
-                                            <select
-                                                name="end_ampm"
-                                                value={editData.end_ampm}
-                                                onChange={handleEditChange}
-                                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                                required
-                                            >
-                                                <option value="">AM/PM</option>
-                                                <option value="AM">AM</option>
-                                                <option value="PM">PM</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
-
-                                {/* Meeting Type and Location */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Meeting Type
-                                    </label>
-                                    <select
-                                        name="meeting_type"
-                                        value={editData.meeting_type}
-                                        onChange={handleEditChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                    >
-                                        <option value="physical">Physical</option>
-                                        <option value="online">Online</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        {editData.meeting_type === 'online' ? 'Meeting Link' : 'Location'}
-                                    </label>
-                                    <input
-                                        type={editData.meeting_type === 'online' ? 'url' : 'text'}
-                                        name="location"
-                                        value={editData.location}
-                                        onChange={handleEditChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                        placeholder={editData.meeting_type === 'online'
-                                            ? 'Enter meeting link'
-                                            : 'Enter location'
-                                        }
-                                    />
-                                </div>
-
-                                {/* Is Recurring */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Recurring Meeting
-                                    </label>
-                                    <select
-                                        name="is_recurring"
-                                        value={String(editData.is_recurring)}
-                                        onChange={handleEditChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0BBFBF] focus:ring-[#0BBFBF] sm:text-sm"
-                                    >
-                                        <option value="false">No</option>
-                                        <option value="true">Yes</option>
-                                    </select>
-                                </div>
-
-                                {/* Action Buttons */}
-                                <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-                                    <button
-                                        type="submit"
-                                        disabled={isLoading}
-                                        className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#0BBFBF] text-white hover:bg-[#89D9D9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:col-start-2 sm:text-sm ${
-                                            isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                                        }`}
-                                    >
-                                        {isLoading ? 'Saving...' : 'Save Changes'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleClose}
-                                        disabled={isLoading}
-                                        className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:mt-0 sm:col-start-1 sm:text-sm"
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-                            </form>
+                            )}
                         </div>
-                    </div>
+
+                        {/* Start Date and Time Selection */}
+                        <div className="flex flex-col md:flex-row gap-4">
+                            {/* Start Date Input */}
+                            <div className="w-full md:w-1/2">
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Start Date</label>
+                                <input
+                                    type="date"
+                                    name="start_time"
+                                    value={editData.start_time}
+                                    onChange={handleEditChange}
+                                    min={new Date().toISOString().split('T')[0]}
+                                    className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    required
+                                />
+                            </div>
+
+                            {/* Start Time Selection */}
+                            <div className="w-full md:w-1/2">
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Start Time</label>
+                                <div className="flex gap-2">
+                                    {/* Hour Selection */}
+                                    <select
+                                        name="hour"
+                                        value={editData.hour}
+                                        onChange={handleEditChange}
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        required
+                                    >
+                                        <option value="">Hour</option>
+                                        {Array.from({ length: 12 }, (_, i) => {
+                                            const hour = i + 1;
+                                            return (
+                                                <option key={hour} value={String(hour).padStart(2, '0')}>
+                                                    {String(hour).padStart(2, '0')}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+
+                                    {/* Minute Selection */}
+                                    <select
+                                        name="minute"
+                                        value={editData.minute}
+                                        onChange={handleEditChange}
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        required
+                                    >
+                                        <option value="">Minute</option>
+                                        {["00", "15", "30", "45"].map((minute) => (
+                                            <option key={minute} value={minute}>{minute}</option>
+                                        ))}
+                                    </select>
+
+                                    {/* AM/PM Selection */}
+                                    <select
+                                        name="ampm"
+                                        value={editData.ampm}
+                                        onChange={handleEditChange}
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        required
+                                    >
+                                        <option value="">AM/PM</option>
+                                        <option value="AM">AM</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Edit Date Time Selection */}
+                        <div className="flex flex-col md:flex-row gap-4">
+                            {/* End Date Input */}
+                            <div className="w-full md:w-1/2">
+                                <label className="block text-sm font-medium text-gray-600 mb-1">End Date</label>
+                                <input
+                                    type="date"
+                                    name="end_time"
+                                    value={editData.end_time}
+                                    onChange={handleEditChange}
+                                    min={editData.start_time || new Date().toISOString().split('T')[0]}
+                                    className="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    required
+                                />
+                            </div>
+
+                            {/* End Time Selection */}
+                            <div className="w-full md:w-1/2">
+                                <label className="block text-sm font-medium text-gray-600 mb-1">End Time</label>
+                                <div className="flex gap-2">
+                                    {/* End Hour Selection */}
+                                    <select
+                                        name="end_hour"
+                                        value={editData.end_hour}
+                                        onChange={handleEditChange}
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        required
+                                    >
+                                        <option value="">Hour</option>
+                                        {Array.from({ length: 12 }, (_, i) => {
+                                            const hour = i + 1;
+                                            return (
+                                                <option key={hour} value={String(hour).padStart(2, '0')}>
+                                                    {String(hour).padStart(2, '0')}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+
+                                    {/* End Minute Selection */}
+                                    <select
+                                        name="end_minute"
+                                        value={editData.end_minute}
+                                        onChange={handleEditChange}
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        required
+                                    >
+                                        <option value="">Minute</option>
+                                        {["00", "15", "30", "45"].map((minute) => (
+                                            <option key={minute} value={minute}>{minute}</option>
+                                        ))}
+                                    </select>
+
+                                    {/* End AM/PM Selection */}
+                                    <select
+                                        name="end_ampm"
+                                        value={editData.end_ampm}
+                                        onChange={handleEditChange}
+                                        className="p-2 w-1/3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        required
+                                    >
+                                        <option value="">AM/PM</option>
+                                        <option value="AM">AM</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {!isEndTimeValid(
+                            editData.start_time,
+                            editData.hour,
+                            editData.minute,
+                            editData.ampm,
+                            editData.end_time,
+                            editData.end_hour,
+                            editData.end_minute,
+                            editData.end_ampm
+                        ) && (
+                                <div className="text-red-500 text-sm mt-1">
+                                    End date and time must be after start date and time
+                                </div>
+                            )}
+
+
+
+                        {/* Meeting Type and Location */}
+
+                         <div className="form-group">
+                            <label className="block text-sm font-medium text-gray-600">Meeting Type</label>
+                            <select
+                                name="meeting_type"
+                                value={editData.meeting_type}
+                                onChange={handleEditChange}
+                                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                required
+                            >
+                                <option value="physical">Physical</option>
+                                <option value="online">Online</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="block text-sm font-medium text-gray-600">
+                                {editData.meeting_type === 'online' ? 'Online Meeting Link' : 'Physical Location'}
+                            </label>
+                            <input
+                                type={editData.meeting_type === 'online' ? 'url' : 'text'}
+                                name="location"
+                                value={editData.location}
+                                onChange={handleEditChange}
+                                placeholder={editData.meeting_type === 'online'
+                                    ? "Enter the online meeting link"
+                                    : "Enter the location address"
+                                }
+                                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                required
+                            />
+                        </div>
+
+                        {/* Is Recurring */}
+                        <div className="form-group">
+                            <label className="block text-sm font-medium text-gray-600">Is Recurring</label>
+                            <select
+                                name="is_recurring"
+                                value={editData.is_recurring}
+                                onChange={handleEditChange}
+                                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                required
+                            >
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#0BBFBF] text-white hover:bg-[#89D9D9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:col-start-2 sm:text-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
+                            >
+                                {isLoading ? 'Updating...' : 'Update Meeting'} 
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleClose}
+                                disabled={isLoading}
+                                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:mt-0 sm:col-start-1 sm:text-sm"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+
     );
 };
 

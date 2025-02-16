@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddAppointmentModal = ({ isOpen, onClose }) => {
-
+const [isLoading, setIsLoading] = useState(false);
     const [meetingData, setMeetingData] = useState({
         title: '',
         description: '',
@@ -429,8 +429,21 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
                             />
                         </div>
 
-                        {/* Appointment with */}
-                        <div className="form-group relative">
+                        {/* Appointment Details */}
+                        <div className="form-group">
+                            <label className="block text-sm font-medium text-gray-600">Appointment Details</label>
+                            <textarea
+                                type="text"
+                                name="description"
+                                value={meetingData.description}
+                                onChange={handleChange}
+                                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                required
+                            />
+                        </div>
+
+                         {/* Appointment with */}
+                         <div className="form-group relative">
                             <label className="block text-sm font-medium text-gray-600">Appointment With</label>
 
                             {/* Input field with selected contacts */}
@@ -540,19 +553,6 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
                                     )}
                                 </div>
                             )}
-                        </div>
-
-                        {/* Appointment Details */}
-                        <div className="form-group">
-                            <label className="block text-sm font-medium text-gray-600">Appointment Details</label>
-                            <input
-                                type="text"
-                                name="description"
-                                value={meetingData.description}
-                                onChange={handleChange}
-                                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                required
-                            />
                         </div>
 
                         {/* Start Date and Time */}
@@ -759,19 +759,22 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
                             </select>
                         </div>
 
-                        <div className="mt-6 flex justify-end space-x-3">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                Cancel
-                            </button>
+                        <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-[#0BBFBF] text-white rounded-md hover:bg-[#89D9D9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                disabled={isLoading}
+                                className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#0BBFBF] text-white hover:bg-[#89D9D9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:col-start-2 sm:text-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
                             >
-                                Add Meeting
+                                {isLoading ? 'Saving...' : 'Save Meeting'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleClose}
+                                disabled={isLoading}
+                                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:mt-0 sm:col-start-1 sm:text-sm"
+                            >
+                                Cancel
                             </button>
                         </div>
                     </form>
