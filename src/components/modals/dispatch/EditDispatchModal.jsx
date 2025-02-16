@@ -1,8 +1,8 @@
+'use client'
 import React, { useState } from 'react';
 import { toast } from "react-toastify";
 import base_url from '@/base_url';
 import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
 
 const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
     if (!isOpen || !data) return null;
@@ -11,11 +11,19 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
         reference_number: data.reference_number || '',
         type: data.type || '',
         subject: data.subject || '',
+        sender: data.sender || '',
         recipient: data.recipient || '',
         status: data.status || '',
         note: data.note || '',
     });
     const [file, setFile] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleOverlayClick = (e) => {
+        if (e.target.classList.contains('modal')) {
+            onClose();
+        }
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -26,13 +34,20 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
     };
 
     const handleFileChange = (e) => {
-        if (e.target.files.length > 0) {
-            setFile(e.target.files[0]);
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            // Add file size validation (5MB limit)
+            if (selectedFile.size > 5 * 1024 * 1024) {
+                toast.error("File size should be less than 5MB");
+                return;
+            }
+            setFile(selectedFile);
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
 
         const userId = Cookies.get('user_id');
         let authToken = localStorage.getItem('authToken');
@@ -40,25 +55,28 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
 
         if (!userId) {
             toast.error("User ID is missing. Please log in again.");
+            setIsLoading(false);
             return;
         }
 
-        // Create FormData instance
         const formData = new FormData();
-        
-        // Only append non-empty values
-        if (editData.reference_number) formData.append('reference_number', editData.reference_number);
-        if (editData.type) formData.append('type', editData.type);
-        if (editData.subject) formData.append('subject', editData.subject);
-        formData.append('sender', userId); // Always append sender as userId
-        if (editData.recipient) formData.append('recipient', editData.recipient);
-        if (editData.status) formData.append('status', editData.status);
-        if (editData.note) formData.append('note', editData.note);
-        
-        // Append file if selected
-        if (file) {
-            formData.append('attachments', file);
+
+        // Handle sender/recipient logic
+        if (editData.type === 'Incoming') {
+            formData.append('sender', editData.sender);
+            formData.append('recipient', userId);
+        } else if (editData.type === 'Outgoing') {
+            formData.append('sender', userId);
+            formData.append('recipient', editData.recipient);
         }
+
+        // Append other form data
+        formData.append('reference_number', editData.reference_number);
+        formData.append('type', editData.type);
+        formData.append('subject', editData.subject);
+        formData.append('status', editData.status);
+        if (editData.note) formData.append('note', editData.note);
+        if (file) formData.append('attachments', file);
 
         const submitDispatch = async (token) => {
             try {
@@ -76,10 +94,9 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
                 }
 
                 const responseData = await response.json();
-                
-                // Update the dispatches list
-                setDispatchData(prev => 
-                    prev.map(dispatch => 
+
+                setDispatchData(prev =>
+                    prev.map(dispatch =>
                         dispatch.dispatch_id === data.dispatch_id ? responseData : dispatch
                     )
                 );
@@ -89,6 +106,8 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
             } catch (err) {
                 console.error("Submit Error:", err);
                 toast.error(err.message || "An error occurred while updating.");
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -114,6 +133,7 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
             } catch (err) {
                 console.error("Refresh Error:", err);
                 toast.error("Session expired. Please log in again.");
+                setIsLoading(false);
             }
         };
 
@@ -128,11 +148,12 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
         } catch (err) {
             console.error("Error:", err);
             toast.error(err.message || "An error occurred.");
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className="modal modal-open">
+        <div className="modal modal-open" onClick={handleOverlayClick}>
             <div className="modal-box">
                 <h4 className="text-2xl font-bold mb-4">Edit Dispatch</h4>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -159,10 +180,26 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
                             required
                         >
                             <option value="">Select Type</option>
-                            <option value="incoming">Incoming</option>
-                            <option value="outgoing">Outgoing</option>
+                            <option value="Incoming">Incoming</option>
+                            <option value="Outgoing">Outgoing</option>
                         </select>
                     </div>
+
+                    {editData.type && (
+                        <div className="form-control">
+                            <label className="label">
+                                {editData.type === 'Incoming' ? 'Sender' : 'Recipient'}
+                            </label>
+                            <input
+                                type="text"
+                                name={editData.type === 'Incoming' ? 'sender' : 'recipient'}
+                                value={editData.type === 'Incoming' ? editData.sender : editData.recipient}
+                                onChange={handleInputChange}
+                                className="input input-bordered"
+                                required
+                            />
+                        </div>
+                    )}
 
                     <div className="form-control">
                         <label className="label">Subject</label>
@@ -174,18 +211,6 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
                             className="input input-bordered"
                             required
                             maxLength={255}
-                        />
-                    </div>
-
-                    <div className="form-control">
-                        <label className="label">Recipient</label>
-                        <input
-                            type="text"
-                            name="recipient"
-                            value={editData.recipient}
-                            onChange={handleInputChange}
-                            className="input input-bordered"
-                            required
                         />
                     </div>
 
@@ -206,17 +231,6 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
                     </div>
 
                     <div className="form-control">
-                        <label className="label">Note</label>
-                        <textarea
-                            name="note"
-                            value={editData.note}
-                            onChange={handleInputChange}
-                            className="textarea textarea-bordered"
-                            rows="3"
-                        />
-                    </div>
-
-                    <div className="form-control">
                         <label className="label">Attachment</label>
                         <input
                             type="file"
@@ -230,19 +244,22 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
                         )}
                     </div>
 
-                    <div className="flex justify-end space-x-4 pt-4">
+                    <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#0BBFBF] text-white hover:bg-[#89D9D9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:col-start-2 sm:text-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
+                            >
+                                {isLoading ? 'Updating...' : 'Update Dispatch'} 
+                            </button>
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                                disabled={isLoading}
+                                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:mt-0 sm:col-start-1 sm:text-sm"
                             >
                                 Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                className="px-4 py-2 bg-[#0BBFBF] text-white rounded-md hover:bg-[#89D9D9]"
-                            >
-                                Submit
                             </button>
                         </div>
                 </form>

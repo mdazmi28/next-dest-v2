@@ -8,6 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { jwtDecode } from 'jwt-decode'
 import 'react-toastify/dist/ReactToastify.css';
 import EditDispatchModal from "./modals/dispatch/EditDispatchModal";
+import DeleteDispatchModal from "./modals/dispatch/DeleteDispatchModal";
 
 const DispatchTable = ({ dispatchData, setDispatchData }) => {
     const [isViewOpen, setIsViewOpen] = useState(false);
@@ -16,7 +17,7 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
     // for edit data state
     // const [editData, setEditData] = useState(null);
     // const [isEditOpen, setIsEditOpen] = useState(false);
-    const [selectedContactId, setSelectedContactId] = useState(null);
+    // const [selectedContactId, setSelectedContactId] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [selectedDispatchId, setSelectedDispatchId] = useState(null);
 
@@ -62,8 +63,8 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
     };
 
 
-    const handleDelete = (contact_id) => {
-        setSelectedContactId(contact_id);
+    const handleDelete = (dispatch_id) => {
+        setSelectedDispatchId(dispatch_id);
         setIsDeleteOpen(true);
     };
 
@@ -321,12 +322,12 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                                     <td>{data.recipient}</td>
                                     <td>
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${data.status === "pending"
-                                                ? "bg-red-100 text-red-800"
-                                                : data.status === "in_progress"
-                                                    ? "bg-yellow-100 text-yellow-800"
-                                                    : data.status === "completed"
-                                                        ? "bg-green-100 text-green-800"
-                                                        : "bg-gray-100 text-gray-800"
+                                            ? "bg-red-100 text-red-800"
+                                            : data.status === "in_progress"
+                                                ? "bg-yellow-100 text-yellow-800"
+                                                : data.status === "completed"
+                                                    ? "bg-green-100 text-green-800"
+                                                    : "bg-gray-100 text-gray-800"
                                             }`}>
                                             {data.status.charAt(0).toUpperCase() + data.status.slice(1).replace('_', ' ')}
                                         </span>
@@ -390,7 +391,7 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
 
 
                 {/* Delete Confirmation Modal */}
-                {isDeleteOpen && (
+                {/* {isDeleteOpen && (
                     <div className="modal modal-open">
                         <div className="modal-box">
                             <h3 className="font-bold text-lg">
@@ -410,7 +411,13 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                             </div>
                         </div>
                     </div>
-                )}
+                )} */}
+
+                <DeleteDispatchModal
+                    isOpen={isDeleteOpen}
+                    onClose={() => setIsDeleteOpen(false)}
+                    onConfirm={() => confirmDelete(selectedDispatchId)} />
+
 
 
             </div>
