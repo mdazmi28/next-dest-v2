@@ -2,7 +2,6 @@
 import ShowMeetings from '@/pages/ShowMeetingsPage';
 import React from 'react';
 import { useFlowContext } from '@/context/FlowContext';
-import AddMeetingsPage from '@/pages/AddMeetingsPage';
 import Layout from '@/components/Layout';
 
 const page = () => {
@@ -10,10 +9,7 @@ const page = () => {
     // console.log(addMeetingInfoStage)
     return (
         <Layout>
-
-            {
-                addMeetingInfoStage ? (<ShowMeetings />) : (<AddMeetingsPage />)
-            }
+            <ShowMeetings />
         </Layout>
 
     );
