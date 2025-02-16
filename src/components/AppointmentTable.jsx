@@ -201,164 +201,164 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     };
 
 
-    const handleEditChange = (e) => {
-        const { name, value } = e.target;
+    // const handleEditChange = (e) => {
+    //     const { name, value } = e.target;
 
-        // Special handling for is_recurring
-        if (name === 'is_recurring') {
-            const boolValue = value === 'true'; // Convert string to boolean
-            setEditData(prev => ({
-                ...prev,
-                [name]: boolValue
-            }));
-            return;
-        }
+    //     // Special handling for is_recurring
+    //     if (name === 'is_recurring') {
+    //         const boolValue = value === 'true'; // Convert string to boolean
+    //         setEditData(prev => ({
+    //             ...prev,
+    //             [name]: boolValue
+    //         }));
+    //         return;
+    //     }
 
-        // Create new state with the changed value
-        const newEditData = {
-            ...editData,
-            [name]: value === undefined ? '' : value
-        };
+    //     // Create new state with the changed value
+    //     const newEditData = {
+    //         ...editData,
+    //         [name]: value === undefined ? '' : value
+    //     };
 
-        // Validate end time when any date/time field changes
-        const timeRelatedFields = ['start_time', 'hour', 'minute', 'ampm',
-            'end_time', 'end_hour', 'end_minute', 'end_ampm'];
+    //     // Validate end time when any date/time field changes
+    //     const timeRelatedFields = ['start_time', 'hour', 'minute', 'ampm',
+    //         'end_time', 'end_hour', 'end_minute', 'end_ampm'];
 
-        if (timeRelatedFields.includes(name)) {
-            const isValid = isEndTimeValid(
-                newEditData.start_time,
-                newEditData.hour,
-                newEditData.minute,
-                newEditData.ampm,
-                newEditData.end_time,
-                newEditData.end_hour,
-                newEditData.end_minute,
-                newEditData.end_ampm
-            );
+    //     if (timeRelatedFields.includes(name)) {
+    //         const isValid = isEndTimeValid(
+    //             newEditData.start_time,
+    //             newEditData.hour,
+    //             newEditData.minute,
+    //             newEditData.ampm,
+    //             newEditData.end_time,
+    //             newEditData.end_hour,
+    //             newEditData.end_minute,
+    //             newEditData.end_ampm
+    //         );
 
-            if (!isValid) {
-                toast.error("End time cannot be earlier than start time");
-                // Optionally, prevent the change or reset the end time
-                if (name.startsWith('end')) {
-                    return; // Don't update if end time is invalid
-                }
-            }
-        }
+    //         if (!isValid) {
+    //             toast.error("End time cannot be earlier than start time");
+    //             // Optionally, prevent the change or reset the end time
+    //             if (name.startsWith('end')) {
+    //                 return; // Don't update if end time is invalid
+    //             }
+    //         }
+    //     }
 
-        setEditData(newEditData);
-    };
+    //     setEditData(newEditData);
+    // };
 
-    const saveEdit = async (id) => {
-        const userId = Cookies.get("user_id");
-        let authToken = localStorage.getItem("authToken");
-        const refreshToken = localStorage.getItem("refreshToken");
+    // const saveEdit = async (id) => {
+    //     const userId = Cookies.get("user_id");
+    //     let authToken = localStorage.getItem("authToken");
+    //     const refreshToken = localStorage.getItem("refreshToken");
 
-        if (!userId || !editData) {
-            toast.error("User ID or appointment data is missing!");
-            return;
-        }
+    //     if (!userId || !editData) {
+    //         toast.error("User ID or appointment data is missing!");
+    //         return;
+    //     }
 
-        // Validate times before saving
-        const isValid = isEndTimeValid(
-            editData.start_time,
-            editData.hour,
-            editData.minute,
-            editData.ampm,
-            editData.end_time,
-            editData.end_hour,
-            editData.end_minute,
-            editData.end_ampm
-        );
+    //     // Validate times before saving
+    //     const isValid = isEndTimeValid(
+    //         editData.start_time,
+    //         editData.hour,
+    //         editData.minute,
+    //         editData.ampm,
+    //         editData.end_time,
+    //         editData.end_hour,
+    //         editData.end_minute,
+    //         editData.end_ampm
+    //     );
 
-        if (!isValid) {
-            toast.error("End time cannot be earlier than start time");
-            return;
-        }
+    //     if (!isValid) {
+    //         toast.error("End time cannot be earlier than start time");
+    //         return;
+    //     }
 
-        const formattedStartTime = editData.start_time
-            ? formatDateTime(editData.start_time, editData.hour, editData.minute, editData.ampm)
-            : undefined;
-        const formattedEndTime = editData.end_time
-            ? formatDateTime(editData.end_time, editData.end_hour, editData.end_minute, editData.end_ampm)
-            : undefined;
+    //     const formattedStartTime = editData.start_time
+    //         ? formatDateTime(editData.start_time, editData.hour, editData.minute, editData.ampm)
+    //         : undefined;
+    //     const formattedEndTime = editData.end_time
+    //         ? formatDateTime(editData.end_time, editData.end_hour, editData.end_minute, editData.end_ampm)
+    //         : undefined;
 
-        const requestBody = {};
+    //     const requestBody = {};
 
-        if (editData.title !== undefined) requestBody.title = editData.title;
-        if (editData.description !== undefined) requestBody.description = editData.description;
-        if (formattedStartTime !== undefined) requestBody.start_time = formattedStartTime;
-        if (formattedEndTime !== undefined) requestBody.end_time = formattedEndTime;
-        if (editData.location !== undefined) requestBody.location = editData.location;
-        if (editData.note !== undefined) requestBody.note = editData.note;
-        requestBody.is_recurring = true;
+    //     if (editData.title !== undefined) requestBody.title = editData.title;
+    //     if (editData.description !== undefined) requestBody.description = editData.description;
+    //     if (formattedStartTime !== undefined) requestBody.start_time = formattedStartTime;
+    //     if (formattedEndTime !== undefined) requestBody.end_time = formattedEndTime;
+    //     if (editData.location !== undefined) requestBody.location = editData.location;
+    //     if (editData.note !== undefined) requestBody.note = editData.note;
+    //     requestBody.is_recurring = true;
 
-        const updateAppointmentWithToken = async (token) => {
-            try {
-                const response = await fetch(`${base_url}/users/${userId}/appointments/${id}/`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(requestBody),
-                });
+    //     const updateAppointmentWithToken = async (token) => {
+    //         try {
+    //             const response = await fetch(`${base_url}/users/${userId}/appointments/${id}/`, {
+    //                 method: "PATCH",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //                 body: JSON.stringify(requestBody),
+    //             });
 
-                if (response.ok) {
-                    const updatedAppointment = await response.json();
-                    setAppointmentData((prevAppointments) =>
-                        prevAppointments.map((appointment) =>
-                            appointment.appointment_id === id
-                                ? { ...appointment, ...updatedAppointment }
-                                : appointment
-                        )
-                    );
+    //             if (response.ok) {
+    //                 const updatedAppointment = await response.json();
+    //                 setAppointmentData((prevAppointments) =>
+    //                     prevAppointments.map((appointment) =>
+    //                         appointment.appointment_id === id
+    //                             ? { ...appointment, ...updatedAppointment }
+    //                             : appointment
+    //                     )
+    //                 );
 
-                    toast.success("Appointment updated successfully!");
-                    setIsEditOpen(false);
-                    clearForm();
-                    location.reload();
-                } else {
-                    const errorData = await response.json();
-                    toast.error(errorData.message || "Failed to update appointment.");
-                }
-            } catch (error) {
-                console.error("Error updating appointment:", error);
-                toast.error("An error occurred while updating.");
-            }
-        };
+    //                 toast.success("Appointment updated successfully!");
+    //                 setIsEditOpen(false);
+    //                 clearForm();
+    //                 location.reload();
+    //             } else {
+    //                 const errorData = await response.json();
+    //                 toast.error(errorData.message || "Failed to update appointment.");
+    //             }
+    //         } catch (error) {
+    //             console.error("Error updating appointment:", error);
+    //             toast.error("An error occurred while updating.");
+    //         }
+    //     };
 
-        const refreshAndRetry = async () => {
-            try {
-                const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ refresh: refreshToken }),
-                });
+    //     const refreshAndRetry = async () => {
+    //         try {
+    //             const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //                 body: JSON.stringify({ refresh: refreshToken }),
+    //             });
 
-                if (!refreshResponse.ok) {
-                    throw new Error("Token refresh failed. Please log in again.");
-                }
+    //             if (!refreshResponse.ok) {
+    //                 throw new Error("Token refresh failed. Please log in again.");
+    //             }
 
-                const refreshData = await refreshResponse.json();
-                authToken = refreshData.access;
-                localStorage.setItem("authToken", authToken);
-                await updateAppointmentWithToken(authToken);
-            } catch (err) {
-                console.error("Refresh and Retry Error:", err);
-                toast.error("Session expired. Please log in again.");
-            }
-        };
+    //             const refreshData = await refreshResponse.json();
+    //             authToken = refreshData.access;
+    //             localStorage.setItem("authToken", authToken);
+    //             await updateAppointmentWithToken(authToken);
+    //         } catch (err) {
+    //             console.error("Refresh and Retry Error:", err);
+    //             toast.error("Session expired. Please log in again.");
+    //         }
+    //     };
 
-        if (authToken && !isTokenExpired(authToken)) {
-            await updateAppointmentWithToken(authToken);
-        } else if (refreshToken) {
-            await refreshAndRetry();
-        } else {
-            toast.error("Authentication error. Please log in.");
-        }
-    };
+    //     if (authToken && !isTokenExpired(authToken)) {
+    //         await updateAppointmentWithToken(authToken);
+    //     } else if (refreshToken) {
+    //         await refreshAndRetry();
+    //     } else {
+    //         toast.error("Authentication error. Please log in.");
+    //     }
+    // };
 
     const confirmDelete = async (id) => {
         const userId = Cookies.get('user_id');
@@ -502,32 +502,6 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 data={editData}
                 setAppointmentData={setAppointmentData}
             />
-
-            {/* Delete Confirmation Modal */}
-            {/* {isDeleteOpen && (
-                <div className="modal modal-open">
-                    <div className="modal-box">
-                        <h3 className="font-bold text-lg">
-                            Are you sure you want to delete this appointment?
-                        </h3>
-                        <p className="py-4">This action cannot be undone.</p>
-                        <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-                            <button
-                                className="btn"
-                                onClick={() => setIsDeleteOpen(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="btn btn-error text-white hover:bg-red-400"
-                                onClick={() => confirmDelete(selectedAppointmentId)}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )} */}
 
             <DeleteAppointmentModal
                 isOpen={isDeleteOpen}
