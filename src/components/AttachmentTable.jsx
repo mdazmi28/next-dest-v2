@@ -31,6 +31,7 @@ const AttachmentTable = ({ attachmentData }) => {
                 <table className='table'>
                     <thead>
                         <tr>
+                            <th>Reference Number</th>
                             <th>Subject</th>
                             <th>File Name</th>
                             <th>Download</th>
@@ -41,6 +42,7 @@ const AttachmentTable = ({ attachmentData }) => {
                             <React.Fragment key={dispatch.reference_number}>
                                 {dispatch.attached_files.map((attachment) => (
                                     <tr key={attachment.attachment_id}>
+                                        <td>{dispatch.reference_number}</td>
                                         <td>{dispatch.subject}</td>
                                         <td>{attachment.file_path.split('/').pop()}</td>
                                         <td>
