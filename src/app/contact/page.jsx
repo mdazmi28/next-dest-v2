@@ -5,9 +5,6 @@ import ShowContactPage from '@/pages/ShowContactPage';
 
 
 const page = () => {
-    const { addContactInfoStage } = useFlowContext()
-    // console.log(addContactInfoStage)
-
     return (
         <Layout>
             <ShowContactPage />

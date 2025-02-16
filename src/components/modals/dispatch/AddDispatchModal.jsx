@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import base_url from '@/base_url';
 
 const AddDispatchModal = ({ isOpen, onClose }) => {
+    const [isLoading, setIsLoading] = useState(false);
     const initialState = {
         reference_number: '',
         type: '',
@@ -302,57 +303,57 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
 
 
                         <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Attachments
-                        </label>
-                        <input
-                            type="file"
-                            onChange={handleFileChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
-                            accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
-                            multiple // Enable multiple file selection
-                        />
-                </div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Attachments
+                            </label>
+                            <input
+                                type="file"
+                                onChange={handleFileChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
+                                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                                multiple // Enable multiple file selection
+                            />
+                        </div>
 
-                {/* {files.length > 0 && (
+                        {/* {files.length > 0 && (
                     <div className="text-sm text-gray-600">
                         Selected file: {files[0].name} ({(files[0].size / 1024).toFixed(2)} KB)
                     </div>
                 )} */}
 
 
-                {files.length > 0 && (
-                    <div className="space-y-3">
-                        <h4 className="font-medium text-gray-700">Selected Files:</h4>
-                        {files.map((file, index) => (
-                            <div key={index} className="flex flex-col space-y-2 p-3 border rounded-md">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-600">
-                                        {file.name} ({(file.size / 1024).toFixed(2)} KB)
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveFile(index)}
-                                        className="text-red-500 hover:text-red-700"
-                                    >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                {/* <input
+                        {files.length > 0 && (
+                            <div className="space-y-3">
+                                <h4 className="font-medium text-gray-700">Selected Files:</h4>
+                                {files.map((file, index) => (
+                                    <div key={index} className="flex flex-col space-y-2 p-3 border rounded-md">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sm text-gray-600">
+                                                {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveFile(index)}
+                                                className="text-red-500 hover:text-red-700"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        {/* <input
                                     type="text"
                                     placeholder="Add a note for this file (optional)"
                                     value={fileNotes[index] || ''}
                                     onChange={(e) => handleFileNoteChange(e, index)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
                                 /> */}
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                )}
+                        )}
 
-                {/* {files.map((file, index) => (
+                        {/* {files.map((file, index) => (
                             <div key={index}>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Note for {file.name}
@@ -366,23 +367,26 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                             </div>
                         ))} */}
 
-                <div className="flex justify-end space-x-4 pt-4">
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="px-4 py-2 bg-[#0BBFBF] text-white rounded-md hover:bg-[#89D9D9]"
-                    >
-                        Submit
-                    </button>
+                        <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#0BBFBF] text-white hover:bg-[#89D9D9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:col-start-2 sm:text-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
+                            >
+                                {isLoading ? 'Adding...' : 'Add Dispatch'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                disabled={isLoading}
+                                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0BBFBF] sm:mt-0 sm:col-start-1 sm:text-sm"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </div>
             </div >
         </div >
     );

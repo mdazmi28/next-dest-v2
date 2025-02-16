@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 
 const ViewContactModal = ({ isOpen, onClose, data }) => {
-    console.log("LUUUUUUUUUUUUUUUUUUUUUU: ", data);
     const modalRef = useRef(null);
 
     useEffect(() => {
