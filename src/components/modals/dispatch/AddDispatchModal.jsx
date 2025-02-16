@@ -94,7 +94,10 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
         e.preventDefault();
 
         const userId = Cookies.get('user_id');
+        // const userNmae = Cookies.get('user_name');
         let authToken = localStorage.getItem('authToken');
+        let user_name = localStorage.getItem('userName');
+        console.log("User Name is: ", user_name)
         const refreshToken = localStorage.getItem('refreshToken');
 
         if (!userId) {
@@ -110,9 +113,9 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
 
         if (dispatchData.type === 'Incoming') {
             finalSender = dispatchData.sender;
-            finalRecipient = userId;
+            finalRecipient = user_name;
         } else if (dispatchData.type === 'Outgoing') {
-            finalSender = userId;
+            finalSender = user_name;
             finalRecipient = dispatchData.recipient;
         }
 

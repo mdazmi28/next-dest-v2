@@ -248,7 +248,7 @@ const DispatchTable = ({ dispatchData, setDispatchData }) => {
                                 </th>
                                 <th>Subject</th>
                                 <th>Sender</th>
-                                <th>Reciver</th>
+                                <th>Receiver</th>
                                 {/* <th>Date</th> */}
                                 <th className="relative">
                                     <div className="flex items-center gap-2">

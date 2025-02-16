@@ -20,7 +20,7 @@ const Login = () => {
     // Handle form submission
     const handleLogin = async (e) => {
         e.preventDefault();
-        console.log("Im in the block: " + base_url)
+        // console.log("Im in the block: " + base_url)
         // Basic validation
         if (!email || !password) {
             setError('Both fields are required.');
@@ -58,11 +58,14 @@ const Login = () => {
                     setPassword(password); // Store password in context
                     localStorage.setItem('authToken', data.access); // Store token in local storage
                     localStorage.setItem('refreshToken', data.refresh)
+                    localStorage.setItem('userName', data.user.name)
+                    
 
                     const decodedToken = jwtDecode(data.access);
-                    const userId = decodedToken.user_id;
-
+                    const userId = data.user.user_id;
+                    // const userName = data.user.name;
                     Cookies.set('user_id', userId, { expires: 7, secure: true, sameSite: 'Strict' });
+                    // Cookies.set('user_name', userName, { expires: 7, secure: true, sameSite: 'Strict' });
 
                     location.replace("/dashboard")
                 } else {
