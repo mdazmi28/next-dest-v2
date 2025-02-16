@@ -134,35 +134,121 @@ const page = () => {
 
 
   return (
+    // <Layout>
+    //   <div className='flex flex-col'>
+    //     <div className='flex flex-col md:flex-row gap-5'>
+    //       <div className="w-full md:w-3/4 flex items-center justify-center">
+    //         <div className="p-5 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6">
+    //           {cardData.map((card, i) => (
+    //             <Card
+    //               key={i}
+    //               type={card.type}
+    //               noOfContact={card.noOfContact}
+    //               className="p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 "
+    //             />
+    //           ))}
+    //         </div>
+    //       </div>
+
+    //       <div className='w-full md:w-1/4 flex items-center justify-center border shadow-xl rounded-lg '>
+
+    //       </div>
+    //     </div>
+    //     <div className='w-full md:w-3/4'>
+    //       <Scheduler events={events}/>
+    //     </div>
+    //   </div>
+    //   {/* <div className=''>
+    //     <Scheduler />
+    //   </div> */}
+
+    // </Layout>
     <Layout>
-      <div className='flex flex-col'>
-        <div className='flex flex-col md:flex-row gap-5'>
-          <div className="w-full md:w-3/4 flex items-center justify-center">
-            <div className="p-5 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              {cardData.map((card, i) => (
+  <div className='container mx-auto px-4 py-6'>
+    {/* Header Section */}
+    <div className='mb-8'>
+      <div className='flex items-center space-x-4'>
+        <div className='text-sm text-gray-600'>
+          Last updated: {new Date().toLocaleDateString()}
+        </div>
+      </div>
+    </div>
+
+    {/* Main Content */}
+    <div className='flex flex-col space-y-8'>
+      {/* Stats Cards Section */}
+      <div className='flex flex-col md:flex-row gap-5'>
+        {/* Left Section - Stats Cards */}
+        <div className="w-full md:w-3/4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {cardData.map((card, i) => (
+              <div key={i} className="transform hover:scale-105 transition-transform duration-300">
                 <Card
-                  key={i}
                   type={card.type}
                   noOfContact={card.noOfContact}
-                  className="p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 "
-                />
-              ))}
+                  className="p-6 border rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300"
+                >
+                  {/* Add icons and more visual elements */}
+                  <div className="flex items-center justify-between">
+                    <div className="text-lg font-semibold text-gray-700">{card.type}</div>
+                    <div className="text-2xl font-bold text-blue-600">{card.noOfContact}</div>
+                  </div>
+                  {/* Add a mini chart or trend indicator */}
+                  {/* <div className="mt-4 text-sm text-gray-500">
+                    +12% from last month
+                  </div> */}
+                </Card>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Section - Quick Actions/Summary */}
+        <div className='w-full md:w-1/4 space-y-4'>
+          <div className='bg-white p-6 rounded-xl shadow-xl'>
+            <h3 className='text-lg font-semibold mb-4'>Quick Actions</h3>
+            <div className='space-y-3'>
+              <button onClick={()=>location.replace('/contact')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
+                🗓️ New Appointment
+              </button>
+              <button className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
+                👥 Add Contact
+              </button>
+              <button className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
+                📊 Add Dispatch
+              </button>
             </div>
           </div>
 
-          <div className='w-full md:w-1/4 flex items-center justify-center border shadow-xl rounded-lg '>
+          {/* Activity Feed */}
 
+        </div>
+      </div>
+
+      {/* Calendar Section */}
+      <div className='bg-white rounded-xl shadow-xl p-6'>
+        <div className='mb-4 flex justify-between items-center'>
+          <h2 className='text-xl font-semibold text-gray-800'>Schedule Overview</h2>
+          <div className='flex space-x-2'>
+            <button className='px-3 py-1 text-sm bg-gray-100 rounded-md hover:bg-gray-200'>
+              Day
+            </button>
+            <button className='px-3 py-1 text-sm bg-gray-100 rounded-md hover:bg-gray-200'>
+              Week
+            </button>
+            <button className='px-3 py-1 text-sm bg-gray-100 rounded-md hover:bg-gray-200'>
+              Month
+            </button>
           </div>
         </div>
-        <div className='w-full md:w-3/4'>
+        <div className='w-full'>
           <Scheduler events={events}/>
         </div>
       </div>
-      {/* <div className=''>
-        <Scheduler />
-      </div> */}
 
-    </Layout>
+    </div>
+  </div>
+</Layout>
   );
 };
 
