@@ -19,11 +19,11 @@
 //                     clearForm();
 //                 }
 //             };
-    
+
 //             if ( isViewOpen) {
 //                 window.addEventListener("keydown", handleKeyDown);
 //             }
-    
+
 //             return () => {
 //                 window.removeEventListener("keydown", handleKeyDown);
 //             };
@@ -79,9 +79,11 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import ViewSchedularModal from './modals/ViewSchedularModal';
+// import ViewSchedularModal from './modals/ViewSchedularModal';
+import ViewAppointmentModal from './modals/appointment/ViewAppointmentModal';
 
-const Scheduler = ({events}) => {
+const Scheduler = ({ events }) => {
+    console.log("Events are: ", events)
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
 
@@ -110,9 +112,9 @@ const Scheduler = ({events}) => {
             location: clickInfo.event.extendedProps.location,
             start: clickInfo.event.start,
             end: clickInfo.event.end,
-            // Add any other properties you need
+            with_contacts: clickInfo.event.extendedProps.with_contacts || []
         };
-        
+
         setSelectedData(eventData);
         setIsViewOpen(true);
     };
@@ -143,11 +145,12 @@ const Scheduler = ({events}) => {
                 />
             </div>
 
-            <ViewSchedularModal
+            <ViewAppointmentModal
                 isOpen={isViewOpen}
                 onClose={() => setIsViewOpen(false)}
-                data={selectedData} // Pass selectedData instead of events
+                data={selectedData}
             />
+
         </div>
     );
 };
