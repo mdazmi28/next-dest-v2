@@ -14,6 +14,7 @@ import EditAppointmentModal from './modals/appointment/EditAppointmentModal';
 import DeleteAppointmentModal from './modals/appointment/DeleteAppointmentModal';
 import DatePicker from 'react-datepicker'; // You'll need to install this
 import "react-datepicker/dist/react-datepicker.css";
+import { ImCross } from "react-icons/im";
 
 // Extend dayjs with the necessary plugins
 dayjs.extend(utc);
@@ -203,165 +204,6 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     };
 
 
-    // const handleEditChange = (e) => {
-    //     const { name, value } = e.target;
-
-    //     // Special handling for is_recurring
-    //     if (name === 'is_recurring') {
-    //         const boolValue = value === 'true'; // Convert string to boolean
-    //         setEditData(prev => ({
-    //             ...prev,
-    //             [name]: boolValue
-    //         }));
-    //         return;
-    //     }
-
-    //     // Create new state with the changed value
-    //     const newEditData = {
-    //         ...editData,
-    //         [name]: value === undefined ? '' : value
-    //     };
-
-    //     // Validate end time when any date/time field changes
-    //     const timeRelatedFields = ['start_time', 'hour', 'minute', 'ampm',
-    //         'end_time', 'end_hour', 'end_minute', 'end_ampm'];
-
-    //     if (timeRelatedFields.includes(name)) {
-    //         const isValid = isEndTimeValid(
-    //             newEditData.start_time,
-    //             newEditData.hour,
-    //             newEditData.minute,
-    //             newEditData.ampm,
-    //             newEditData.end_time,
-    //             newEditData.end_hour,
-    //             newEditData.end_minute,
-    //             newEditData.end_ampm
-    //         );
-
-    //         if (!isValid) {
-    //             toast.error("End time cannot be earlier than start time");
-    //             // Optionally, prevent the change or reset the end time
-    //             if (name.startsWith('end')) {
-    //                 return; // Don't update if end time is invalid
-    //             }
-    //         }
-    //     }
-
-    //     setEditData(newEditData);
-    // };
-
-    // const saveEdit = async (id) => {
-    //     const userId = Cookies.get("user_id");
-    //     let authToken = localStorage.getItem("authToken");
-    //     const refreshToken = localStorage.getItem("refreshToken");
-
-    //     if (!userId || !editData) {
-    //         toast.error("User ID or appointment data is missing!");
-    //         return;
-    //     }
-
-    //     // Validate times before saving
-    //     const isValid = isEndTimeValid(
-    //         editData.start_time,
-    //         editData.hour,
-    //         editData.minute,
-    //         editData.ampm,
-    //         editData.end_time,
-    //         editData.end_hour,
-    //         editData.end_minute,
-    //         editData.end_ampm
-    //     );
-
-    //     if (!isValid) {
-    //         toast.error("End time cannot be earlier than start time");
-    //         return;
-    //     }
-
-    //     const formattedStartTime = editData.start_time
-    //         ? formatDateTime(editData.start_time, editData.hour, editData.minute, editData.ampm)
-    //         : undefined;
-    //     const formattedEndTime = editData.end_time
-    //         ? formatDateTime(editData.end_time, editData.end_hour, editData.end_minute, editData.end_ampm)
-    //         : undefined;
-
-    //     const requestBody = {};
-
-    //     if (editData.title !== undefined) requestBody.title = editData.title;
-    //     if (editData.description !== undefined) requestBody.description = editData.description;
-    //     if (formattedStartTime !== undefined) requestBody.start_time = formattedStartTime;
-    //     if (formattedEndTime !== undefined) requestBody.end_time = formattedEndTime;
-    //     if (editData.location !== undefined) requestBody.location = editData.location;
-    //     if (editData.note !== undefined) requestBody.note = editData.note;
-    //     requestBody.is_recurring = true;
-
-    //     const updateAppointmentWithToken = async (token) => {
-    //         try {
-    //             const response = await fetch(`${base_url}/users/${userId}/appointments/${id}/`, {
-    //                 method: "PATCH",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     Authorization: `Bearer ${token}`,
-    //                 },
-    //                 body: JSON.stringify(requestBody),
-    //             });
-
-    //             if (response.ok) {
-    //                 const updatedAppointment = await response.json();
-    //                 setAppointmentData((prevAppointments) =>
-    //                     prevAppointments.map((appointment) =>
-    //                         appointment.appointment_id === id
-    //                             ? { ...appointment, ...updatedAppointment }
-    //                             : appointment
-    //                     )
-    //                 );
-
-    //                 toast.success("Appointment updated successfully!");
-    //                 setIsEditOpen(false);
-    //                 clearForm();
-    //                 location.reload();
-    //             } else {
-    //                 const errorData = await response.json();
-    //                 toast.error(errorData.message || "Failed to update appointment.");
-    //             }
-    //         } catch (error) {
-    //             console.error("Error updating appointment:", error);
-    //             toast.error("An error occurred while updating.");
-    //         }
-    //     };
-
-    //     const refreshAndRetry = async () => {
-    //         try {
-    //             const refreshResponse = await fetch(`${base_url}/token/refresh/`, {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //                 body: JSON.stringify({ refresh: refreshToken }),
-    //             });
-
-    //             if (!refreshResponse.ok) {
-    //                 throw new Error("Token refresh failed. Please log in again.");
-    //             }
-
-    //             const refreshData = await refreshResponse.json();
-    //             authToken = refreshData.access;
-    //             localStorage.setItem("authToken", authToken);
-    //             await updateAppointmentWithToken(authToken);
-    //         } catch (err) {
-    //             console.error("Refresh and Retry Error:", err);
-    //             toast.error("Session expired. Please log in again.");
-    //         }
-    //     };
-
-    //     if (authToken && !isTokenExpired(authToken)) {
-    //         await updateAppointmentWithToken(authToken);
-    //     } else if (refreshToken) {
-    //         await refreshAndRetry();
-    //     } else {
-    //         toast.error("Authentication error. Please log in.");
-    //     }
-    // };
-
     const confirmDelete = async (id) => {
         const userId = Cookies.get('user_id');
         let authToken = localStorage.getItem('authToken');
@@ -450,14 +292,34 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const [selectedDateTime, setSelectedDateTime] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
 
+    // const [showDatePicker, setShowDatePicker] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (!event.target.closest('.relative')) {
+                setShowDatePicker(false);
+            }
+        };
+
+        if (showDatePicker) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showDatePicker]);
+
 
     return (
         <div>
             {/* Table Component */}
-            <div className="overflow-x-auto">
+            <div className="">
+
                 <div className="mb-4 flex items-center gap-2">
-                   
-                    <DatePicker selected={selectedDateTime}
+
+                    {/* <DatePicker selected={selectedDateTime}
                         onChange={(date) => setSelectedDateTime(date)} />
                     {selectedDateTime && (
                         <button
@@ -466,54 +328,286 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                         >
                             Clear Filter
                         </button>
-                    )}
+                    )} */}
                 </div>
                 <table className="table">
                     <thead>
                         <tr>
-                            <th className='flex gap-4'>
-                                Time
-                                <FaCalendarAlt className="text-gray-500" />
-                                </th>
+                            {/* <th className='relative'>
+                                <div className='flex gap-4 items-center'>
+                                    Time
+                                    <div className="relative inline-block">
+                                        <FaCalendarAlt
+                                            className="text-gray-500 cursor-pointer hover:text-gray-700"
+                                            onClick={() => setShowDatePicker(!showDatePicker)}
+                                        />
+                                        {showDatePicker && (
+                                            <div className="relative left-0 top-full mt-2 z-50">
+                                                <div className="bg-white rounded-lg shadow-lg border border-gray-200">
+                                                    <DatePicker
+                                                        selected={selectedDateTime}
+                                                        onChange={(date) => {
+                                                            setSelectedDateTime(date);
+                                                            setShowDatePicker(false);
+                                                        }}
+                                                        inline
+                                                        dateFormat="MMMM d, yyyy"
+                                                        calendarClassName="!border-none"
+                                                        renderCustomHeader={({
+                                                            date,
+                                                            decreaseMonth,
+                                                            increaseMonth,
+                                                            prevMonthButtonDisabled,
+                                                            nextMonthButtonDisabled
+                                                        }) => (
+                                                            <div className="flex items-center justify-between px-3 py-2">
+                                                                <button
+                                                                    onClick={decreaseMonth}
+                                                                    disabled={prevMonthButtonDisabled}
+                                                                    className="p-1 hover:bg-gray-100 rounded-full"
+                                                                >
+                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                                                    </svg>
+                                                                </button>
+                                                                <div className="text-lg font-semibold">
+                                                                    {date.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                                                                </div>
+                                                                <button
+                                                                    onClick={increaseMonth}
+                                                                    disabled={nextMonthButtonDisabled}
+                                                                    className="p-1 hover:bg-gray-100 rounded-full"
+                                                                >
+                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    />
+                                                    {selectedDate && (
+                                                        <div className="p-2 border-t">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setSelectedDate(null);
+                                                                    setShowDatePicker(false);
+                                                                }}
+                                                                className="w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
+                                                            >
+                                                                Clear
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </th> */}
+                            {/* <th className='relative'>
+                                <div className='flex gap-4 items-center'>
+                                    Time
+                                    <div className="relative inline-block">
+                                        <FaCalendarAlt
+                                            className="text-gray-500 cursor-pointer hover:text-gray-700"
+                                            onClick={() => setShowDatePicker(!showDatePicker)}
+                                        />
+                                        {showDatePicker && (
+                                            // Modal Overlay
+                                            <div className="fixed inset-0 z-50 overflow-y-auto">
+                                               
+                                                <div
+                                                    className="fixed inset-0 bg-black bg-opacity-25 transition-opacity"
+                                                    onClick={() => setShowDatePicker(false)}
+                                                ></div>
+
+                                                
+                                                <div className="flex items-center justify-center p-4">
+                                                    <div className="relative bg-white rounded-lg shadow-xl max-w-sm w-full p-4">
+                                                    
+                                                        <button
+                                                            onClick={() => setShowDatePicker(false)}
+                                                            className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition-colors"
+                                                            aria-label="Close modal"
+                                                        >
+                                                            <ImCross className="w-4 h-4" />
+                                                        </button>
+
+
+                                                      
+                                                        <DatePicker
+                                                            selected={selectedDateTime}
+                                                            onChange={(date) => {
+                                                                setSelectedDateTime(date);
+                                                                setShowDatePicker(false);
+                                                            }}
+                                                            inline
+                                                            dateFormat="MMMM d, yyyy"
+                                                            calendarClassName="!border-none"
+                                                            className='w-full'
+                                                            renderCustomHeader={({
+                                                                date,
+                                                                decreaseMonth,
+                                                                increaseMonth,
+                                                                prevMonthButtonDisabled,
+                                                                nextMonthButtonDisabled
+                                                            }) => (
+                                                                <div className="flex items-center justify-between px-3 py-2">
+                                                                    <button
+                                                                        onClick={decreaseMonth}
+                                                                        disabled={prevMonthButtonDisabled}
+                                                                        className="p-1 hover:bg-gray-100 rounded-full"
+                                                                    >
+                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                                                        </svg>
+                                                                    </button>
+                                                                    <div className="text-lg font-semibold">
+                                                                        {date.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={increaseMonth}
+                                                                        disabled={nextMonthButtonDisabled}
+                                                                        className="p-1 hover:bg-gray-100 rounded-full"
+                                                                    >
+                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        />
+
+                                                        {selectedDateTime && (
+                                                            <div className="mt-4 pt-3 border-t">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setSelectedDateTime(null);
+                                                                        setShowDatePicker(false);
+                                                                    }}
+                                                                    className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                                                                >
+                                                                    Clear Selection
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </th> */}
+                            <th className='relative'>
+                                <div className='flex gap-4 items-center'>
+                                    Time
+                                    <div className="relative inline-block">
+                                        <FaCalendarAlt
+                                            className="text-gray-500 cursor-pointer hover:text-gray-700"
+                                            onClick={() => setShowDatePicker(!showDatePicker)}
+                                        />
+                                        {showDatePicker && (
+                                            <div className="absolute left-0 top-8 z-[1000] fixed-calendar"> {/* Added custom class */}
+                                                <div 
+                                                className="bg-white rounded-lg shadow-lg border border-gray-200"> {/* Added fixed width */}
+                                                    <DatePicker
+                                                        selected={selectedDateTime}
+                                                        onChange={(date) => {
+                                                            setSelectedDateTime(date);
+                                                            setShowDatePicker(false);
+                                                        }}
+                                                        inline
+                                                        dateFormat="MMMM d, yyyy"
+                                                        // calendarClassName="!border-none w-full" // Added full width
+                                                        renderCustomHeader={({
+                                                            date,
+                                                            decreaseMonth,
+                                                            increaseMonth,
+                                                            prevMonthButtonDisabled,
+                                                            nextMonthButtonDisabled
+                                                        }) => (
+                                                            <div className="flex items-center justify-between px-3 py-2 border-b">
+                                                                <button
+                                                                    onClick={decreaseMonth}
+                                                                    disabled={prevMonthButtonDisabled}
+                                                                    // className="p-1 hover:bg-gray-100 rounded-full"
+                                                                >
+                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                                                    </svg>
+                                                                </button>
+                                                                <div className="text-lg font-semibold">
+                                                                    {date.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                                                                </div>
+                                                                <button
+                                                                    onClick={increaseMonth}
+                                                                    disabled={nextMonthButtonDisabled}
+                                                                    // className="p-1 hover:bg-gray-100 rounded-full"
+                                                                >
+                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    />
+                                                    {selectedDateTime && (
+                                                        <div className="p-2 border-t">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setSelectedDateTime(null);
+                                                                    setShowDatePicker(false);
+                                                                }}
+                                                                className="w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
+                                                            >
+                                                                Clear
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </th>
                             <th>Title</th>
                             <th>Description</th>
                             <th>Location</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                  
                     <tbody>
-                {appointmentData
-                    .filter(filterAppointments)
-                    .map((data, index) => (
-                        <tr key={data.appointment_id || index}>
-                            <td>
-                                <div className="flex items-center gap-2">
-                                    <div className="font-bold">
-                                        {dayjs(data.start).format('DD-MM-YY hh:mm A')} - {dayjs(data.end).format('DD-MM-YY hh:mm A')}
-                                    </div>
-                                </div>
-                            </td>
-                            <td>{data.title}</td>
-                            <td>{data.description}</td>
-                            <td>{data.location}</td>
-                            <td className="flex justify-between gap-5">
-                                <FaEye
-                                    className="h-5 w-5 text-green-500 cursor-pointer"
-                                    onClick={() => handleView(data)}
-                                />
-                                <FaEdit
-                                    className="h-5 w-5 text-blue-500 cursor-pointer"
-                                    onClick={() => handleEdit(data)}
-                                />
-                                <MdDelete
-                                    className="h-5 w-5 text-red-500 cursor-pointer"
-                                    onClick={() => handleDelete(data.appointment_id)}
-                                />
-                            </td>
-                        </tr>
-                    ))}
-            </tbody>
+                        {appointmentData
+                            .filter(filterAppointments)
+                            .map((data, index) => (
+                                <tr key={data.appointment_id || index}>
+                                    <td>
+                                        <div className="flex items-center gap-2">
+                                            <div className="font-bold">
+                                                {dayjs(data.start).format('DD-MM-YY hh:mm A')} - {dayjs(data.end).format('DD-MM-YY hh:mm A')}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{data.title}</td>
+                                    <td>{data.description}</td>
+                                    <td>{data.location}</td>
+                                    <td className="flex justify-between gap-5">
+                                        <FaEye
+                                            className="h-5 w-5 text-green-500 cursor-pointer"
+                                            onClick={() => handleView(data)}
+                                        />
+                                        <FaEdit
+                                            className="h-5 w-5 text-blue-500 cursor-pointer"
+                                            onClick={() => handleEdit(data)}
+                                        />
+                                        <MdDelete
+                                            className="h-5 w-5 text-red-500 cursor-pointer"
+                                            onClick={() => handleDelete(data.appointment_id)}
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
+                    </tbody>
                 </table>
             </div>
 

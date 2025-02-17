@@ -88,3 +88,59 @@ body {
 }
 
 
+
+
+/* Add these styles to fix the calendar positioning */
+.fixed-calendar {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+}
+
+/* Calendar styles */
+/* .react-datepicker {
+  @apply !font-sans !border-none !shadow-none !w-full;
+} */
+
+/* .react-datepicker__month-container {
+  @apply !w-full;
+} */
+
+/* .react-datepicker__header {
+  @apply !bg-white !border-none;
+} */
+
+/* .react-datepicker__day-names {
+  @apply !flex !justify-between !px-2;
+} */
+
+/* .react-datepicker__day-name {
+  @apply !text-gray-500 !text-sm !w-8 !m-0;
+} */
+
+/* .react-datepicker__month {
+  @apply !m-0 !p-2;
+} */
+
+/* .react-datepicker__day {
+  @apply !w-8 !h-8 !leading-8 !m-0 !text-center !rounded-full hover:!bg-gray-100;
+} */
+
+.react-datepicker__day--selected {
+  @apply !bg-[#0BBFBF] !text-white hover:!bg-[#89D9D9];
+}
+
+.react-datepicker__day--today {
+  @apply !font-bold !text-black;
+}
+
+/* Table styles to prevent layout shifts */
+/* .table th {
+  @apply !h-16; 
+
+} */
+
+/* .table td {
+  @apply !align-middle; 
+} */
