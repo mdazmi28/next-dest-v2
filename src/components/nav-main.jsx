@@ -26,21 +26,31 @@ export function NavMain({
         {items.map((item) => (
           <Collapsible
             key={item.title}
-            // asChild
-            // defaultOpen={item.isActive}
-            className="group/collapsible">
+            className="group/collapsible"
+          >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton className="hover:bg-[#0BBFBF]" tooltip={item.title}>
-                  {item.icon &&
-                    <Link href={item.url}><item.icon /></Link>
-                  }
-                  <span className=""><a href={item.url}>
-                    <span>{item.title}</span>
-                  </a></span>
+                <SidebarMenuButton
+                  className="hover:bg-[#0BBFBF] mb-2"
+                  tooltip={item.title}
+                >
+                  <Link
+                    href={item.url}
+                    className="flex items-center gap-3 w-full"
+                  >
+                    <img
+                      src={item.icon}
+                      alt={item.title}
+                      className="w-5 h-5"
+                    />
+                    <span className="">
+                      {item.title}
+                    </span>
+                  </Link>
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
+
               </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>

@@ -11,6 +11,8 @@ import {
 
 import { NavMain } from "@/components/nav-main"
 import { TeamSwitcher } from "@/components/team-switcher"
+import { MdDashboard } from "react-icons/md";
+import { FcContacts } from "react-icons/fc";
 import {
   Sidebar,
   SidebarContent,
@@ -34,29 +36,29 @@ const data = {
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: SquareTerminal,
+      icon: "/assets/icons/dashboard.png",
       isActive: false,
     },
     {
       title: "Contact",
       url: "/contact",
-      icon: Bot,
+      icon: "/assets/icons/contact.png",
     },
     {
       title: "Appointment",
       url: "/appointment",
-      icon: BookOpen,
+      icon: "/assets/icons/schedule.png",
     },
     {
       title: "Dispatch",
       url: "/dispatch",
-      icon: Settings2,
+      icon: "/assets/icons/letter.png",
 
     },
     {
       title: "Attachment",
       url: "/attachment",
-      icon: Settings2,
+      icon: "/assets/icons/attachment.png",
 
     },
   ],

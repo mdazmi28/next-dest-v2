@@ -15,7 +15,7 @@ import Scheduler from '@/components/Schedular';
 
 const page = () => {
   // const { setAppointments, events, setEvents } = useFlowContext();
-  const[appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [events, setEvents] = useState([]);
 
   const isTokenExpired = (token) => {
@@ -67,7 +67,7 @@ const page = () => {
           end: event.end_time.slice(0, -4),
           id: event.id,
           description: event.description || "No Description",  // Include description
-          location: event.location || "No Location" , // Include location
+          location: event.location || "No Location", // Include location
           with_contacts: event.with_contacts || [],  // Include with_contacts
         }));
 
@@ -164,80 +164,92 @@ const page = () => {
 
     // </Layout>
     <Layout>
-  <div className='container mx-auto px-4 py-6'>
-    {/* Header Section */}
-    <div className='mb-8'>
-      <div className='flex items-center space-x-4'>
-        <div className='text-sm text-gray-600'>
-          {/* Today is: {new Date().toLocaleDateString()} */}
-        </div>
-      </div>
-    </div>
-
-    {/* Main Content */}
-    <div className='flex flex-col space-y-8'>
-      {/* Stats Cards Section */}
-      <div className='flex flex-col md:flex-row gap-5'>
-        {/* Left Section - Stats Cards */}
-        <div className="w-full md:w-3/4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {cardData.map((card, i) => (
-              <div key={i} className="transform hover:scale-105 transition-transform duration-300">
-                <Card
-                  type={card.type}
-                  noOfContact={card.noOfContact}
-                  className="p-6 border rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300"
-                >
-                  {/* Add icons and more visual elements */}
-                  <div className="flex items-center justify-between">
-                    <div className="text-lg font-semibold text-gray-700">{card.type}</div>
-                    <div className="text-2xl font-bold text-blue-600">{card.noOfContact}</div>
-                  </div>
-                  {/* Add a mini chart or trend indicator */}
-                  {/* <div className="mt-4 text-sm text-gray-500">
-                    +12% from last month
-                  </div> */}
-                </Card>
-              </div>
-            ))}
+      <div className='container mx-auto px-4 py-6'>
+        {/* Header Section */}
+        <div className='mb-8'>
+          <div className='flex items-center space-x-4'>
+            <div className='text-sm text-gray-600'>
+              {/* Today is: {new Date().toLocaleDateString()} */}
+            </div>
           </div>
         </div>
 
-        {/* Right Section - Quick Actions/Summary */}
-        <div className='w-full md:w-1/4 space-y-4'>
-          <div className='bg-white p-6 rounded-xl shadow-xl'>
-            <h3 className='text-lg font-semibold mb-4'>Quick Actions</h3>
-            <div className='space-y-3'>
-              <button onClick={()=>location.replace('/appointment')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
-                🗓️ New Appointment
-              </button>
-              <button onClick={()=>location.replace('/contact')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
-                👥 Add Contact
-              </button>
-              <button onClick={()=>location.replace('/dispatch')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
-                📊 Add Dispatch
-              </button>
+        {/* Main Content */}
+        <div className='flex flex-col space-y-8'>
+          {/* Stats Cards Section */}
+          <div className='flex flex-col md:flex-row gap-5'>
+            {/* Left Section - Stats Cards */}
+            <div className="w-full md:w-3/4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {cardData.map((card, i) => (
+                  <div key={i} className="transform hover:scale-105 transition-transform duration-300">
+                    <Card
+                      type={card.type}
+                      noOfContact={card.noOfContact}
+                      className="p-6 border rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300"
+                    >
+                      {/* Add icons and more visual elements */}
+                      <div className="flex items-center justify-between">
+                        <div className="text-lg font-semibold text-gray-700">{card.type}</div>
+                        <div className="text-2xl font-bold text-blue-600">{card.noOfContact}</div>
+                      </div>
+                      {/* Add a mini chart or trend indicator */}
+                      {/* <div className="mt-4 text-sm text-gray-500">
+                    +12% from last month
+                  </div> */}
+                    </Card>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Section - Quick Actions/Summary */}
+            <div className='w-full md:w-1/4 space-y-4'>
+              <div className='bg-white p-6 rounded-xl shadow-xl'>
+                <h3 className='text-lg font-semibold mb-4'>Quick Actions</h3>
+                <div className='space-y-3'>
+                  <button onClick={() => location.replace('/appointment')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                  <img
+                      src="/assets/icons/schedule.png"
+                      // alt={item.title}
+                      className="w-5 h-5"
+                    />New Appointment
+                  </button>
+                  <button onClick={() => location.replace('/contact')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                  <img
+                      src="/assets/icons/contact.png"
+                      // alt={item.title}
+                      className="w-5 h-5"
+                    /> Add Contact
+                  </button>
+                  <button onClick={() => location.replace('/dispatch')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                    <img
+                      src="/assets/icons/letter.png"
+                      // alt={item.title}
+                      className="w-5 h-5"
+                    /> Add Dispatch
+                  </button>
+                </div>
+              </div>
+
+              {/* Activity Feed */}
+
             </div>
           </div>
 
-          {/* Activity Feed */}
+          {/* Calendar Section */}
+          <div className='b'>
+            <div className='mb-4 flex justify-between items-center'>
+              <h2 className='text-xl font-semibold text-gray-800'>Schedule Overview</h2>
+            </div>
+            <div className=''>
+              <Scheduler events={events} />
+            </div>
+          </div>
 
         </div>
       </div>
-
-      {/* Calendar Section */}
-      <div className='b'>
-        <div className='mb-4 flex justify-between items-center'>
-          <h2 className='text-xl font-semibold text-gray-800'>Schedule Overview</h2>
-        </div>
-        <div className=''>
-          <Scheduler events={events}/>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</Layout>
+    </Layout>
   );
 };
 

@@ -245,14 +245,20 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                 <div className='flex gap-4 items-center'>
                                     Time
                                     <div className="relative inline-block">
-                                        <FaCalendarAlt
+                                        {/* <FaCalendarAlt
                                             className="text-gray-500 cursor-pointer hover:text-gray-700"
                                             onClick={() => setShowDatePicker(!showDatePicker)}
+                                        /> */}
+                                        <img
+                                            src="/assets/icons/filter_appointment.png"
+                                            // alt={item.title}
+                                            onClick={() => setShowDatePicker(!showDatePicker)}
+                                            className="h-4 w-5 cursor-pointer"
                                         />
                                         {showDatePicker && (
-                                            <div className="absolute left-0 top-8 z-[1000] fixed-calendar"> 
-                                                <div 
-                                                className="bg-white rounded-lg shadow-lg border border-gray-200"> 
+                                            <div className="absolute left-0 top-8 z-[1000] fixed-calendar">
+                                                <div
+                                                    className="bg-white rounded-lg shadow-lg border border-gray-200">
                                                     <DatePicker
                                                         selected={selectedDateTime}
                                                         onChange={(date) => {
@@ -273,7 +279,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                                 <button
                                                                     onClick={decreaseMonth}
                                                                     disabled={prevMonthButtonDisabled}
-                                                                    // className="p-1 hover:bg-gray-100 rounded-full"
+                                                                // className="p-1 hover:bg-gray-100 rounded-full"
                                                                 >
                                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -285,7 +291,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                                 <button
                                                                     onClick={increaseMonth}
                                                                     disabled={nextMonthButtonDisabled}
-                                                                    // className="p-1 hover:bg-gray-100 rounded-full"
+                                                                // className="p-1 hover:bg-gray-100 rounded-full"
                                                                 >
                                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
