@@ -149,9 +149,9 @@ const ShowMeetings = () => {
       {/* Top Half - Appointments Table & Sidebar */}
       <div className="flex flex-row gap-4 h-1/2">
         {/* Left - Appointment Table */}
-        <div className="w-3/4 p-4 flex flex-col">
+        <div className="w-3/4 p-0 flex flex-col">
           {/* Add Meeting Button */}
-          <div className="flex justify-end mb-2">
+          <div className="flex justify-end mb-0">
             <button
               className="btn btn-active bg-[#0BBFBF] hover:bg-[#89D9D9] hover:scale-110"
               onClick={() => setIsModalOpen(true)}

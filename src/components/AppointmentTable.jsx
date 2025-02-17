@@ -551,7 +551,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                             </div>
                                                         )}
                                                     />
-                                                    {selectedDateTime && (
+                                                    {/* {selectedDateTime && (
                                                         <div className="p-2 border-t">
                                                             <button
                                                                 onClick={() => {
@@ -563,7 +563,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                                 Clear
                                                             </button>
                                                         </div>
-                                                    )}
+                                                    )} */}
                                                 </div>
                                             </div>
                                         )}
