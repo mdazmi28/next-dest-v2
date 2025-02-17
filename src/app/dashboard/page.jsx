@@ -208,13 +208,13 @@ const page = () => {
           <div className='bg-white p-6 rounded-xl shadow-xl'>
             <h3 className='text-lg font-semibold mb-4'>Quick Actions</h3>
             <div className='space-y-3'>
-              <button onClick={()=>location.replace('/contact')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
+              <button onClick={()=>location.replace('/appointment')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
                 🗓️ New Appointment
               </button>
-              <button className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
+              <button onClick={()=>location.replace('/contact')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
                 👥 Add Contact
               </button>
-              <button className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
+              <button onClick={()=>location.replace('/dispatch')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors'>
                 📊 Add Dispatch
               </button>
             </div>
