@@ -77,6 +77,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         }
     };
 
+
     const handleView = (data) => {
         setSelectedData(data);
         setIsViewOpen(true);
@@ -192,6 +193,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         }
     };
 
+    // const [selectedDateTime, setSelectedDateTime] = useState(null);
 
     // Add this filter function
     const filterAppointments = (data) => {
@@ -206,17 +208,15 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            // Check if the click is outside both the calendar icon and the date picker
-            if (!event.target.closest('.calendar-trigger') && 
-                !event.target.closest('.date-picker-wrapper')) {
+            if (!event.target.closest('.relative')) {
                 setShowDatePicker(false);
             }
         };
-    
+
         if (showDatePicker) {
             document.addEventListener('mousedown', handleClickOutside);
         }
-    
+
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
@@ -244,13 +244,177 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 <table className="table">
                     <thead>
                         <tr>
-                           
+                            {/* <th className='relative'>
+                                <div className='flex gap-4 items-center'>
+                                    Time
+                                    <div className="relative inline-block">
+                                        <FaCalendarAlt
+                                            className="text-gray-500 cursor-pointer hover:text-gray-700"
+                                            onClick={() => setShowDatePicker(!showDatePicker)}
+                                        />
+                                        {showDatePicker && (
+                                            <div className="relative left-0 top-full mt-2 z-50">
+                                                <div className="bg-white rounded-lg shadow-lg border border-gray-200">
+                                                    <DatePicker
+                                                        selected={selectedDateTime}
+                                                        onChange={(date) => {
+                                                            setSelectedDateTime(date);
+                                                            setShowDatePicker(false);
+                                                        }}
+                                                        inline
+                                                        dateFormat="MMMM d, yyyy"
+                                                        calendarClassName="!border-none"
+                                                        renderCustomHeader={({
+                                                            date,
+                                                            decreaseMonth,
+                                                            increaseMonth,
+                                                            prevMonthButtonDisabled,
+                                                            nextMonthButtonDisabled
+                                                        }) => (
+                                                            <div className="flex items-center justify-between px-3 py-2">
+                                                                <button
+                                                                    onClick={decreaseMonth}
+                                                                    disabled={prevMonthButtonDisabled}
+                                                                    className="p-1 hover:bg-gray-100 rounded-full"
+                                                                >
+                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                                                    </svg>
+                                                                </button>
+                                                                <div className="text-lg font-semibold">
+                                                                    {date.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                                                                </div>
+                                                                <button
+                                                                    onClick={increaseMonth}
+                                                                    disabled={nextMonthButtonDisabled}
+                                                                    className="p-1 hover:bg-gray-100 rounded-full"
+                                                                >
+                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    />
+                                                    {selectedDate && (
+                                                        <div className="p-2 border-t">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setSelectedDate(null);
+                                                                    setShowDatePicker(false);
+                                                                }}
+                                                                className="w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
+                                                            >
+                                                                Clear
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </th> */}
+                            {/* <th className='relative'>
+                                <div className='flex gap-4 items-center'>
+                                    Time
+                                    <div className="relative inline-block">
+                                        <FaCalendarAlt
+                                            className="text-gray-500 cursor-pointer hover:text-gray-700"
+                                            onClick={() => setShowDatePicker(!showDatePicker)}
+                                        />
+                                        {showDatePicker && (
+                                            // Modal Overlay
+                                            <div className="fixed inset-0 z-50 overflow-y-auto">
+                                               
+                                                <div
+                                                    className="fixed inset-0 bg-black bg-opacity-25 transition-opacity"
+                                                    onClick={() => setShowDatePicker(false)}
+                                                ></div>
+
+                                                
+                                                <div className="flex items-center justify-center p-4">
+                                                    <div className="relative bg-white rounded-lg shadow-xl max-w-sm w-full p-4">
+                                                    
+                                                        <button
+                                                            onClick={() => setShowDatePicker(false)}
+                                                            className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition-colors"
+                                                            aria-label="Close modal"
+                                                        >
+                                                            <ImCross className="w-4 h-4" />
+                                                        </button>
+
+
+                                                      
+                                                        <DatePicker
+                                                            selected={selectedDateTime}
+                                                            onChange={(date) => {
+                                                                setSelectedDateTime(date);
+                                                                setShowDatePicker(false);
+                                                            }}
+                                                            inline
+                                                            dateFormat="MMMM d, yyyy"
+                                                            calendarClassName="!border-none"
+                                                            className='w-full'
+                                                            renderCustomHeader={({
+                                                                date,
+                                                                decreaseMonth,
+                                                                increaseMonth,
+                                                                prevMonthButtonDisabled,
+                                                                nextMonthButtonDisabled
+                                                            }) => (
+                                                                <div className="flex items-center justify-between px-3 py-2">
+                                                                    <button
+                                                                        onClick={decreaseMonth}
+                                                                        disabled={prevMonthButtonDisabled}
+                                                                        className="p-1 hover:bg-gray-100 rounded-full"
+                                                                    >
+                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                                                        </svg>
+                                                                    </button>
+                                                                    <div className="text-lg font-semibold">
+                                                                        {date.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={increaseMonth}
+                                                                        disabled={nextMonthButtonDisabled}
+                                                                        className="p-1 hover:bg-gray-100 rounded-full"
+                                                                    >
+                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        />
+
+                                                        {selectedDateTime && (
+                                                            <div className="mt-4 pt-3 border-t">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setSelectedDateTime(null);
+                                                                        setShowDatePicker(false);
+                                                                    }}
+                                                                    className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                                                                >
+                                                                    Clear Selection
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </th> */}
                             <th className='relative'>
                                 <div className='flex gap-4 items-center'>
                                     Time
                                     <div className="relative inline-block">
                                         <FaCalendarAlt
-                                            className="text-gray-500 cursor-pointer hover:text-gray-700 calendar-trigger"
+                                            className="text-gray-500 cursor-pointer hover:text-gray-700"
                                             onClick={() => setShowDatePicker(!showDatePicker)}
                                         />
                                         {showDatePicker && (
@@ -298,7 +462,19 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                             </div>
                                                         )}
                                                     />
-                                                  
+                                                    {/* {selectedDateTime && (
+                                                        <div className="p-2 border-t">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setSelectedDateTime(null);
+                                                                    setShowDatePicker(false);
+                                                                }}
+                                                                className="w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
+                                                            >
+                                                                Clear
+                                                            </button>
+                                                        </div>
+                                                    )} */}
                                                 </div>
                                             </div>
                                         )}
