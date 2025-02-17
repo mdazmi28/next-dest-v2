@@ -8,7 +8,7 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
     if (!isOpen || !data) return null;
 
     const [editData, setEditData] = useState({
-        reference_number: data.reference_number || '',
+        // reference_number: data.reference_number || '',
         type: data.type || '',
         subject: data.subject || '',
         sender: data.sender || '',
@@ -71,7 +71,7 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
         }
 
         // Append other form data
-        formData.append('reference_number', editData.reference_number);
+        // formData.append('reference_number', editData.reference_number);
         formData.append('type', editData.type);
         formData.append('subject', editData.subject);
         formData.append('status', editData.status);
@@ -157,7 +157,7 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
             <div className="modal-box">
                 <h4 className="text-2xl font-bold mb-4">Edit Dispatch</h4>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="form-control">
+                    {/* <div className="form-control">
                         <label className="label">Reference Number</label>
                         <input
                             type="text"
@@ -168,7 +168,7 @@ const EditDispatchModal = ({ isOpen, onClose, data, setDispatchData }) => {
                             required
                             maxLength={50}
                         />
-                    </div>
+                    </div> */}
 
                     <div className="form-control">
                         <label className="label">Type</label>
