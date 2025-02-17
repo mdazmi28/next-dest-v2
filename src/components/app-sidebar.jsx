@@ -83,10 +83,7 @@ export function AppSidebar({
       <SidebarContent>
         <NavMain items={data.navMain} />
         {/* <NavProjects projects={data.projects} /> */}
-      </SidebarContent>
-      <SidebarFooter>
-        {/* <NavUser user={data.user} /> */}
-        <div className="flex justify-start items-center flex-row gap-3 cursor-pointer  hover:shadow-xl hover:scale-105 duration-300">
+        <div className="flex justify-start items-center flex-row gap-3 cursor-pointe mt-80">
           <img
             src="assets/icons/logout.png"
             // alt={item.title}
@@ -95,6 +92,11 @@ export function AppSidebar({
           />
           <h1 className="font-bold">Logout</h1>
           </div>
+      </SidebarContent>
+   
+      <SidebarFooter>
+        {/* <NavUser user={data.user} /> */}
+        
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>)
