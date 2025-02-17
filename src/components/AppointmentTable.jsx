@@ -27,7 +27,8 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const [selectedData, setSelectedData] = useState(null);
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
-    // const { appointments } = useFlowContext();
+    const [selectedDateTime, setSelectedDateTime] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
     // Initialize editData with all possible fields
     const [editData, setEditData] = useState({
@@ -66,25 +67,6 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         };
     }, [isEditOpen, isDeleteOpen, isViewOpen]);
 
-    // const clearForm = () => {
-    //     setEditData({
-    //         meeting_type: "physical",
-    //         location: "",
-    //         title: "",
-    //         description: "",
-    //         start_time: "",
-    //         end_time: "",
-    //         hour: "",
-    //         minute: "",
-    //         ampm: "",
-    //         end_hour: "",
-    //         end_minute: "",
-    //         end_ampm: "",
-    //         is_recurring: true,
-    //         note: ""
-    //     });
-    // };
-
     const isTokenExpired = (token) => {
         try {
             const decoded = jwtDecode(token);
@@ -95,78 +77,10 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         }
     };
 
-    const isEndTimeValid = (startDate, startHour, startMinute, startAMPM, endDate, endHour, endMinute, endAMPM) => {
-        if (!startDate || !startHour || !startMinute || !startAMPM ||
-            !endDate || !endHour || !endMinute || !endAMPM) {
-            return true; // Skip validation if any field is empty
-        }
-
-        const start = dayjs(`${startDate} ${startHour}:${startMinute} ${startAMPM}`, 'YYYY-MM-DD hh:mm A');
-        const end = dayjs(`${endDate} ${endHour}:${endMinute} ${endAMPM}`, 'YYYY-MM-DD hh:mm A');
-
-        // If dates are the same, check times
-        if (startDate === endDate) {
-            // Convert hours to 24-hour format for comparison
-            const startHour24 = start.hour();
-            const endHour24 = end.hour();
-
-            if (startHour24 > endHour24) {
-                return false;
-            }
-
-            if (startHour24 === endHour24 && parseInt(startMinute) >= parseInt(endMinute)) {
-                return false;
-            }
-        }
-
-        return end.isAfter(start);
-    };
-
-    const formatDateTime = (date, hour, minute, ampm) => {
-        if (!date || !hour || !minute || !ampm) return '';
-
-        let hours = parseInt(hour, 10);
-        if (ampm.toLowerCase() === "pm" && hours !== 12) {
-            hours += 12;
-        } else if (ampm.toLowerCase() === "am" && hours === 12) {
-            hours = 0;
-        }
-
-        const formattedHour = String(hours).padStart(2, '0');
-        const formattedMinute = String(minute).padStart(2, '0');
-
-        return `${date}T${formattedHour}:${formattedMinute}:00Z`;
-    };
-
     const handleView = (data) => {
         setSelectedData(data);
         setIsViewOpen(true);
     };
-
-    // const handleEdit = (data) => {
-    //     const startDate = dayjs(data.start);
-    //     const endDate = dayjs(data.end);
-
-    //     setEditData({
-    //         ...data,
-    //         start_time: startDate.format('YYYY-MM-DD'),
-    //         end_time: endDate.format('YYYY-MM-DD'),
-    //         hour: startDate.format('hh'),
-    //         minute: startDate.format('mm'),
-    //         ampm: startDate.format('A'),
-    //         end_hour: endDate.format('hh'),
-    //         end_minute: endDate.format('mm'),
-    //         end_ampm: endDate.format('A'),
-    //         meeting_type: data.meeting_type || 'physical',
-    //         location: data.location || '',
-    //         title: data.title || '',
-    //         description: data.description || '',
-    //         is_recurring: Boolean(data.is_recurring), // Ensure it's a boolean
-    //         note: data.note || '',
-    //     });
-    //     setSelectedAppointmentId(data.appointment_id);
-    //     setIsEditOpen(true);
-    // };
 
     const handleEdit = (data) => {
         const startDate = dayjs(data.start_time);
@@ -278,7 +192,6 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         }
     };
 
-    // const [selectedDateTime, setSelectedDateTime] = useState(null);
 
     // Add this filter function
     const filterAppointments = (data) => {
@@ -289,23 +202,21 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         }
         return true; // Show all appointments if no date is selected
     };
-    const [selectedDateTime, setSelectedDateTime] = useState(new Date());
-    const [showDatePicker, setShowDatePicker] = useState(false);
 
-    // const [showDatePicker, setShowDatePicker] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(null);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (!event.target.closest('.relative')) {
+            // Check if the click is outside both the calendar icon and the date picker
+            if (!event.target.closest('.calendar-trigger') && 
+                !event.target.closest('.date-picker-wrapper')) {
                 setShowDatePicker(false);
             }
         };
-
+    
         if (showDatePicker) {
             document.addEventListener('mousedown', handleClickOutside);
         }
-
+    
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
@@ -333,177 +244,13 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 <table className="table">
                     <thead>
                         <tr>
-                            {/* <th className='relative'>
-                                <div className='flex gap-4 items-center'>
-                                    Time
-                                    <div className="relative inline-block">
-                                        <FaCalendarAlt
-                                            className="text-gray-500 cursor-pointer hover:text-gray-700"
-                                            onClick={() => setShowDatePicker(!showDatePicker)}
-                                        />
-                                        {showDatePicker && (
-                                            <div className="relative left-0 top-full mt-2 z-50">
-                                                <div className="bg-white rounded-lg shadow-lg border border-gray-200">
-                                                    <DatePicker
-                                                        selected={selectedDateTime}
-                                                        onChange={(date) => {
-                                                            setSelectedDateTime(date);
-                                                            setShowDatePicker(false);
-                                                        }}
-                                                        inline
-                                                        dateFormat="MMMM d, yyyy"
-                                                        calendarClassName="!border-none"
-                                                        renderCustomHeader={({
-                                                            date,
-                                                            decreaseMonth,
-                                                            increaseMonth,
-                                                            prevMonthButtonDisabled,
-                                                            nextMonthButtonDisabled
-                                                        }) => (
-                                                            <div className="flex items-center justify-between px-3 py-2">
-                                                                <button
-                                                                    onClick={decreaseMonth}
-                                                                    disabled={prevMonthButtonDisabled}
-                                                                    className="p-1 hover:bg-gray-100 rounded-full"
-                                                                >
-                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                                                    </svg>
-                                                                </button>
-                                                                <div className="text-lg font-semibold">
-                                                                    {date.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                                                                </div>
-                                                                <button
-                                                                    onClick={increaseMonth}
-                                                                    disabled={nextMonthButtonDisabled}
-                                                                    className="p-1 hover:bg-gray-100 rounded-full"
-                                                                >
-                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                    />
-                                                    {selectedDate && (
-                                                        <div className="p-2 border-t">
-                                                            <button
-                                                                onClick={() => {
-                                                                    setSelectedDate(null);
-                                                                    setShowDatePicker(false);
-                                                                }}
-                                                                className="w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
-                                                            >
-                                                                Clear
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </th> */}
-                            {/* <th className='relative'>
-                                <div className='flex gap-4 items-center'>
-                                    Time
-                                    <div className="relative inline-block">
-                                        <FaCalendarAlt
-                                            className="text-gray-500 cursor-pointer hover:text-gray-700"
-                                            onClick={() => setShowDatePicker(!showDatePicker)}
-                                        />
-                                        {showDatePicker && (
-                                            // Modal Overlay
-                                            <div className="fixed inset-0 z-50 overflow-y-auto">
-                                               
-                                                <div
-                                                    className="fixed inset-0 bg-black bg-opacity-25 transition-opacity"
-                                                    onClick={() => setShowDatePicker(false)}
-                                                ></div>
-
-                                                
-                                                <div className="flex items-center justify-center p-4">
-                                                    <div className="relative bg-white rounded-lg shadow-xl max-w-sm w-full p-4">
-                                                    
-                                                        <button
-                                                            onClick={() => setShowDatePicker(false)}
-                                                            className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition-colors"
-                                                            aria-label="Close modal"
-                                                        >
-                                                            <ImCross className="w-4 h-4" />
-                                                        </button>
-
-
-                                                      
-                                                        <DatePicker
-                                                            selected={selectedDateTime}
-                                                            onChange={(date) => {
-                                                                setSelectedDateTime(date);
-                                                                setShowDatePicker(false);
-                                                            }}
-                                                            inline
-                                                            dateFormat="MMMM d, yyyy"
-                                                            calendarClassName="!border-none"
-                                                            className='w-full'
-                                                            renderCustomHeader={({
-                                                                date,
-                                                                decreaseMonth,
-                                                                increaseMonth,
-                                                                prevMonthButtonDisabled,
-                                                                nextMonthButtonDisabled
-                                                            }) => (
-                                                                <div className="flex items-center justify-between px-3 py-2">
-                                                                    <button
-                                                                        onClick={decreaseMonth}
-                                                                        disabled={prevMonthButtonDisabled}
-                                                                        className="p-1 hover:bg-gray-100 rounded-full"
-                                                                    >
-                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                                                        </svg>
-                                                                    </button>
-                                                                    <div className="text-lg font-semibold">
-                                                                        {date.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                                                                    </div>
-                                                                    <button
-                                                                        onClick={increaseMonth}
-                                                                        disabled={nextMonthButtonDisabled}
-                                                                        className="p-1 hover:bg-gray-100 rounded-full"
-                                                                    >
-                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                                        </svg>
-                                                                    </button>
-                                                                </div>
-                                                            )}
-                                                        />
-
-                                                        {selectedDateTime && (
-                                                            <div className="mt-4 pt-3 border-t">
-                                                                <button
-                                                                    onClick={() => {
-                                                                        setSelectedDateTime(null);
-                                                                        setShowDatePicker(false);
-                                                                    }}
-                                                                    className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-                                                                >
-                                                                    Clear Selection
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </th> */}
+                           
                             <th className='relative'>
                                 <div className='flex gap-4 items-center'>
                                     Time
                                     <div className="relative inline-block">
                                         <FaCalendarAlt
-                                            className="text-gray-500 cursor-pointer hover:text-gray-700"
+                                            className="text-gray-500 cursor-pointer hover:text-gray-700 calendar-trigger"
                                             onClick={() => setShowDatePicker(!showDatePicker)}
                                         />
                                         {showDatePicker && (
@@ -551,19 +298,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                             </div>
                                                         )}
                                                     />
-                                                    {/* {selectedDateTime && (
-                                                        <div className="p-2 border-t">
-                                                            <button
-                                                                onClick={() => {
-                                                                    setSelectedDateTime(null);
-                                                                    setShowDatePicker(false);
-                                                                }}
-                                                                className="w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
-                                                            >
-                                                                Clear
-                                                            </button>
-                                                        </div>
-                                                    )} */}
+                                                  
                                                 </div>
                                             </div>
                                         )}
