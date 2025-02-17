@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaEye } from "react-icons/fa";
+import { FaEdit, FaEye, FaCalendarAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Cookies from 'js-cookie';
 import { toast } from "react-toastify";
@@ -12,6 +12,8 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import ViewAppointmentModal from './modals/appointment/ViewAppointmentModal';
 import EditAppointmentModal from './modals/appointment/EditAppointmentModal';
 import DeleteAppointmentModal from './modals/appointment/DeleteAppointmentModal';
+import DatePicker from 'react-datepicker'; // You'll need to install this
+import "react-datepicker/dist/react-datepicker.css";
 
 // Extend dayjs with the necessary plugins
 dayjs.extend(utc);
@@ -434,55 +436,84 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         }
     };
 
+    // const [selectedDateTime, setSelectedDateTime] = useState(null);
+
+    // Add this filter function
+    const filterAppointments = (data) => {
+        if (selectedDateTime) {
+            const appointmentDate = dayjs(data.start);
+            const filterDate = dayjs(selectedDateTime);
+            return appointmentDate.isSame(filterDate, 'day');
+        }
+        return true; // Show all appointments if no date is selected
+    };
+    const [selectedDateTime, setSelectedDateTime] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+
+
     return (
         <div>
             {/* Table Component */}
             <div className="overflow-x-auto">
+                <div className="mb-4 flex items-center gap-2">
+                   
+                    <DatePicker selected={selectedDateTime}
+                        onChange={(date) => setSelectedDateTime(date)} />
+                    {selectedDateTime && (
+                        <button
+                            onClick={() => setSelectedDateTime(null)}
+                            className="bg-gray-200 px-2 py-1 rounded hover:bg-gray-300"
+                        >
+                            Clear Filter
+                        </button>
+                    )}
+                </div>
                 <table className="table">
                     <thead>
                         <tr>
-                            <th>Time</th>
+                            <th className='flex gap-4'>
+                                Time
+                                <FaCalendarAlt className="text-gray-500" />
+                                </th>
                             <th>Title</th>
                             <th>Description</th>
-                            {/* <th>With</th> */}
                             <th>Location</th>
                             <th>Action</th>
                         </tr>
                     </thead>
+                  
                     <tbody>
-                        {appointmentData.map((data, index) => (
-                            <tr key={data.appointment_id || index}>
-                                <td>
+                {appointmentData
+                    .filter(filterAppointments)
+                    .map((data, index) => (
+                        <tr key={data.appointment_id || index}>
+                            <td>
+                                <div className="flex items-center gap-2">
                                     <div className="font-bold">
                                         {dayjs(data.start).format('DD-MM-YY hh:mm A')} - {dayjs(data.end).format('DD-MM-YY hh:mm A')}
                                     </div>
-                                </td>
-                                <td>{data.title}</td>
-                                <td>{data.description}</td>
-                                {/* {data.with_contacts.map((contact, index) => (
-                                    <td className='flex flex-col' key={contact.contact_id || index}>
-                                        <li>
-                                            {contact.name}
-                                        </li></td>
-                                ))} */}
-                                <td>{data.location}</td>
-                                <td className="flex justify-between gap-5">
-                                    <FaEye
-                                        className="h-5 w-5 text-green-500 cursor-pointer"
-                                        onClick={() => handleView(data)}
-                                    />
-                                    <FaEdit
-                                        className="h-5 w-5 text-blue-500 cursor-pointer"
-                                        onClick={() => handleEdit(data)}
-                                    />
-                                    <MdDelete
-                                        className="h-5 w-5 text-red-500 cursor-pointer"
-                                        onClick={() => handleDelete(data.appointment_id)}
-                                    />
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
+                                </div>
+                            </td>
+                            <td>{data.title}</td>
+                            <td>{data.description}</td>
+                            <td>{data.location}</td>
+                            <td className="flex justify-between gap-5">
+                                <FaEye
+                                    className="h-5 w-5 text-green-500 cursor-pointer"
+                                    onClick={() => handleView(data)}
+                                />
+                                <FaEdit
+                                    className="h-5 w-5 text-blue-500 cursor-pointer"
+                                    onClick={() => handleEdit(data)}
+                                />
+                                <MdDelete
+                                    className="h-5 w-5 text-red-500 cursor-pointer"
+                                    onClick={() => handleDelete(data.appointment_id)}
+                                />
+                            </td>
+                        </tr>
+                    ))}
+            </tbody>
                 </table>
             </div>
 
