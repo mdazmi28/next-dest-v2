@@ -29,8 +29,8 @@ const data = {
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [
-   
-  
+
+
   ],
   navMain: [
     {
@@ -65,7 +65,14 @@ const data = {
 
 }
 
+const handleLogout = () => {
+  localStorage.removeItem('authToken')
+  // localStorage.removeItem('authToken')
+  location.replace("/")
+}
+
 export function AppSidebar({
+
   ...props
 }) {
   return (
@@ -79,6 +86,15 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter>
         {/* <NavUser user={data.user} /> */}
+        <div className="flex justify-start items-center flex-row gap-3 cursor-pointer  hover:shadow-xl hover:scale-105 duration-300">
+          <img
+            src="assets/icons/logout.png"
+            // alt={item.title}
+            className="w-10 h-10 "
+            onClick={handleLogout}
+          />
+          <h1 className="font-bold">Logout</h1>
+          </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>)
