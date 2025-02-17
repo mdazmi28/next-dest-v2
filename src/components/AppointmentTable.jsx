@@ -208,15 +208,20 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (!event.target.closest('.relative')) {
+            // Check if click is outside both the calendar icon and the datepicker
+            if (!event.target.closest('.calendar-container') &&
+                !event.target.closest('.datepicker-dropdown') &&
+                !event.target.closest('.react-datepicker')) {
                 setShowDatePicker(false);
             }
         };
 
+        // Add event listener only when datepicker is shown
         if (showDatePicker) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
+        // Cleanup
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
@@ -230,12 +235,12 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
 
                 <div className="mb-4 flex items-center gap-2">
 
-                  
+
                 </div>
                 <table className="table">
                     <thead>
                         <tr>
-                           
+
                             <th className='relative'>
                                 <div className='flex gap-4 items-center'>
                                     Time
@@ -245,9 +250,9 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                             onClick={() => setShowDatePicker(!showDatePicker)}
                                         />
                                         {showDatePicker && (
-                                            <div className="absolute left-0 top-8 z-[1000] fixed-calendar"> {/* Added custom class */}
+                                            <div className="absolute left-0 top-8 z-[1000] fixed-calendar"> 
                                                 <div 
-                                                className="bg-white rounded-lg shadow-lg border border-gray-200"> {/* Added fixed width */}
+                                                className="bg-white rounded-lg shadow-lg border border-gray-200"> 
                                                     <DatePicker
                                                         selected={selectedDateTime}
                                                         onChange={(date) => {
@@ -289,19 +294,6 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                                                             </div>
                                                         )}
                                                     />
-                                                    {/* {selectedDateTime && (
-                                                        <div className="p-2 border-t">
-                                                            <button
-                                                                onClick={() => {
-                                                                    setSelectedDateTime(null);
-                                                                    setShowDatePicker(false);
-                                                                }}
-                                                                className="w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
-                                                            >
-                                                                Clear
-                                                            </button>
-                                                        </div>
-                                                    )} */}
                                                 </div>
                                             </div>
                                         )}
