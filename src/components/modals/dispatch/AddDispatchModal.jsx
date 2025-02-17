@@ -7,7 +7,7 @@ import base_url from '@/base_url';
 const AddDispatchModal = ({ isOpen, onClose }) => {
     const [isLoading, setIsLoading] = useState(false);
     const initialState = {
-        reference_number: '',
+        // reference_number: '',
         type: '',
         subject: '',
         sender: '',
@@ -17,7 +17,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
     };
 
     const [dispatchData, setDispatchData] = useState({
-        reference_number: '',
+        // reference_number: '',
         type: '',
         subject: '',
         sender: '',
@@ -120,7 +120,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
 
         // Append basic dispatch data
         formData.append('user', userId);
-        formData.append('reference_number', dispatchData.reference_number);
+        // formData.append('reference_number', dispatchData.reference_number);
         formData.append('type', dispatchData.type);
         formData.append('subject', dispatchData.subject);
         formData.append('sender', finalSender);
@@ -218,7 +218,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Reference Number
                             </label>
@@ -230,7 +230,7 @@ const AddDispatchModal = ({ isOpen, onClose }) => {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0BBFBF]"
                                 required
                             />
-                        </div>
+                        </div> */}
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
