@@ -401,7 +401,7 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
             aria-modal="true"
             aria-labelledby="modal-title"
         >
-            <div ref={modalRef} className="relative w-full max-w-4xl bg-white rounded-lg shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div ref={modalRef} className="relative w-full max-w-4xl bg-white rounded-lg shadow-2xl max-h-[110vh] overflow-y-auto">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
@@ -413,7 +413,7 @@ const AddAppointmentModal = ({ isOpen, onClose }) => {
 
                 {/* Modal Content */}
                 <div className="p-6">
-                    <h2 id="modal-title" className="text-2xl font-bold text-center mb-6">Add New Meeting</h2>
+                    <h2 id="modal-title" className="text-2xl font-bold text-center mb-1">Add New Meeting</h2>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
 
