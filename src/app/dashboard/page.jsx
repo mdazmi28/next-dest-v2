@@ -9,6 +9,9 @@ import Cookies from 'js-cookie';
 import base_url from '@/base_url';
 import { toast } from 'react-toastify';
 import Scheduler from '@/components/Schedular';
+import AddAppointmentModal from '@/components/modals/appointment/AddAppointmentModal';
+import AddContactModal from '@/components/modals/contact/AddContactModal';
+import AddDispatchModal from '@/components/modals/dispatch/AddDispatchModal';
 
 
 
@@ -17,6 +20,9 @@ const page = () => {
   // const { setAppointments, events, setEvents } = useFlowContext();
   const [appointments, setAppointments] = useState([]);
   const [events, setEvents] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddContactOpen, setIsAddContactOpen] = useState(false);
+  const [isAddDispatchOpen, setIsAddDispatchOpen] = useState(false);
 
   const isTokenExpired = (token) => {
     try {
@@ -208,21 +214,21 @@ const page = () => {
               <div className='bg-white p-6 rounded-xl shadow-xl'>
                 <h3 className='text-lg font-semibold mb-4'>Quick Actions</h3>
                 <div className='space-y-3'>
-                  <button onClick={() => location.replace('/appointment')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
-                  <img
+                  <button onClick={() => setIsModalOpen(true)} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                    <img
                       src="/assets/icons/schedule.png"
                       // alt={item.title}
                       className="w-5 h-5"
                     />New Appointment
                   </button>
-                  <button onClick={() => location.replace('/contact')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
-                  <img
+                  <button onClick={() => setIsAddContactOpen(true)} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                    <img
                       src="/assets/icons/contact.png"
                       // alt={item.title}
                       className="w-5 h-5"
                     /> Add Contact
                   </button>
-                  <button onClick={() => location.replace('/dispatch')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                  <button onClick={() => setIsAddDispatchOpen(true)} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
                     <img
                       src="/assets/icons/letter.png"
                       // alt={item.title}
@@ -249,6 +255,21 @@ const page = () => {
 
         </div>
       </div>
+      <AddAppointmentModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+
+      <AddContactModal
+        isOpen={isAddContactOpen}
+        onClose={() => setIsAddContactOpen(false)}
+      />
+
+      <AddDispatchModal
+        isOpen={isAddDispatchOpen}
+        onClose={() => setIsAddDispatchOpen(false)}
+      />
+
     </Layout>
   );
 };
