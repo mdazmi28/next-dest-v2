@@ -91,12 +91,12 @@ export function AppSidebar({
             onClick={handleLogout}
           />
           <h1 className="font-bold">Logout</h1>
-          </div>
+        </div>
       </SidebarContent>
-   
+
       <SidebarFooter>
         {/* <NavUser user={data.user} /> */}
-        
+
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>)
