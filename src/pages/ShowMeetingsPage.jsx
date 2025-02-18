@@ -172,8 +172,33 @@ const ShowMeetings = () => {
         </div>
 
         {/* Right - Sidebar */}
-        <div className="w-1/4 border shadow-2xl p-4">
-          {/* Sidebar Content (if any) */}
+        <div className="w-1/4">
+        <div className='bg-white p-6 rounded-xl shadow-xl mt-16'>
+                <h3 className='text-lg font-semibold mb-4'>Quick Actions</h3>
+                <div className='space-y-3'>
+                  <button onClick={() => location.replace('/appointment')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                    <img
+                      src="/assets/icons/schedule.png"
+                      // alt={item.title}
+                      className="w-5 h-5"
+                    />New Appointment
+                  </button>
+                  <button onClick={() => location.replace('/contact')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                    <img
+                      src="/assets/icons/contact.png"
+                      // alt={item.title}
+                      className="w-5 h-5"
+                    /> Add Contact
+                  </button>
+                  <button onClick={() => location.replace('/dispatch')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                    <img
+                      src="/assets/icons/letter.png"
+                      // alt={item.title}
+                      className="w-5 h-5"
+                    /> Add Dispatch
+                  </button>
+                </div>
+              </div>
         </div>
       </div>
 
