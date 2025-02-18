@@ -15,10 +15,12 @@ import DeleteAppointmentModal from './modals/appointment/DeleteAppointmentModal'
 import DatePicker from 'react-datepicker'; // You'll need to install this
 import "react-datepicker/dist/react-datepicker.css";
 import { ImCross } from "react-icons/im";
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
 // Extend dayjs with the necessary plugins
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
+dayjs.extend(isSameOrAfter); // Add this extension
 
 const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     console.log(appointmentData)
@@ -27,8 +29,9 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
     const [selectedData, setSelectedData] = useState(null);
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
-    const [selectedDateTime, setSelectedDateTime] = useState(new Date());
+    // const [selectedDateTime, setSelectedDateTime] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [selectedDateTime, setSelectedDateTime] = useState(dayjs());
 
     // Initialize editData with all possible fields
     const [editData, setEditData] = useState({
@@ -195,12 +198,20 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
 
     // Add this filter function
     const filterAppointments = (data) => {
+        const now = dayjs(); // Current system date and time
+        const appointmentStart = dayjs(data.start);
+
+        // If a date is selected in the filter
         if (selectedDateTime) {
-            const appointmentDate = dayjs(data.start);
-            const filterDate = dayjs(selectedDateTime);
-            return appointmentDate.isSame(filterDate, 'day');
+            // If appointment is on the same day as selected date, check time
+            if (appointmentStart.isSame(selectedDateTime, 'day')) {
+                return appointmentStart.isSameOrAfter(selectedDateTime);
+            }
+            return appointmentStart.isAfter(selectedDateTime, 'day');
         }
-        return true; // Show all appointments if no date is selected
+
+        // Default filter: show appointments from current time onwards
+        return appointmentStart.isSameOrAfter(now);
     };
 
 
@@ -225,6 +236,50 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         };
     }, [showDatePicker]);
 
+    const CustomDatePicker = () => (
+        <DatePicker
+            selected={selectedDateTime.toDate()}
+            onChange={(date) => {
+                setSelectedDateTime(dayjs(date));
+                setShowDatePicker(false);
+            }}
+            showTimeSelect
+            timeFormat="HH:mm"
+            timeIntervals={15}
+            dateFormat="MMMM d, yyyy h:mm aa"
+            inline
+            renderCustomHeader={({
+                date,
+                decreaseMonth,
+                increaseMonth,
+                prevMonthButtonDisabled,
+                nextMonthButtonDisabled
+            }) => (
+                <div className="flex items-center justify-between px-3 py-2 border-b">
+                    <button
+                        onClick={decreaseMonth}
+                        disabled={prevMonthButtonDisabled}
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <div className="text-lg font-semibold">
+                        {dayjs(date).format('MMMM YYYY')}
+                    </div>
+                    <button
+                        onClick={increaseMonth}
+                        disabled={nextMonthButtonDisabled}
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            )}
+        />
+    );
+
 
     return (
         <div>
@@ -239,65 +294,19 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                     <thead>
                         <tr>
 
-                            <th className='relative'>
+                        <th className='relative'>
                                 <div className='flex gap-4 items-center'>
                                     Time
                                     <div className="relative inline-block">
-                                        {/* <FaCalendarAlt
-                                            className="text-gray-500 cursor-pointer hover:text-gray-700"
-                                            onClick={() => setShowDatePicker(!showDatePicker)}
-                                        /> */}
                                         <img
                                             src="/assets/icons/filter_appointment.png"
-                                            // alt={item.title}
                                             onClick={() => setShowDatePicker(!showDatePicker)}
                                             className="h-4 w-5 cursor-pointer"
                                         />
                                         {showDatePicker && (
                                             <div className="absolute left-0 top-8 z-[1000] fixed-calendar">
-                                                <div
-                                                    className="bg-white rounded-lg shadow-lg border border-gray-200">
-                                                    <DatePicker
-                                                        selected={selectedDateTime}
-                                                        onChange={(date) => {
-                                                            setSelectedDateTime(date);
-                                                            setShowDatePicker(false);
-                                                        }}
-                                                        inline
-                                                        dateFormat="MMMM d, yyyy"
-                                                        // calendarClassName="!border-none w-full" // Added full width
-                                                        renderCustomHeader={({
-                                                            date,
-                                                            decreaseMonth,
-                                                            increaseMonth,
-                                                            prevMonthButtonDisabled,
-                                                            nextMonthButtonDisabled
-                                                        }) => (
-                                                            <div className="flex items-center justify-between px-3 py-2 border-b">
-                                                                <button
-                                                                    onClick={decreaseMonth}
-                                                                    disabled={prevMonthButtonDisabled}
-                                                                // className="p-1 hover:bg-gray-100 rounded-full"
-                                                                >
-                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                                                    </svg>
-                                                                </button>
-                                                                <div className="text-lg font-semibold">
-                                                                    {date.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                                                                </div>
-                                                                <button
-                                                                    onClick={increaseMonth}
-                                                                    disabled={nextMonthButtonDisabled}
-                                                                // className="p-1 hover:bg-gray-100 rounded-full"
-                                                                >
-                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                    />
+                                                <div className="bg-white rounded-lg shadow-lg border border-gray-200">
+                                                    <CustomDatePicker />
                                                 </div>
                                             </div>
                                         )}
