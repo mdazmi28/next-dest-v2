@@ -83,12 +83,11 @@ export function AppSidebar({
       <SidebarContent>
         <NavMain items={data.navMain} />
         {/* <NavProjects projects={data.projects} /> */}
-        <div className="flex justify-start items-center flex-row gap-3 cursor-pointe mt-80">
+        <div className="flex justify-start items-center flex-row gap-3 cursor-pointer mt-80" onClick={handleLogout}>
           <img
             src="assets/icons/logout.png"
             // alt={item.title}
             className="w-10 h-10 "
-            onClick={handleLogout}
           />
           <h1 className="font-bold">Logout</h1>
         </div>
