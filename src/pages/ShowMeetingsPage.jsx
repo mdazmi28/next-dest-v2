@@ -71,14 +71,14 @@ const ShowMeetings = () => {
             phone: contact.phone || "",
             designation: contact.designation || "",
             organization: contact.organization ? {
-                organization_id: contact.organization.organization_id,
-                name: contact.organization.name || "",
-                address: contact.organization.address || "",
-                email: contact.organization.email || "",
-                website: contact.organization.website || "",
-                phone: contact.organization.phone || ""
+              organization_id: contact.organization.organization_id,
+              name: contact.organization.name || "",
+              address: contact.organization.address || "",
+              email: contact.organization.email || "",
+              website: contact.organization.website || "",
+              phone: contact.organization.phone || ""
             } : null
-        })) : [],
+          })) : [],
         }));
 
         setAppointments(formattedEvents);
@@ -147,9 +147,9 @@ const ShowMeetings = () => {
 
     <div className="h-screen flex flex-col">
       {/* Top Half - Appointments Table & Sidebar */}
-      <div className="flex flex-row gap-4 h-1/2">
+      <div className="flex flex-col md:flex-row gap-4 md:h-1/2">
         {/* Left - Appointment Table */}
-        <div className="w-3/4 p-0 flex flex-col">
+        <div className="w-full md:w-3/4 p-0 flex flex-col">
           {/* Add Meeting Button */}
           <div className="flex justify-end mb-0">
             <button
@@ -172,38 +172,38 @@ const ShowMeetings = () => {
         </div>
 
         {/* Right - Sidebar */}
-        <div className="w-1/4">
-        <div className='bg-white p-6 rounded-xl shadow-xl mt-16'>
-                <h3 className='text-lg font-semibold mb-4'>Quick Actions</h3>
-                <div className='space-y-3'>
-                  <button onClick={() => location.replace('/appointment')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
-                    <img
-                      src="/assets/icons/schedule.png"
-                      // alt={item.title}
-                      className="w-5 h-5"
-                    />New Appointment
-                  </button>
-                  <button onClick={() => location.replace('/contact')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
-                    <img
-                      src="/assets/icons/contact.png"
-                      // alt={item.title}
-                      className="w-5 h-5"
-                    /> Add Contact
-                  </button>
-                  <button onClick={() => location.replace('/dispatch')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
-                    <img
-                      src="/assets/icons/letter.png"
-                      // alt={item.title}
-                      className="w-5 h-5"
-                    /> Add Dispatch
-                  </button>
-                </div>
-              </div>
+        <div className="w-full md:w-1/4">
+          <div className='bg-white p-6 rounded-xl shadow-xl mt-16'>
+            <h3 className='text-lg font-semibold mb-4'>Quick Actions</h3>
+            <div className='space-y-3'>
+              <button onClick={() => location.replace('/appointment')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                <img
+                  src="/assets/icons/schedule.png"
+                  // alt={item.title}
+                  className="w-5 h-5"
+                />New Appointment
+              </button>
+              <button onClick={() => location.replace('/contact')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                <img
+                  src="/assets/icons/contact.png"
+                  // alt={item.title}
+                  className="w-5 h-5"
+                /> Add Contact
+              </button>
+              <button onClick={() => location.replace('/dispatch')} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                <img
+                  src="/assets/icons/letter.png"
+                  // alt={item.title}
+                  className="w-5 h-5"
+                /> Add Dispatch
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Bottom Half - Calendar & Another Section */}
-      <div className="flex flex-row h-1/2">
+      <div className="flex flex-row md:h-1/2">
         {/* Left - Calendar */}
         <div className="w-3/4 ">
           {/* <Calendar events={events} /> */}
