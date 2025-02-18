@@ -24,6 +24,7 @@
     "@syncfusion/ej2-buttons": "^28.1.33",
     "@syncfusion/ej2-react-buttons": "^28.2.3",
     "@syncfusion/ej2-react-schedule": "^28.2.4",
+    "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",

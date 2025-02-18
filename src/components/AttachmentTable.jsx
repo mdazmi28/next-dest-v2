@@ -49,7 +49,7 @@ const AttachmentTable = ({ attachmentData }) => {
                                                 href={`https://nd-api.nakhlah.xyz${attachment.file_path}`}
                                                 target='_blank'
                                                 rel="noopener noreferrer"
-                                                className="btn btn-sm bg-[#0BBFBF]"
+                                                className="btn btn-sm bg-[#0BBFBF] hover:bg-[#89D9D9]"
                                                 download
                                             >
                                                 Download
