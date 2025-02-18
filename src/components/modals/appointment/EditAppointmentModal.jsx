@@ -686,7 +686,7 @@ const EditAppointmentModal = ({ isOpen, onClose, data, setAppointmentData }) => 
                         </div>
 
                         {/* Is Recurring */}
-                        <div className="form-group">
+                        {/* <div className="form-group">
                             <label className="block text-sm font-medium text-gray-600">Is Recurring</label>
                             <select
                                 name="is_recurring"
@@ -698,7 +698,7 @@ const EditAppointmentModal = ({ isOpen, onClose, data, setAppointmentData }) => 
                                 <option value="true">Yes</option>
                                 <option value="false">No</option>
                             </select>
-                        </div>
+                        </div> */}
 
                         {/* Action Buttons */}
                         <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">

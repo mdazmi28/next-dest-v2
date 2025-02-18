@@ -63,8 +63,8 @@ const ViewAppointmentModal = ({ isOpen, onClose, data }) => {
                                         key={contact.contact_id || index}
                                         className="ml-4 py-1"
                                     >
-                                        • {contact.name || "N/A"}
-                                        {contact.designation || "N/A" && ` - ${contact.designation || "N/A"}`}
+                                        • {contact.name || "N/A"}{", "} 
+                                        {contact.designation || "N/A" && ` - ${contact.designation || "N/A"}`} at {"  "}
                                         {contact.organization?.name || "N/A" && ` at ${contact.organization.name || "N/A"}`} 
                                     </div>
                                 ))}

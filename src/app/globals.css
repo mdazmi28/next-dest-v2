@@ -144,3 +144,67 @@ body {
 /* .table td {
   @apply !align-middle; 
 } */
+
+
+
+.custom-calendar {
+  margin: 20px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-event {
+  border-radius: 4px;
+  padding: 2px 4px;
+  transition: all 0.3s ease;
+}
+
+.calendar-event:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.event-tooltip {
+  padding: 8px;
+  max-width: 300px;
+}
+
+.event-tooltip h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.event-tooltip p {
+  margin: 4px 0;
+  color: #666;
+}
+
+/* Customize calendar header */
+.fc-header-toolbar {
+  padding: 10px;
+  margin-bottom: 1.5em !important;
+}
+
+.fc-button {
+  background-color: #0BBFBF !important;
+  border-color: #0BBFBF !important;
+  box-shadow: none !important;
+  transition: all 0.3s ease;
+}
+
+.fc-button:hover {
+  background-color: #0BBFBF !important;
+  border-color: #0BBFBF !important;
+}
+
+.fc-day-today {
+  background-color: rgba(74, 144, 226, 0.1) !important;
+}
+
+/* Improve event appearance */
+.fc-event {
+  background-color: #0BBFBF;
+  border: none;
+  padding: 2px 4px;
+}
