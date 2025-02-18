@@ -193,8 +193,6 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
         }
     };
 
-    // const [selectedDateTime, setSelectedDateTime] = useState(null);
-
     // Add this filter function
     const filterAppointments = (data) => {
         if (selectedDateTime) {

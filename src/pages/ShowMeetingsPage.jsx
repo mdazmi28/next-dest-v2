@@ -182,13 +182,13 @@ const ShowMeetings = () => {
           <div className='bg-white p-6 rounded-xl shadow-xl mt-16'>
             <h3 className='text-lg font-semibold mb-4'>Quick Actions</h3>
             <div className='space-y-3'>
-                  <button onClick={() => setIsModalOpen(true)} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
+                  {/* <button onClick={() => setIsModalOpen(true)} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
                     <img
                       src="/assets/icons/schedule.png"
                       // alt={item.title}
                       className="w-5 h-5"
                     />New Appointment
-                  </button>
+                  </button> */}
                   <button onClick={() => setIsAddContactOpen(true)} className='w-full px-4 py-2 text-left text-sm hover:bg-gray-50 rounded-lg transition-colors flex gap-2'>
                     <img
                       src="/assets/icons/contact.png"
@@ -228,10 +228,10 @@ const ShowMeetings = () => {
       />
 
 
-      <AddAppointmentModal
+      {/* <AddAppointmentModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-      />
+      /> */}
 
       <AddContactModal
         isOpen={isAddContactOpen}
