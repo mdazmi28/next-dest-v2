@@ -66,48 +66,104 @@ const AddContactModal = ({ isOpen, onClose, refreshData }) => {
         setIsProcessing(false);
     };
 
-    const handleClose = () => {
-        resetForm();
-        onClose();
-    };
+
+    // const handleFileUpload = async (e) => {
+    //     const file = e.target.files[0];
+    //     if (!file) return;
+
+    //     setIsProcessing(true);
+    //     const formData = new FormData();
+    //     formData.append('file', file);
+
+    //     try {
+    //         const response = await fetch(`${base_url}/ocr-contact/`, {
+    //             method: 'POST',
+    //             body: formData
+    //         });
+
+    //         if (!response.ok) {
+    //             toast.error('File processing failed');
+    //             return;
+    //         }
+
+    //         const data = await response.json();
+    //         if (data && data.length > 0) {
+    //             const ocrData = data[0];
+
+    //             setPerson(prev => ({
+    //                 ...prev,
+    //                 name: ocrData['Name']?.trim() || '',
+    //                 designation: ocrData['Designation']?.trim() || '',
+    //                 email: ocrData['Email']?.trim() || '',
+    //                 phone: ocrData['Phone Number']?.trim().replace(/\s/g, '') || '',
+    //             }));
+
+    //             setOrganization(prev => ({
+    //                 ...prev,
+    //                 name: ocrData['Company Name']?.trim() || '',
+    //                 address: ocrData['Address']?.trim() || '',
+    //                 website: ocrData['Website']?.trim() || '',
+                    
+    //             }));
+
+    //             toast.success('Business card data extracted successfully!');
+    //         }
+    //     } catch (error) {
+    //         console.error('OCR Error:', error);
+    //         toast.error('Failed to process business card');
+    //     } finally {
+    //         setIsProcessing(false);
+    //     }
+    // };
 
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
+    
         setIsProcessing(true);
         const formData = new FormData();
         formData.append('file', file);
-
+    
         try {
             const response = await fetch(`${base_url}/ocr-contact/`, {
                 method: 'POST',
                 body: formData
             });
-
+    
+            // Log the raw response
+            const responseText = await response.text();
+            console.log('Raw response:', responseText);
+    
             if (!response.ok) {
-                toast.error('File processing failed');
+                toast.error(`File processing failed: ${response.status}`);
                 return;
             }
-
-            const data = await response.json();
-            if (data && data.length > 0) {
-                const ocrData = data[0];
-
-                setPerson(prev => ({
-                    ...prev,
-                    name: ocrData['Name']?.trim() || '',
-                    designation: ocrData['Designation']?.trim() || '',
-                    email: ocrData['Email']?.trim() || '',
-                    phone: ocrData['Phone Number']?.trim().replace(/\s/g, '') || '',
-                }));
-
-                setOrganization(prev => ({
-                    ...prev,
-                    name: ocrData['Company Name']?.trim() || '',
-                }));
-
-                toast.success('Business card data extracted successfully!');
+    
+            // Only try to parse if we have content
+            if (responseText) {
+                const data = JSON.parse(responseText);
+                if (data && data.length > 0) {
+                    const ocrData = data[0];
+    
+                    setPerson(prev => ({
+                        ...prev,
+                        name: ocrData['Name']?.trim() || '',
+                        designation: ocrData['Designation']?.trim() || '',
+                        email: ocrData['Email']?.trim() || '',
+                        phone: ocrData['Phone Number']?.trim().replace(/\s/g, '') || '',
+                    }));
+    
+                    setOrganization(prev => ({
+                        ...prev,
+                        name: ocrData['Company Name']?.trim() || '',
+                        address: ocrData['Address']?.trim() || '',
+                        website: ocrData['Website']?.trim() || '',
+                    }));
+    
+                    toast.success('Business card data extracted successfully!');
+                }
+            } else {
+                toast.error('Received empty response from server');
             }
         } catch (error) {
             console.error('OCR Error:', error);
@@ -455,7 +511,7 @@ const AddContactModal = ({ isOpen, onClose, refreshData }) => {
                                     value={person.phone}
                                     onChange={handlePersonChange}
                                     className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                // required
+                                required
                                 />
                             </div>
                             <div className="form-group">
