@@ -243,7 +243,7 @@ const AppointmentTable = ({ appointmentData, setAppointmentData }) => {
                 setSelectedDateTime(dayjs(date));
                 setShowDatePicker(false);
             }}
-            showTimeSelect
+            // showTimeSelect
             timeFormat="HH:mm"
             timeIntervals={15}
             dateFormat="MMMM d, yyyy h:mm aa"
